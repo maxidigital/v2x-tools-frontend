@@ -14,33 +14,39 @@ document.addEventListener('DOMContentLoaded', function() {
     // Rotating headline setup
     const isMobile = window.innerWidth < 768;
     const headlines = isMobile ? [
-        "Convert V2X Instantly",
-        "XML/JSON Output",
-        "No Setup Required",
-        "Secure Conversion"
+        { text: "Convert V2X Instantly" },
+        { text: "XML/JSON Output" },
+        { text: "No Setup Required" },
+        { text: "Secure Conversion" },
+        { text: "Bug fixed: contact form working now", highlight: true }
     ] : [
-        "Convert V2X Payloads Instantly",
-        "Supports XML/JSON input/output",
-        "No setup required",
-        "Fast & secure conversion"
+        { text: "Convert V2X Payloads Instantly" },
+        { text: "Supports XML/JSON input/output" },
+        { text: "No setup required" },
+        { text: "Fast & secure conversion" },
+        { text: "Bug fixed: contact form working now", highlight: true }
     ];
     let currentHeadlineIndex = 0;
     const headlineElement = document.getElementById('rotatingHeadline');
-    
+
+    function applyHeadline(h) {
+        headlineElement.textContent = h.text;
+        headlineElement.style.color = h.highlight ? '#16a34a' : '';
+        headlineElement.style.fontWeight = h.highlight ? '600' : '';
+    }
+
+    applyHeadline(headlines[0]);
+
     // Function to rotate headlines
     function rotateHeadline() {
-        // Fade out
         headlineElement.style.opacity = '0';
-        
-        // Change text after fade out
         setTimeout(() => {
             currentHeadlineIndex = (currentHeadlineIndex + 1) % headlines.length;
-            headlineElement.textContent = headlines[currentHeadlineIndex];
-            // Fade in
+            applyHeadline(headlines[currentHeadlineIndex]);
             headlineElement.style.opacity = '1';
         }, 500);
     }
-    
+
     // Start rotating headlines every 3 seconds
     setInterval(rotateHeadline, 3000);
     // Update tooltip for buttons
