@@ -14,17 +14,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Rotating headline setup
     const isMobile = window.innerWidth < 768;
     const headlines = isMobile ? [
+        { text: "Bug fixed: contact form working now", highlight: true },
         { text: "Convert V2X Instantly" },
         { text: "XML/JSON Output" },
         { text: "No Setup Required" },
-        { text: "Secure Conversion" },
-        { text: "Bug fixed: contact form working now", highlight: true }
+        { text: "Secure Conversion" }
     ] : [
+        { text: "Bug fixed: contact form working now", highlight: true },
         { text: "Convert V2X Payloads Instantly" },
         { text: "Supports XML/JSON input/output" },
         { text: "No setup required" },
-        { text: "Fast & secure conversion" },
-        { text: "Bug fixed: contact form working now", highlight: true }
+        { text: "Fast & secure conversion" }
     ];
     let currentHeadlineIndex = 0;
     const headlineElement = document.getElementById('rotatingHeadline');
