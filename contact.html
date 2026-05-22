@@ -395,9 +395,10 @@
                     verification: turnstileToken
                 })
             })
-            .then(response => {
+            .then(async response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error: ${response.status}`);
+                    const body = await response.text().catch(() => '');
+                    throw new Error(body || `HTTP error: ${response.status}`);
                 }
                 return response.json();
             })
@@ -425,7 +426,7 @@
                 const isTimeout = error.name === 'AbortError';
                 errorMessage.textContent = isTimeout
                     ? "Request timed out. Please try again or email maxidigital@gmail.com directly."
-                    : "There was a problem sending your message. Please try again later.";
+                    : (error.message || "There was a problem sending your message. Please try again later.");
                 errorMessage.style.display = 'block';
                 
                 // Reset Turnstile on error
