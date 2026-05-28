@@ -10,13 +10,17 @@
   h1 { font-size: 1rem; color: #475569; margin-bottom: 32px; }
   .section { margin-bottom: 32px; }
   .section-title { font-size: 0.75rem; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
-  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-  input { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 120px; }
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+  input[type=number] { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 100px; }
+  input[type=text] { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 280px; }
   button { background: #1e3a5f; border: 1px solid #2563eb; border-radius: 6px; color: #60a5fa; padding: 8px 16px; font-family: inherit; font-size: 0.875rem; cursor: pointer; }
   button:hover { background: #1e4a8f; }
-  .output { background: #1e2433; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; font-size: 0.8rem; color: #94a3b8; min-height: 60px; white-space: pre-wrap; word-break: break-all; margin-top: 8px; }
+  button.danger { background: #3b1a1a; border-color: #dc2626; color: #f87171; }
+  button.danger:hover { background: #5a1a1a; }
+  .output { background: #1e2433; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; font-size: 0.8rem; color: #94a3b8; min-height: 48px; white-space: pre-wrap; word-break: break-all; margin-top: 8px; }
   .ok { color: #34d399; }
   .err { color: #f87171; }
+  .label { font-size: 0.75rem; color: #475569; }
 </style>
 </head>
 <body>
@@ -24,10 +28,24 @@
 <h1>// dev console</h1>
 
 <div class="section">
+  <div class="section-title">Engine — Load</div>
+  <div class="row">
+    <span class="label">userId</span>
+    <input id="userId-load" type="number" value="0">
+    <span class="label">aliases (comma separated)</span>
+    <input id="aliases-load" type="text" value="cam_v2">
+    <button onclick="loadAliases()">POST load</button>
+  </div>
+  <div class="output" id="out-load">—</div>
+</div>
+
+<div class="section">
   <div class="section-title">Engine — Aliases</div>
   <div class="row">
-    <input id="userId-aliases" type="number" value="0" placeholder="userId">
+    <span class="label">userId</span>
+    <input id="userId-aliases" type="number" value="0">
     <button onclick="getAliases()">GET aliases</button>
+    <button class="danger" onclick="evictEngine()">DELETE engine</button>
   </div>
   <div class="output" id="out-aliases">—</div>
 </div>
@@ -35,20 +53,39 @@
 <script>
   const API = 'https://v2x-tools-backend-production.up.railway.app';
 
-  async function getAliases() {
-    const userId = document.getElementById('userId-aliases').value;
-    const out = document.getElementById('out-aliases');
+  async function call(method, url, body, outId) {
+    const out = document.getElementById(outId);
     out.textContent = 'loading...';
     out.className = 'output';
     try {
-      const res = await fetch(`${API}/api/engine/${userId}/aliases`);
-      const data = await res.json();
-      out.textContent = JSON.stringify(data, null, 2);
+      const opts = { method, headers: {} };
+      if (body) { opts.body = body; opts.headers['Content-Type'] = 'application/json'; }
+      const res = await fetch(url, opts);
+      const text = await res.text();
+      try { out.textContent = JSON.stringify(JSON.parse(text), null, 2); }
+      catch { out.textContent = text; }
       out.classList.add(res.ok ? 'ok' : 'err');
     } catch (e) {
       out.textContent = e.message;
       out.classList.add('err');
     }
+  }
+
+  function loadAliases() {
+    const userId = document.getElementById('userId-load').value;
+    const aliases = document.getElementById('aliases-load').value
+      .split(',').map(s => s.trim()).filter(Boolean);
+    call('POST', `${API}/api/engine/${userId}/load`, JSON.stringify(aliases), 'out-load');
+  }
+
+  function getAliases() {
+    const userId = document.getElementById('userId-aliases').value;
+    call('GET', `${API}/api/engine/${userId}/aliases`, null, 'out-aliases');
+  }
+
+  function evictEngine() {
+    const userId = document.getElementById('userId-aliases').value;
+    call('DELETE', `${API}/api/engine/${userId}`, null, 'out-aliases');
   }
 </script>
 </body>
