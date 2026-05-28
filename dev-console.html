@@ -40,6 +40,8 @@
 
   input[type=number] { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 100px; }
   input[type=text]   { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 280px; }
+  select { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; }
+  input[type=checkbox] { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
 
   button { background: #1e3a5f; border: 1px solid #2563eb; border-radius: 6px; color: #60a5fa; padding: 8px 16px; font-family: inherit; font-size: 0.875rem; cursor: pointer; }
   button:hover { background: #1e4a8f; }
@@ -121,6 +123,39 @@
   <hr class="divider">
 
   <div class="section">
+    <div class="section-title">Random — generate message</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="b-rnd-userId" type="number" value="0">
+      <span class="label">message</span>
+      <select id="b-rnd-mid">
+        <option value="2:2">CAM v2</option>
+        <option value="1:2">DENM v2</option>
+        <option value="4:2">SPATEM v2</option>
+        <option value="5:2">MAPEM v2</option>
+        <option value="6:2">IVIM v2</option>
+        <option value="9:2">SREM v2</option>
+        <option value="10:2">SSEM v2</option>
+        <option value="14:2">CPM v2</option>
+      </select>
+      <span class="label">format</span>
+      <select id="b-rnd-format">
+        <option value="UPER">UPER</option>
+        <option value="JSON">JSON</option>
+        <option value="XML">XML</option>
+        <option value="WER">WER</option>
+      </select>
+      <input type="checkbox" id="b-rnd-minimal">
+      <span class="label">minimal</span>
+      <button onclick="backendRandom()">GET random</button>
+      <button class="ghost" onclick="clearOut('b-out-rnd')">clear</button>
+    </div>
+    <div class="output" id="b-out-rnd">—</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
     <div class="section-title">Engine — aliases &amp; evict</div>
     <div class="row">
       <span class="label">userId</span>
@@ -186,8 +221,30 @@
       .split(',').map(s => s.trim()).filter(Boolean);
     call('POST', `${API}/api/engine/${v('b-userId-load')}/load`, JSON.stringify(aliases), 'b-out-load');
   }
-  function backendGetAliases() { call('GET',    `${API}/api/engine/${v('b-userId-aliases')}/aliases`, null, 'b-out-aliases'); }
-  function backendEvict()      { call('DELETE',  `${API}/api/engine/${v('b-userId-aliases')}`,        null, 'b-out-aliases'); }
+  function backendGetAliases() { call('GET',   `${API}/api/engine/${v('b-userId-aliases')}/aliases`, null, 'b-out-aliases'); }
+  function backendEvict()      { call('DELETE', `${API}/api/engine/${v('b-userId-aliases')}`,         null, 'b-out-aliases'); }
+
+  async function backendRandom() {
+    const out     = document.getElementById('b-out-rnd');
+    const userId  = v('b-rnd-userId');
+    const mid     = v('b-rnd-mid');
+    const format  = v('b-rnd-format');
+    const minimal = document.getElementById('b-rnd-minimal').checked;
+    const url     = `${API}/command/random?mid=${mid}&format=${format}&minimal=${minimal}`;
+
+    out.textContent = 'loading...';
+    out.className = 'output';
+    try {
+      const res  = await fetch(url, { headers: { 'X-User-Id': userId } });
+      const text = await res.text();
+      try { out.textContent = JSON.stringify(JSON.parse(text), null, 2); }
+      catch { out.textContent = text; }
+      out.classList.add(res.ok ? 'ok' : 'err');
+    } catch (e) {
+      out.textContent = e.message;
+      out.classList.add('err');
+    }
+  }
 
   function v(id) { return document.getElementById(id).value; }
 </script>
