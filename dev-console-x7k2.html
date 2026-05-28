@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dev console</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'JetBrains Mono', 'Fira Code', monospace; background: #0f1117; color: #e2e8f0; padding: 32px; }
+  h1 { font-size: 1rem; color: #475569; margin-bottom: 32px; }
+  .section { margin-bottom: 32px; }
+  .section-title { font-size: 0.75rem; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  input { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 120px; }
+  button { background: #1e3a5f; border: 1px solid #2563eb; border-radius: 6px; color: #60a5fa; padding: 8px 16px; font-family: inherit; font-size: 0.875rem; cursor: pointer; }
+  button:hover { background: #1e4a8f; }
+  .output { background: #1e2433; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; font-size: 0.8rem; color: #94a3b8; min-height: 60px; white-space: pre-wrap; word-break: break-all; margin-top: 8px; }
+  .ok { color: #34d399; }
+  .err { color: #f87171; }
+</style>
+</head>
+<body>
+
+<h1>// dev console</h1>
+
+<div class="section">
+  <div class="section-title">Engine — Aliases</div>
+  <div class="row">
+    <input id="userId-aliases" type="number" value="0" placeholder="userId">
+    <button onclick="getAliases()">GET aliases</button>
+  </div>
+  <div class="output" id="out-aliases">—</div>
+</div>
+
+<script>
+  const API = 'https://v2x-tools-backend-production.up.railway.app';
+
+  async function getAliases() {
+    const userId = document.getElementById('userId-aliases').value;
+    const out = document.getElementById('out-aliases');
+    out.textContent = 'loading...';
+    out.className = 'output';
+    try {
+      const res = await fetch(`${API}/api/engine/${userId}/aliases`);
+      const data = await res.json();
+      out.textContent = JSON.stringify(data, null, 2);
+      out.classList.add(res.ok ? 'ok' : 'err');
+    } catch (e) {
+      out.textContent = e.message;
+      out.classList.add('err');
+    }
+  }
+</script>
+</body>
+</html>
