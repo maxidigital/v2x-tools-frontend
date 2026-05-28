@@ -34,7 +34,7 @@
     <input id="userId-modules" type="number" value="0">
     <button onclick="getModules()">GET all modules</button>
     <button onclick="getMessages()">GET messages only</button>
-    <button onclick="clear('out-modules')">clear</button>
+    <button onclick="clearOut('out-modules')">clear</button>
   </div>
   <div class="output" id="out-modules">—</div>
 </div>
@@ -47,7 +47,7 @@
     <span class="label">aliases (comma separated)</span>
     <input id="aliases-load" type="text" value="cam_v2">
     <button onclick="loadAliases()">POST load</button>
-    <button onclick="clear('out-load')">clear</button>
+    <button onclick="clearOut('out-load')">clear</button>
   </div>
   <div class="output" id="out-load">—</div>
 </div>
@@ -59,7 +59,7 @@
     <input id="userId-aliases" type="number" value="0">
     <button onclick="getAliases()">GET aliases</button>
     <button class="danger" onclick="evictEngine()">DELETE engine</button>
-    <button onclick="clear('out-aliases')">clear</button>
+    <button onclick="clearOut('out-aliases')">clear</button>
   </div>
   <div class="output" id="out-aliases">—</div>
 </div>
@@ -68,7 +68,7 @@
   const API  = 'https://v2x-tools-backend-production.up.railway.app';
   const REPO = 'https://v2x-tools-repo-production.up.railway.app';
 
-  function clear(outId) {
+  function clearOut(outId) {
     const out = document.getElementById(outId);
     out.textContent = '—';
     out.className = 'output';
