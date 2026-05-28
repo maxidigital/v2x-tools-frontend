@@ -80,6 +80,25 @@
     </div>
     <div class="output" id="r-out">—</div>
   </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">Modules — patch IDs</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="r-patch-userId" type="number" value="0">
+      <span class="label">alias</span>
+      <input id="r-patch-alias" type="text" value="cam_v2" style="width:140px">
+      <span class="label">msgId</span>
+      <input id="r-patch-msgId" type="number" value="2" style="width:70px">
+      <span class="label">protocolVersion</span>
+      <input id="r-patch-protVer" type="number" value="2" style="width:70px">
+      <button onclick="repoPatchIds()">PATCH ids</button>
+      <button class="ghost" onclick="clearOut('r-out-patch')">clear</button>
+    </div>
+    <div class="output" id="r-out-patch">—</div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════ BACKEND TAB ════════════════════════════ -->
@@ -150,9 +169,16 @@
   }
 
   // ── Repo ──────────────────────────────────────────────────────────────────
-  function repoGetModules()  { call('GET', `${REPO}/api/modules/by-user?userId=${v('r-userId')}`,  null, 'r-out'); }
-  function repoGetAliases()  { call('GET', `${REPO}/api/modules/aliases?userId=${v('r-userId')}`,   null, 'r-out'); }
-  function repoGetMessages() { call('GET', `${REPO}/api/modules/messages?userId=${v('r-userId')}`,  null, 'r-out'); }
+  function repoGetModules()  { call('GET',   `${REPO}/api/modules/by-user?userId=${v('r-userId')}`,  null, 'r-out'); }
+  function repoGetAliases()  { call('GET',   `${REPO}/api/modules/aliases?userId=${v('r-userId')}`,   null, 'r-out'); }
+  function repoGetMessages() { call('GET',   `${REPO}/api/modules/messages?userId=${v('r-userId')}`,  null, 'r-out'); }
+  function repoPatchIds() {
+    const alias   = v('r-patch-alias');
+    const userId  = v('r-patch-userId');
+    const msgId   = v('r-patch-msgId');
+    const protVer = v('r-patch-protVer');
+    call('PATCH', `${REPO}/api/modules/${alias}/ids?userId=${userId}&messageId=${msgId}&protocolVersion=${protVer}`, null, 'r-out-patch');
+  }
 
   // ── Backend ───────────────────────────────────────────────────────────────
   function backendLoad() {
