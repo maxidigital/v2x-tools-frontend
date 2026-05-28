@@ -7,71 +7,127 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'JetBrains Mono', 'Fira Code', monospace; background: #0f1117; color: #e2e8f0; padding: 32px; }
-  h1 { font-size: 1rem; color: #475569; margin-bottom: 32px; }
+  h1 { font-size: 1rem; color: #475569; margin-bottom: 24px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 32px; border-bottom: 1px solid #2d3748; padding-bottom: 0; }
+  .tab-btn {
+    background: none; border: none; border-bottom: 2px solid transparent;
+    color: #475569; padding: 8px 20px; font-family: inherit; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
+    margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: #94a3b8; }
+  .tab-btn.active { color: #60a5fa; border-bottom-color: #2563eb; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Service badge */
+  .badge {
+    display: inline-block; font-size: 0.65rem; padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 24px;
+    font-family: inherit;
+  }
+  .badge.repo    { background: #1a3a2a; border: 1px solid #16a34a; color: #4ade80; }
+  .badge.backend { background: #1e2a4a; border: 1px solid #2563eb; color: #60a5fa; }
+
+  /* Sections */
   .section { margin-bottom: 32px; }
   .section-title { font-size: 0.75rem; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
   .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+  .label { font-size: 0.75rem; color: #475569; }
+
   input[type=number] { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 100px; }
-  input[type=text] { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 280px; }
+  input[type=text]   { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 280px; }
+
   button { background: #1e3a5f; border: 1px solid #2563eb; border-radius: 6px; color: #60a5fa; padding: 8px 16px; font-family: inherit; font-size: 0.875rem; cursor: pointer; }
   button:hover { background: #1e4a8f; }
   button.danger { background: #3b1a1a; border-color: #dc2626; color: #f87171; }
   button.danger:hover { background: #5a1a1a; }
+  button.ghost { background: none; border-color: #2d3748; color: #475569; }
+  button.ghost:hover { background: #1e2433; color: #94a3b8; }
+
   .output { background: #1e2433; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; font-size: 0.8rem; color: #94a3b8; min-height: 48px; white-space: pre-wrap; word-break: break-all; margin-top: 8px; }
-  .ok { color: #34d399; }
+  .ok  { color: #34d399; }
   .err { color: #f87171; }
-  .label { font-size: 0.75rem; color: #475569; }
+
+  .divider { border: none; border-top: 1px solid #1e2433; margin: 24px 0; }
 </style>
 </head>
 <body>
 
 <h1>// dev console</h1>
 
-<div class="section">
-  <div class="section-title">Repo — Modules</div>
-  <div class="row">
-    <span class="label">userId</span>
-    <input id="userId-modules" type="number" value="0">
-    <button onclick="getModules()">GET all modules</button>
-    <button onclick="getMessages()">GET messages only</button>
-    <button onclick="clearOut('out-modules')">clear</button>
-  </div>
-  <div class="output" id="out-modules">—</div>
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('repo')">repo</button>
+  <button class="tab-btn"        onclick="switchTab('backend')">backend</button>
 </div>
 
-<div class="section">
-  <div class="section-title">Engine — Load</div>
-  <div class="row">
-    <span class="label">userId</span>
-    <input id="userId-load" type="number" value="0">
-    <span class="label">aliases (comma separated)</span>
-    <input id="aliases-load" type="text" value="cam_v2">
-    <button onclick="loadAliases()">POST load</button>
-    <button onclick="clearOut('out-load')">clear</button>
+<!-- ═══════════════════════════════ REPO TAB ═══════════════════════════════ -->
+<div id="tab-repo" class="tab-panel active">
+  <span class="badge repo">v2x-tools-repo · persistent DB</span>
+
+  <div class="section">
+    <div class="section-title">Modules — by user</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="r-userId" type="number" value="0">
+      <button onclick="repoGetModules()">GET all modules</button>
+      <button onclick="repoGetMessages()">GET messages only</button>
+      <button class="ghost" onclick="clearOut('r-out')">clear</button>
+    </div>
+    <div class="output" id="r-out">—</div>
   </div>
-  <div class="output" id="out-load">—</div>
 </div>
 
-<div class="section">
-  <div class="section-title">Engine — Aliases</div>
-  <div class="row">
-    <span class="label">userId</span>
-    <input id="userId-aliases" type="number" value="0">
-    <button onclick="getAliases()">GET aliases</button>
-    <button class="danger" onclick="evictEngine()">DELETE engine</button>
-    <button onclick="clearOut('out-aliases')">clear</button>
+<!-- ══════════════════════════════ BACKEND TAB ════════════════════════════ -->
+<div id="tab-backend" class="tab-panel">
+  <span class="badge backend">v2x-tools-backend · in-memory engine</span>
+
+  <div class="section">
+    <div class="section-title">Engine — load aliases</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="b-userId-load" type="number" value="0">
+      <span class="label">aliases (comma separated)</span>
+      <input id="b-aliases" type="text" value="cam_v2">
+      <button onclick="backendLoad()">POST load</button>
+      <button class="ghost" onclick="clearOut('b-out-load')">clear</button>
+    </div>
+    <div class="output" id="b-out-load">—</div>
   </div>
-  <div class="output" id="out-aliases">—</div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">Engine — aliases &amp; evict</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="b-userId-aliases" type="number" value="0">
+      <button onclick="backendGetAliases()">GET aliases</button>
+      <button class="danger" onclick="backendEvict()">DELETE engine</button>
+      <button class="ghost" onclick="clearOut('b-out-aliases')">clear</button>
+    </div>
+    <div class="output" id="b-out-aliases">—</div>
+  </div>
 </div>
 
 <script>
-  const API  = 'https://v2x-tools-backend-production.up.railway.app';
   const REPO = 'https://v2x-tools-repo-production.up.railway.app';
+  const API  = 'https://v2x-tools-backend-production.up.railway.app';
 
-  function clearOut(outId) {
-    const out = document.getElementById(outId);
-    out.textContent = '—';
-    out.className = 'output';
+  function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function clearOut(id) {
+    const el = document.getElementById(id);
+    el.textContent = '—';
+    el.className = 'output';
   }
 
   async function call(method, url, body, outId) {
@@ -92,32 +148,20 @@
     }
   }
 
-  function getModules() {
-    const userId = document.getElementById('userId-modules').value;
-    call('GET', `${REPO}/api/modules/by-user?userId=${userId}`, null, 'out-modules');
-  }
+  // ── Repo ──────────────────────────────────────────────────────────────────
+  function repoGetModules()  { call('GET', `${REPO}/api/modules/by-user?userId=${v('r-userId')}`, null, 'r-out'); }
+  function repoGetMessages() { call('GET', `${REPO}/api/modules/messages?userId=${v('r-userId')}`, null, 'r-out'); }
 
-  function getMessages() {
-    const userId = document.getElementById('userId-modules').value;
-    call('GET', `${REPO}/api/modules/messages?userId=${userId}`, null, 'out-modules');
-  }
-
-  function loadAliases() {
-    const userId = document.getElementById('userId-load').value;
-    const aliases = document.getElementById('aliases-load').value
+  // ── Backend ───────────────────────────────────────────────────────────────
+  function backendLoad() {
+    const aliases = document.getElementById('b-aliases').value
       .split(',').map(s => s.trim()).filter(Boolean);
-    call('POST', `${API}/api/engine/${userId}/load`, JSON.stringify(aliases), 'out-load');
+    call('POST', `${API}/api/engine/${v('b-userId-load')}/load`, JSON.stringify(aliases), 'b-out-load');
   }
+  function backendGetAliases() { call('GET',    `${API}/api/engine/${v('b-userId-aliases')}/aliases`, null, 'b-out-aliases'); }
+  function backendEvict()      { call('DELETE',  `${API}/api/engine/${v('b-userId-aliases')}`,        null, 'b-out-aliases'); }
 
-  function getAliases() {
-    const userId = document.getElementById('userId-aliases').value;
-    call('GET', `${API}/api/engine/${userId}/aliases`, null, 'out-aliases');
-  }
-
-  function evictEngine() {
-    const userId = document.getElementById('userId-aliases').value;
-    call('DELETE', `${API}/api/engine/${userId}`, null, 'out-aliases');
-  }
+  function v(id) { return document.getElementById(id).value; }
 </script>
 </body>
 </html>
