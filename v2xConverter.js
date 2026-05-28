@@ -1143,16 +1143,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Fetch original URL
         //fetch('', {
         //fetch(`${API_BASE_URL}/`, {
-        fetch(`${API_BASE_URL}/api/convert`, {
+        fetch(`${API_BASE_URL}/api/v2x/${formatToSend.toLowerCase()}/${formatToReceive.toLowerCase()}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'text/plain'
             },
-            body: JSON.stringify({
-                textData: userInput,
-                sendFormat: formatToSend,
-                receiveFormat: formatToReceive
-            })
+            body: userInput
         })
         .then(response => {
             if (!response.ok) {
