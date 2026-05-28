@@ -28,6 +28,17 @@
 <h1>// dev console</h1>
 
 <div class="section">
+  <div class="section-title">Repo — Modules</div>
+  <div class="row">
+    <span class="label">userId</span>
+    <input id="userId-modules" type="number" value="0">
+    <button onclick="getModules()">GET all modules</button>
+    <button onclick="getMessages()">GET messages only</button>
+  </div>
+  <div class="output" id="out-modules">—</div>
+</div>
+
+<div class="section">
   <div class="section-title">Engine — Load</div>
   <div class="row">
     <span class="label">userId</span>
@@ -51,7 +62,8 @@
 </div>
 
 <script>
-  const API = 'https://v2x-tools-backend-production.up.railway.app';
+  const API  = 'https://v2x-tools-backend-production.up.railway.app';
+  const REPO = 'https://v2x-tools-repo-production.up.railway.app';
 
   async function call(method, url, body, outId) {
     const out = document.getElementById(outId);
@@ -69,6 +81,16 @@
       out.textContent = e.message;
       out.classList.add('err');
     }
+  }
+
+  function getModules() {
+    const userId = document.getElementById('userId-modules').value;
+    call('GET', `${REPO}/api/modules/by-user?userId=${userId}`, null, 'out-modules');
+  }
+
+  function getMessages() {
+    const userId = document.getElementById('userId-modules').value;
+    call('GET', `${REPO}/api/modules/messages?userId=${userId}`, null, 'out-modules');
   }
 
   function loadAliases() {
