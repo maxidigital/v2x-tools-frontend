@@ -74,6 +74,7 @@
       <span class="label">userId</span>
       <input id="r-userId" type="number" value="0">
       <button onclick="repoGetModules()">GET all modules</button>
+      <button onclick="repoGetAliases()">GET aliases</button>
       <button onclick="repoGetMessages()">GET messages only</button>
       <button class="ghost" onclick="clearOut('r-out')">clear</button>
     </div>
@@ -149,8 +150,9 @@
   }
 
   // ── Repo ──────────────────────────────────────────────────────────────────
-  function repoGetModules()  { call('GET', `${REPO}/api/modules/by-user?userId=${v('r-userId')}`, null, 'r-out'); }
-  function repoGetMessages() { call('GET', `${REPO}/api/modules/messages?userId=${v('r-userId')}`, null, 'r-out'); }
+  function repoGetModules()  { call('GET', `${REPO}/api/modules/by-user?userId=${v('r-userId')}`,  null, 'r-out'); }
+  function repoGetAliases()  { call('GET', `${REPO}/api/modules/aliases?userId=${v('r-userId')}`,   null, 'r-out'); }
+  function repoGetMessages() { call('GET', `${REPO}/api/modules/messages?userId=${v('r-userId')}`,  null, 'r-out'); }
 
   // ── Backend ───────────────────────────────────────────────────────────────
   function backendLoad() {
