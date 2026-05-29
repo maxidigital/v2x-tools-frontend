@@ -194,10 +194,12 @@
     </div>
     <textarea id="m-content" rows="12" placeholder="Paste ASN.1 content here..."></textarea>
     <div class="row" style="margin-top:8px">
-      <button onclick="moduleUpload()">POST upload</button>
-      <button class="ghost" onclick="clearOut('m-out-upload')">clear</button>
+      <button onclick="moduleValidate()">Validate</button>
+      <button onclick="moduleUpload()">Upload</button>
+      <button class="ghost" onclick="clearOut('m-out-validate'); clearOut('m-out-upload')">clear</button>
     </div>
-    <div class="output" id="m-out-upload">—</div>
+    <div class="output" id="m-out-validate">—</div>
+    <div class="output" id="m-out-upload" style="margin-top:4px">—</div>
   </div>
 
   <hr class="divider">
@@ -332,6 +334,28 @@
   function v(id) { return document.getElementById(id).value; }
 
   // ── Modules admin ─────────────────────────────────────────────────────────
+  async function moduleValidate() {
+    const out = document.getElementById('m-out-validate');
+    out.textContent = 'validating...'; out.className = 'output';
+    const content = document.getElementById('m-content').value;
+    if (!content.trim()) { out.textContent = 'No content'; out.classList.add('err'); return; }
+    try {
+      const res = await fetch(`${REPO}/api/modules/validate`, {
+        method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: content
+      });
+      const data = await res.json();
+      if (data.valid) {
+        const imp = data.imports && data.imports.length
+          ? '\nimports: ' + data.imports.map(i => i.name).join(', ') : '';
+        out.textContent = `✓ ${data.moduleName}\noid: ${data.oid || '(none)'}${imp}`;
+        out.classList.add('ok');
+      } else {
+        out.textContent = `✗ ${data.error}`;
+        out.classList.add('err');
+      }
+    } catch(e) { out.textContent = e.message; out.classList.add('err'); }
+  }
+
   function toggleMessageFields() {
     const show = document.getElementById('m-is-message').checked;
     document.getElementById('m-message-fields').style.display = show ? 'block' : 'none';
