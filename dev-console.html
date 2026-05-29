@@ -55,6 +55,7 @@
   .err { color: #f87171; }
 
   .divider { border: none; border-top: 1px solid #1e2433; margin: 24px 0; }
+  textarea { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 10px 12px; font-family: inherit; font-size: 0.8rem; width: 100%; resize: vertical; }
 </style>
 </head>
 <body>
@@ -64,6 +65,7 @@
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('repo')">repo</button>
   <button class="tab-btn"        onclick="switchTab('backend')">backend</button>
+  <button class="tab-btn"        onclick="switchTab('modules')">modules</button>
 </div>
 
 <!-- ═══════════════════════════════ REPO TAB ═══════════════════════════════ -->
@@ -168,6 +170,93 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════ MODULES TAB ════════════════════════════ -->
+<div id="tab-modules" class="tab-panel">
+  <span class="badge repo">v2x-tools-repo · module admin</span>
+
+  <div class="section">
+    <div class="section-title">Upload module</div>
+    <div class="row">
+      <span class="label">alias</span>
+      <input id="m-alias" type="text" value="" style="width:130px">
+      <span class="label">groupId</span>
+      <input id="m-groupId" type="text" value="de.dlr.ts.v2x" style="width:180px">
+      <span class="label">version</span>
+      <input id="m-version" type="text" value="4.0" style="width:70px">
+    </div>
+    <div class="row">
+      <span class="label">mainType</span>
+      <input id="m-mainType" type="text" value="" style="width:160px">
+      <span class="label">msgId</span>
+      <input id="m-msgId" type="number" value="" style="width:70px">
+      <span class="label">protVer</span>
+      <input id="m-protVer" type="number" value="" style="width:70px">
+      <span class="label">userId</span>
+      <input id="m-userId" type="number" value="0" style="width:70px">
+    </div>
+    <textarea id="m-content" rows="12" placeholder="Paste ASN.1 content here..."></textarea>
+    <div class="row" style="margin-top:8px">
+      <button onclick="moduleUpload()">POST upload</button>
+      <button class="ghost" onclick="clearOut('m-out-upload')">clear</button>
+    </div>
+    <div class="output" id="m-out-upload">—</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">Delete module</div>
+    <div class="row">
+      <span class="label">by alias</span>
+      <input id="m-del-alias" type="text" value="" style="width:160px">
+      <span class="label">userId</span>
+      <input id="m-del-userId" type="number" value="0" style="width:70px">
+      <button class="danger" onclick="moduleDeleteByAlias()">DELETE by alias</button>
+    </div>
+    <div class="row">
+      <span class="label">by OID</span>
+      <input id="m-del-oid" type="text" value="" style="width:480px">
+      <button class="danger" onclick="moduleDeleteByOid()">DELETE by OID</button>
+    </div>
+    <div class="row">
+      <button class="ghost" onclick="clearOut('m-out-delete')">clear</button>
+    </div>
+    <div class="output" id="m-out-delete">—</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">Find module</div>
+    <div class="row">
+      <span class="label">by alias</span>
+      <input id="m-find-alias" type="text" value="" style="width:160px">
+      <span class="label">userId</span>
+      <input id="m-find-userId" type="number" value="0" style="width:70px">
+      <button onclick="moduleFindByAlias()">GET by alias</button>
+    </div>
+    <div class="row">
+      <span class="label">by OID</span>
+      <input id="m-find-oid" type="text" value="" style="width:480px">
+      <button onclick="moduleFindByOid()">GET by OID</button>
+      <button class="ghost" onclick="clearOut('m-out-find')">clear</button>
+    </div>
+    <div class="output" id="m-out-find">—</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">All modules</div>
+    <div class="row">
+      <button onclick="moduleListAll()">GET all</button>
+      <button onclick="moduleListPublic()">GET public</button>
+      <button class="ghost" onclick="clearOut('m-out-list')">clear</button>
+    </div>
+    <div class="output" id="m-out-list">—</div>
+  </div>
+</div>
+
 <script>
   const REPO = 'https://v2x-tools-repo-production.up.railway.app';
   const API  = 'https://v2x-tools-backend-production.up.railway.app';
@@ -247,6 +336,58 @@
   }
 
   function v(id) { return document.getElementById(id).value; }
+
+  // ── Modules admin ─────────────────────────────────────────────────────────
+  async function moduleUpload() {
+    const out = document.getElementById('m-out-upload');
+    out.textContent = 'uploading...'; out.className = 'output';
+    const content = document.getElementById('m-content').value;
+    if (!content.trim()) { out.textContent = 'No content'; out.classList.add('err'); return; }
+    const params = new URLSearchParams({
+      alias:    v('m-alias'),
+      groupId:  v('m-groupId'),
+      version:  v('m-version'),
+    });
+    const mainType = v('m-mainType'); if (mainType) params.set('mainType', mainType);
+    const msgId   = v('m-msgId');    if (msgId)    params.set('messageId', msgId);
+    const protVer = v('m-protVer');  if (protVer)  params.set('protocolVersion', protVer);
+    const userId  = v('m-userId');   if (userId)   params.set('userId', userId);
+    try {
+      const res = await fetch(`${REPO}/api/modules/upload?${params}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: content
+      });
+      const text = await res.text();
+      try { out.textContent = JSON.stringify(JSON.parse(text), null, 2); }
+      catch { out.textContent = text; }
+      out.classList.add(res.ok ? 'ok' : 'err');
+    } catch(e) { out.textContent = e.message; out.classList.add('err'); }
+  }
+
+  function moduleDeleteByAlias() {
+    const alias  = v('m-del-alias');
+    const userId = v('m-del-userId');
+    call('DELETE', `${REPO}/api/modules/${encodeURIComponent(alias)}?userId=${userId}`, null, 'm-out-delete');
+  }
+
+  function moduleDeleteByOid() {
+    const oid = v('m-del-oid');
+    call('DELETE', `${REPO}/api/modules/by-oid?oid=${encodeURIComponent(oid)}`, null, 'm-out-delete');
+  }
+
+  function moduleFindByAlias() {
+    const alias  = v('m-find-alias');
+    const userId = v('m-find-userId');
+    call('GET', `${REPO}/api/modules/by-alias?alias=${encodeURIComponent(alias)}&userId=${userId}`, null, 'm-out-find');
+  }
+
+  function moduleFindByOid() {
+    call('GET', `${REPO}/api/modules/by-oid?oid=${encodeURIComponent(v('m-find-oid'))}`, null, 'm-out-find');
+  }
+
+  function moduleListAll()    { call('GET', `${REPO}/api/modules`,        null, 'm-out-list'); }
+  function moduleListPublic() { call('GET', `${REPO}/api/modules/public`, null, 'm-out-list'); }
 </script>
 </body>
 </html>
