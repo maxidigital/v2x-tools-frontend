@@ -363,9 +363,23 @@
         body: content
       });
       const text = await res.text();
-      try { out.textContent = JSON.stringify(JSON.parse(text), null, 2); }
-      catch { out.textContent = text; }
-      out.classList.add(res.ok ? 'ok' : 'err');
+      try {
+        const data = JSON.parse(text);
+        if (Array.isArray(data)) {
+          // Multi-module response: render a compact table
+          const lines = data.map(r => {
+            const icon = r.status === 'ok' ? '✓' : r.status === 'skipped' ? '—' : '✗';
+            const err  = r.error ? `  (${r.error})` : '';
+            return `${icon} ${r.moduleName}${err}`;
+          });
+          out.textContent = lines.join('\n');
+          const hasError = data.some(r => r.status === 'error');
+          out.classList.add(hasError ? 'err' : 'ok');
+        } else {
+          out.textContent = JSON.stringify(data, null, 2);
+          out.classList.add(res.ok ? 'ok' : 'err');
+        }
+      } catch { out.textContent = text; out.classList.add(res.ok ? 'ok' : 'err'); }
     } catch(e) { out.textContent = e.message; out.classList.add('err'); }
   }
 
