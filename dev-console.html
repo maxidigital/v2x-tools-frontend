@@ -178,9 +178,7 @@
     <div class="section-title">Upload module</div>
     <div class="row">
       <input type="checkbox" id="m-is-message" onchange="toggleMessageFields()">
-      <span class="label">mensaje final &nbsp;·&nbsp; requiere alias + IDs</span>
-      <span class="label" style="margin-left:24px">userId</span>
-      <input id="m-userId" type="number" value="0" style="width:70px">
+      <span class="label">es mensaje principal (requiere alias + IDs)</span>
     </div>
     <div id="m-message-fields" style="display:none; margin-bottom:8px">
       <div class="row">
@@ -209,8 +207,6 @@
     <div class="row">
       <span class="label">by alias</span>
       <input id="m-del-alias" type="text" value="" style="width:160px">
-      <span class="label">userId</span>
-      <input id="m-del-userId" type="number" value="0" style="width:70px">
       <button class="danger" onclick="moduleDeleteByAlias()">DELETE by alias</button>
     </div>
     <div class="row">
@@ -231,8 +227,6 @@
     <div class="row">
       <span class="label">by alias</span>
       <input id="m-find-alias" type="text" value="" style="width:160px">
-      <span class="label">userId</span>
-      <input id="m-find-userId" type="number" value="0" style="width:70px">
       <button onclick="moduleFindByAlias()">GET by alias</button>
     </div>
     <div class="row">
@@ -352,7 +346,6 @@
 
     const isMessage = document.getElementById('m-is-message').checked;
     const params = new URLSearchParams();
-    const userId = v('m-userId'); if (userId) params.set('userId', userId);
 
     if (isMessage) {
       const alias = v('m-alias');
@@ -377,9 +370,8 @@
   }
 
   function moduleDeleteByAlias() {
-    const alias  = v('m-del-alias');
-    const userId = v('m-del-userId');
-    call('DELETE', `${REPO}/api/modules/${encodeURIComponent(alias)}?userId=${userId}`, null, 'm-out-delete');
+    const alias = v('m-del-alias');
+    call('DELETE', `${REPO}/api/modules/${encodeURIComponent(alias)}`, null, 'm-out-delete');
   }
 
   function moduleDeleteByOid() {
@@ -388,9 +380,7 @@
   }
 
   function moduleFindByAlias() {
-    const alias  = v('m-find-alias');
-    const userId = v('m-find-userId');
-    call('GET', `${REPO}/api/modules/by-alias?alias=${encodeURIComponent(alias)}&userId=${userId}`, null, 'm-out-find');
+    call('GET', `${REPO}/api/modules/by-alias?alias=${encodeURIComponent(v('m-find-alias'))}`, null, 'm-out-find');
   }
 
   function moduleFindByOid() {
