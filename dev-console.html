@@ -177,22 +177,22 @@
   <div class="section">
     <div class="section-title">Upload module</div>
     <div class="row">
-      <span class="label">alias</span>
-      <input id="m-alias" type="text" value="" style="width:130px">
-      <span class="label">groupId</span>
-      <input id="m-groupId" type="text" value="de.dlr.ts.v2x" style="width:180px">
-      <span class="label">version</span>
-      <input id="m-version" type="text" value="4.0" style="width:70px">
-    </div>
-    <div class="row">
-      <span class="label">mainType</span>
-      <input id="m-mainType" type="text" value="" style="width:160px">
-      <span class="label">msgId</span>
-      <input id="m-msgId" type="number" value="" style="width:70px">
-      <span class="label">protVer</span>
-      <input id="m-protVer" type="number" value="" style="width:70px">
-      <span class="label">userId</span>
+      <input type="checkbox" id="m-is-message" onchange="toggleMessageFields()">
+      <span class="label">mensaje final &nbsp;·&nbsp; requiere alias + IDs</span>
+      <span class="label" style="margin-left:24px">userId</span>
       <input id="m-userId" type="number" value="0" style="width:70px">
+    </div>
+    <div id="m-message-fields" style="display:none; margin-bottom:8px">
+      <div class="row">
+        <span class="label">alias <span style="color:#f87171">*</span></span>
+        <input id="m-alias" type="text" value="" style="width:140px" placeholder="ej: ivim_v2">
+        <span class="label">mainType <span style="color:#f87171">*</span></span>
+        <input id="m-mainType" type="text" value="" style="width:140px" placeholder="ej: IVIM">
+        <span class="label">msgId <span style="color:#f87171">*</span></span>
+        <input id="m-msgId" type="number" value="" style="width:70px">
+        <span class="label">protVer <span style="color:#f87171">*</span></span>
+        <input id="m-protVer" type="number" value="" style="width:70px">
+      </div>
     </div>
     <textarea id="m-content" rows="12" placeholder="Paste ASN.1 content here..."></textarea>
     <div class="row" style="margin-top:8px">
@@ -338,20 +338,31 @@
   function v(id) { return document.getElementById(id).value; }
 
   // ── Modules admin ─────────────────────────────────────────────────────────
+  function toggleMessageFields() {
+    const show = document.getElementById('m-is-message').checked;
+    document.getElementById('m-message-fields').style.display = show ? 'block' : 'none';
+  }
+
   async function moduleUpload() {
     const out = document.getElementById('m-out-upload');
     out.textContent = 'uploading...'; out.className = 'output';
+
     const content = document.getElementById('m-content').value;
     if (!content.trim()) { out.textContent = 'No content'; out.classList.add('err'); return; }
-    const params = new URLSearchParams({
-      alias:    v('m-alias'),
-      groupId:  v('m-groupId'),
-      version:  v('m-version'),
-    });
-    const mainType = v('m-mainType'); if (mainType) params.set('mainType', mainType);
-    const msgId   = v('m-msgId');    if (msgId)    params.set('messageId', msgId);
-    const protVer = v('m-protVer');  if (protVer)  params.set('protocolVersion', protVer);
-    const userId  = v('m-userId');   if (userId)   params.set('userId', userId);
+
+    const isMessage = document.getElementById('m-is-message').checked;
+    const params = new URLSearchParams();
+    const userId = v('m-userId'); if (userId) params.set('userId', userId);
+
+    if (isMessage) {
+      const alias = v('m-alias');
+      if (!alias.trim()) { out.textContent = 'alias requerido para módulo de mensaje'; out.classList.add('err'); return; }
+      params.set('alias', alias);
+      const mainType = v('m-mainType'); if (mainType) params.set('mainType', mainType);
+      const msgId   = v('m-msgId');    if (msgId)    params.set('messageId', msgId);
+      const protVer = v('m-protVer');  if (protVer)  params.set('protocolVersion', protVer);
+    }
+
     try {
       const res = await fetch(`${REPO}/api/modules/upload?${params}`, {
         method: 'POST',
