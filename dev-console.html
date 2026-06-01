@@ -271,12 +271,12 @@
     el.className = 'output';
   }
 
-  async function call(method, url, body, outId) {
+  async function call(method, url, body, outId, extraHeaders = {}) {
     const out = document.getElementById(outId);
     out.textContent = 'loading...';
     out.className = 'output';
     try {
-      const opts = { method, headers: {} };
+      const opts = { method, headers: { ...extraHeaders } };
       if (body) { opts.body = body; opts.headers['Content-Type'] = 'application/json'; }
       const res = await fetch(url, opts);
       const text = await res.text();
@@ -305,10 +305,17 @@
   function backendLoad() {
     const aliases = document.getElementById('b-aliases').value
       .split(',').map(s => s.trim()).filter(Boolean);
-    call('POST', `${API}/api/engine/${v('b-userId-load')}/load`, JSON.stringify(aliases), 'b-out-load');
+    const userId = v('b-userId-load');
+    call('POST', `${API}/api/v2x/messages/load`, JSON.stringify(aliases), 'b-out-load', { 'X-User-Id': userId });
   }
-  function backendGetAliases() { call('GET',   `${API}/api/engine/${v('b-userId-aliases')}/aliases`, null, 'b-out-aliases'); }
-  function backendEvict()      { call('DELETE', `${API}/api/engine/${v('b-userId-aliases')}`,         null, 'b-out-aliases'); }
+  function backendGetAliases() {
+    const userId = v('b-userId-aliases');
+    call('GET', `${API}/api/v2x/messages`, null, 'b-out-aliases', { 'X-User-Id': userId });
+  }
+  function backendEvict() {
+    const userId = v('b-userId-aliases');
+    call('DELETE', `${API}/api/v2x/messages`, null, 'b-out-aliases', { 'X-User-Id': userId });
+  }
 
   async function backendRandom() {
     const out     = document.getElementById('b-out-rnd');

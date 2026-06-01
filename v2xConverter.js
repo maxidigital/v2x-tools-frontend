@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Construir la URL con el formato y la opción minimal (true o false)
         // const url = `/v2xtools/command/random?mid=${mid}&format=${format}&minimal=${isMinimal}`;
         //const url = `/command/random?mid=${mid}&format=${format}&minimal=${isMinimal}`;
-        const url = `${API_BASE_URL}/command/random?mid=${mid}&format=${format}&minimal=${isMinimal}`;
+        const url = `${API_BASE_URL}/api/v2x/generate?mid=${mid}&format=${format}&minimal=${isMinimal}`;
         console.log('Fetching from URL:', url);
         
         // Mostrar mensaje de carga en el textarea si estamos en la pestaña Generate
