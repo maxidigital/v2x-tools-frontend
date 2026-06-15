@@ -323,7 +323,7 @@
     const mid     = v('b-rnd-mid');
     const format  = v('b-rnd-format');
     const minimal = document.getElementById('b-rnd-minimal').checked;
-    const url     = `${API}/command/random?mid=${mid}&format=${format}&minimal=${minimal}`;
+    const url     = `${API}/api/v2x/generate?mid=${mid}&format=${format}&minimal=${minimal}`;
 
     out.textContent = 'loading...';
     out.className = 'output';
