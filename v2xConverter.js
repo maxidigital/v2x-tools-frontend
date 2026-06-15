@@ -58,9 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const iconLight = darkModeToggle.querySelector('.icon-light');
     const iconDark = darkModeToggle.querySelector('.icon-dark');
     
-    // Check for saved theme preference or use device preference
-    const theme = localStorage.getItem('theme') || 
-                 (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    // Check for saved theme preference; default to dark (matches site aesthetic)
+    const theme = localStorage.getItem('theme') || 'dark';
     
     // Apply the theme
     if (theme === 'dark') {
