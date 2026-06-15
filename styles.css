@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --primary-color: #3498db;
+    --primary-color: #3b82f6;
     --secondary-color: #ecf0f1;
     --background-color: #ecf0f1;
     --text-color: #333;
@@ -18,11 +18,11 @@
   }
   
   .dark {
-    --primary-color: #2980b9;
-    --secondary-color: #1e293b;
-    --background-color: #0f172a;
-    --text-color: #f1f5f9;
-    --border-color: #475569;
+    --primary-color: #3b82f6;
+    --secondary-color: #1e2433;
+    --background-color: #0f1117;
+    --text-color: #e2e8f0;
+    --border-color: #2d3748;
     --success-color: #22c55e;
     --error-color: #ef4444;
     
