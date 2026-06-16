@@ -148,6 +148,14 @@
         <option value="XML">XML</option>
         <option value="WER">WER</option>
       </select>
+      <span class="label">size</span>
+      <select id="b-rnd-size">
+        <option value="SMALLEST">SMALLEST</option>
+        <option value="SMALL" selected>SMALL</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="BIG">BIG</option>
+        <option value="BIGGEST">BIGGEST</option>
+      </select>
       <input type="checkbox" id="b-rnd-minimal">
       <span class="label">minimal</span>
       <button onclick="backendRandom()">GET random</button>
@@ -322,8 +330,9 @@
     const userId  = v('b-rnd-userId');
     const mid     = v('b-rnd-mid');
     const format  = v('b-rnd-format');
+    const size    = v('b-rnd-size');
     const minimal = document.getElementById('b-rnd-minimal').checked;
-    const url     = `${API}/api/v2x/generate?mid=${mid}&format=${format}&minimal=${minimal}`;
+    const url     = `${API}/api/v2x/generate?mid=${mid}&format=${format}&minimal=${minimal}&size=${size}`;
 
     out.textContent = 'loading...';
     out.className = 'output';

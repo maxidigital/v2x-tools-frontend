@@ -575,10 +575,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Construir la URL con el formato y la opción minimal (true o false)
-        // const url = `/v2xtools/command/random?mid=${mid}&format=${format}&minimal=${isMinimal}`;
-        //const url = `/command/random?mid=${mid}&format=${format}&minimal=${isMinimal}`;
-        const url = `${API_BASE_URL}/api/v2x/generate?mid=${mid}&format=${format}&minimal=${isMinimal}`;
+        // Tamaño de la muestra random (ignorado cuando minimal=true)
+        const sizeSelect = document.getElementById('generateSizeSelect');
+        const size = (sizeSelect && sizeSelect.value) ? sizeSelect.value : 'SMALL';
+
+        // Construir la URL con el formato, la opción minimal (true o false) y el tamaño
+        const url = `${API_BASE_URL}/api/v2x/generate?mid=${mid}&format=${format}&minimal=${isMinimal}&size=${size}`;
         console.log('Fetching from URL:', url);
         
         // Mostrar mensaje de carga en el textarea si estamos en la pestaña Generate
