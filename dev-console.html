@@ -259,7 +259,7 @@
 
 <script>
   const REPO = 'https://v2x-tools-repo-production.up.railway.app';
-  const API  = 'https://v2x-tools-backend-production.up.railway.app';
+  const API  = '';  // same-origin — Caddy proxies /api/* to the backend
 
   function switchTab(name) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));

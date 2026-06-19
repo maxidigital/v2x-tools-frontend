@@ -61,7 +61,7 @@
         <a href="#errors">Errors</a>
     </div>
 
-    <p>Base URL: <code>https://v2x-tools-backend-production.up.railway.app</code></p>
+    <p>Base URL: <code>https://v2x.tools</code></p>
     <p>The API converts ETSI V2X messages between three encodings — <code>UPER</code>,
        <code>XML</code> and <code>JSON</code> — and generates sample messages. All requests are plain HTTP;
        no authentication is required for the public message set.</p>
@@ -98,7 +98,7 @@
     <p>The request body is the payload. The response body is the converted payload (text, or bytes when requested).</p>
 
     <h4>Decode UPER → JSON (auto-detect)</h4>
-    <pre><code>curl -X POST "https://v2x-tools-backend-production.up.railway.app/api/convert" \
+    <pre><code>curl -X POST "https://v2x.tools/api/convert" \
   -H "X-From: UPER" -H "X-To: JSON" \
   -H "Content-Type: text/plain" \
   --data "uper:02024c1cd2893d45035379f3eb4ed18dd0..."
@@ -106,7 +106,7 @@
 # → {"header":{"protocolVersion":2,"messageID":2,"stationID":...},"cam":{...}}</code></pre>
 
     <h4>Encode JSON → UPER (explicit ref)</h4>
-    <pre><code>curl -X POST "https://v2x-tools-backend-production.up.railway.app/api/convert" \
+    <pre><code>curl -X POST "https://v2x.tools/api/convert" \
   -H "X-Ref: cam_v2" -H "X-From: JSON" -H "X-To: UPER" \
   -H "Content-Type: text/plain" \
   --data '{"header":{"protocolVersion":2,"messageID":2,"stationID":1},"cam":{...}}'
@@ -114,7 +114,7 @@
 # → uper:0202...</code></pre>
 
     <h4>Decode raw binary</h4>
-    <pre><code>curl -X POST "https://v2x-tools-backend-production.up.railway.app/api/convert" \
+    <pre><code>curl -X POST "https://v2x.tools/api/convert" \
   -H "X-From: UPER" -H "X-To: JSON" \
   -H "Content-Type: application/octet-stream" \
   --data-binary @message.bin</code></pre>
@@ -137,7 +137,7 @@
         <tr><td><code>size</code></td><td>How full the random sample is: <code>SMALLEST</code>, <code>SMALL</code> (default), <code>MEDIUM</code>, <code>BIG</code>, <code>BIGGEST</code>.</td></tr>
         <tr><td><code>minimal</code></td><td><code>true</code> = only mandatory fields with default values (ignores <code>size</code>).</td></tr>
     </table>
-    <pre><code>curl -X POST "https://v2x-tools-backend-production.up.railway.app/api/generate" \
+    <pre><code>curl -X POST "https://v2x.tools/api/generate" \
   -H "X-Ref: cam_v2" -H "Content-Type: application/json" \
   --data '{"format":"UPER","size":"SMALL"}'
 
@@ -148,13 +148,13 @@
 
     <h3><span class="method get">GET</span> <span class="path">/api/messages</span></h3>
     <p>Lists the pre-configured messages. Each <code>name</code> is a valid <code>X-Ref</code>.</p>
-    <pre><code>curl "https://v2x-tools-backend-production.up.railway.app/api/messages"
+    <pre><code>curl "https://v2x.tools/api/messages"
 
 # → [{"name":"cam_v2","moduleAlias":"cam_v2","rootType":"CAM","description":"...","fixups":[...]}, ...]</code></pre>
 
     <h3><span class="method get">GET</span> <span class="path">/api/modules</span></h3>
     <p>Lists the ASN.1 modules with their OID and aliases (use <code>alias:Type</code> as a type ref).</p>
-    <pre><code>curl "https://v2x-tools-backend-production.up.railway.app/api/modules"
+    <pre><code>curl "https://v2x.tools/api/modules"
 
 # → [{"oid":"CAM_PDU_Descriptions {...}","moduleId":"cam_pdu_descriptions_f73e8d","aliases":["cam_v2"]}, ...]</code></pre>
 

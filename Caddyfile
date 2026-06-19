@@ -1,0 +1,26 @@
+{
+	admin off
+	auto_https off
+}
+
+:{$PORT:8080} {
+	root * /usr/share/caddy
+	encode gzip
+
+	# Public API surface: proxy /api/* to the hub backend so the API is reached through
+	# v2x.tools (not the Railway URL). Same-origin for the frontend → no CORS needed.
+	# For Railway private networking, replace the upstream with
+	# "v2x-tools-backend.railway.internal:<port>" and drop the Host header.
+	handle /api/* {
+		reverse_proxy https://v2x-tools-backend-production.up.railway.app {
+			header_up Host v2x-tools-backend-production.up.railway.app
+		}
+	}
+
+	# Everything else is the static site.
+	handle {
+		file_server {
+			hide Caddyfile
+		}
+	}
+}
