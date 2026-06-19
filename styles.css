@@ -106,3 +106,37 @@ body:not(.dark) {
   background-color: #1f2937;
   color: #e5e7eb;
 }
+
+/* Prism syntax highlighting — dark-mode palette.
+   The CDN Prism theme is built for a light background (near-black tokens + white text-shadow),
+   which is unreadable on the dark results panel. Override the base + token colors under .dark. */
+.dark pre[class*="language-"],
+.dark code[class*="language-"] {
+  color: #e2e8f0;
+  text-shadow: none;
+  background: none;
+}
+.dark .token.comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata { color: #8b9cb3; }
+.dark .token.punctuation { color: #a0aec0; }
+.dark .token.tag,
+.dark .token.keyword,
+.dark .token.property,
+.dark .token.deleted { color: #f472b6; }
+.dark .token.attr-name,
+.dark .token.boolean,
+.dark .token.number,
+.dark .token.constant,
+.dark .token.symbol { color: #fbbf24; }
+.dark .token.attr-value,
+.dark .token.string,
+.dark .token.char,
+.dark .token.inserted { color: #34d399; }
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url,
+.dark .token.variable { color: #93c5fd; }
+.dark .token.function,
+.dark .token.class-name { color: #c4b5fd; }
