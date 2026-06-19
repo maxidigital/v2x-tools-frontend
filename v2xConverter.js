@@ -558,40 +558,31 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const midMap = {
-            "cam_v2": "2:2",
-            "denm_v2": "1:2",
-            "cpm_v1": "14:1",
-            "spat_v2": "4:2",
-            "map_v2": "5:2",
-            "ivi_v2": "6:2",
-            "srem_v2": "9:2",
-            "ssem_v2": "10:2"
-        };
-        
-        const mid = midMap[messageType];
-        if (!mid) {
-            console.error('No mapping found for message type:', messageType);
-            return;
-        }
-        
         // Tamaño de la muestra random (ignorado cuando minimal=true)
         const sizeSelect = document.getElementById('generateSizeSelect');
         const size = (sizeSelect && sizeSelect.value) ? sizeSelect.value : 'SMALL';
 
-        // Construir la URL con el formato, la opción minimal (true o false) y el tamaño
-        const url = `${API_BASE_URL}/api/v2x/generate?mid=${mid}&format=${format}&minimal=${isMinimal}&size=${size}`;
-        console.log('Fetching from URL:', url);
-        
         // Mostrar mensaje de carga en el textarea si estamos en la pestaña Generate
         if (generateTabButton && generateTabButton.classList.contains('active')) {
             generateTextArea.value = "Generating payload...";
         }
-        
-        fetch(url)
-            .then(response => {
+
+        // New hub API: POST /api/generate — the message is the X-Ref; options go in the JSON body.
+        // messageType is the saved-message ref (e.g. "cam_v2"); the <option value> must match it.
+        fetch(`${API_BASE_URL}/api/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Ref': messageType,
+                'X-User-Id': '0'
+            },
+            body: JSON.stringify({ format: format, minimal: isMinimal, size: size })
+        })
+            .then(async response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    let msg = 'Network response was not ok';
+                    try { const j = await response.clone().json(); if (j && j.error) msg = j.error; } catch (e) {}
+                    throw new Error(msg);
                 }
                 return response.text();
             })
@@ -1141,19 +1132,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         disableAllInputs();
 
-        // Fetch original URL
-        //fetch('', {
-        //fetch(`${API_BASE_URL}/`, {
-        fetch(`${API_BASE_URL}/api/v2x/${formatToSend.toLowerCase()}/${formatToReceive.toLowerCase()}`, {
+        // New hub API: POST /api/convert with the formats in headers. No X-Ref → the hub auto-detects the
+        // message from the payload's ITS header (protocolVersion, messageId). The engine stays universal.
+        fetch(`${API_BASE_URL}/api/convert`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'text/plain'
+                'Content-Type': 'text/plain',
+                'X-From': formatToSend,
+                'X-To': formatToReceive,
+                'X-User-Id': '0'
             },
             body: userInput
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                throw new Error(response.status === 400 ? 'Bad Request: Check your input' : 'Network response was not ok.');
+                // hub errors come back as JSON {error}; surface that message when present
+                let msg = response.status === 400 ? 'Bad Request: Check your input' : 'Network response was not ok.';
+                try { const j = await response.clone().json(); if (j && j.error) msg = j.error; } catch (e) {}
+                throw new Error(msg);
             }
             return response.text();
         })
