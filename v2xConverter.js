@@ -157,11 +157,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners for the new message type selectors
     generateMessageTypeSelector.addEventListener('change', handleGenerateMessageTypeChange);
     
+    // Sample size only applies to random generation — disable it while 'minimal' is checked.
+    function syncSampleSizeEnabled() {
+        const sizeSelect = document.getElementById('generateSizeSelect');
+        const sizeContainer = document.getElementById('generateSizeContainer');
+        if (!sizeSelect) return;
+        const off = minimalPayloadCheckbox.checked;
+        sizeSelect.disabled = off;
+        if (sizeContainer) sizeContainer.classList.toggle('opacity-50', off);
+    }
+
     // Add event listener for minimal checkbox and generate button
     minimalPayloadCheckbox.addEventListener('change', function() {
         // No generamos automáticamente cuando cambia el checkbox,
         // ahora esperamos que el usuario haga clic en el botón Generate
-        
+
         // Cambiar el texto del botón según el estado del checkbox
         const generateButton = document.getElementById('generatePayloadButton');
         if (this.checked) {
@@ -169,7 +179,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             generateButton.textContent = 'Generate random payload';
         }
+
+        syncSampleSizeEnabled();
     });
+    syncSampleSizeEnabled();   // initial state
     
     // Generate Payload Button
     const generatePayloadButton = document.getElementById('generatePayloadButton');
@@ -454,12 +467,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function activateMinimalTab() {
         activateGenerateTab();
         minimalPayloadCheckbox.checked = true;
+        syncSampleSizeEnabled();
         // Ya no generamos automáticamente
     }
-    
+
     function activateRandomTab() {
         activateGenerateTab();
         minimalPayloadCheckbox.checked = false;
+        syncSampleSizeEnabled();
         // Ya no generamos automáticamente
     }
     
