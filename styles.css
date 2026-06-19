@@ -140,3 +140,19 @@ body:not(.dark) {
 .dark .token.variable { color: #93c5fd; }
 .dark .token.function,
 .dark .token.class-name { color: #c4b5fd; }
+
+/* Dark-mode scrollbars for the converter result panel (the default light scrollbars
+   clash with the dark theme). */
+.dark .conv-tab-content textarea,
+.dark .conv-tab-content pre {
+  scrollbar-width: thin;
+  scrollbar-color: #2d3748 #1a1f2c;
+}
+.dark .conv-tab-content textarea::-webkit-scrollbar,
+.dark .conv-tab-content pre::-webkit-scrollbar { width: 10px; height: 10px; }
+.dark .conv-tab-content textarea::-webkit-scrollbar-track,
+.dark .conv-tab-content pre::-webkit-scrollbar-track { background: #1a1f2c; }
+.dark .conv-tab-content textarea::-webkit-scrollbar-thumb,
+.dark .conv-tab-content pre::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 6px; }
+.dark .conv-tab-content textarea::-webkit-scrollbar-thumb:hover,
+.dark .conv-tab-content pre::-webkit-scrollbar-thumb:hover { background: #475569; }

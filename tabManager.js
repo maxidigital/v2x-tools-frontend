@@ -195,7 +195,7 @@ class TabManager {
                     <div class="text-xs text-gray-600 dark:text-gray-400 px-2 py-1 bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 flex-shrink-0">
                         📄 Original Input (${originalInput.length} chars)
                     </div>
-                    <textarea class="w-full flex-1 min-h-0 resize-none font-mono p-2 border-l border-r border-border dark:border-gray-600 bg-gray-50 dark:bg-gray-800 leading-snug font-['Roboto_Mono'] text-xs" readonly style="padding-top: 8px;">${this._escapeHtml(originalInput)}</textarea>
+                    <textarea class="w-full flex-1 min-h-0 resize-none font-mono p-2 border-l border-r border-border dark:border-gray-600 bg-gray-50 dark:bg-gray-800 leading-snug font-['Roboto_Mono'] text-xs break-all" readonly wrap="soft" style="padding-top: 8px; white-space: pre-wrap; word-break: break-all;">${this._escapeHtml(originalInput)}</textarea>
                 </div>
                 
                 <!-- Horizontal divider -->
