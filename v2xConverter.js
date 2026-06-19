@@ -657,7 +657,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formatDetectedElement.classList.add('text-success');
         
         // Remove any prefix for detection
-        const cleanInput = inputValue.replace(/^(uper:|wer:)/i, '');
+        const cleanInput = inputValue.replace(/^uper:/i, '');
         
         let detected = false;
         let detectedFormat = null;
@@ -680,16 +680,13 @@ document.addEventListener('DOMContentLoaded', function() {
             detected = true;
         }
         
-        // Check for UPER/WER format (hexadecimal)
+        // Check for UPER format (hexadecimal)
         if (!detected) {
             const hexRegex = /^[0-9A-Fa-f]+$/;
             if (hexRegex.test(cleanInput)) {
-                // If it has uper: prefix or starts with 02 (common ETSI ITS format identifier)
+                // If it has a uper: prefix or starts with 02 (common ETSI ITS format identifier)
                 if (inputValue.toLowerCase().startsWith('uper:') || cleanInput.startsWith('02')) {
                     detectedFormat = "UPER";
-                    detected = true;
-                } else if (inputValue.toLowerCase().startsWith('wer:')) {
-                    detectedFormat = "WER";
                     detected = true;
                 }
             }
@@ -726,8 +723,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateBytesLen() {
 		let inputValue = activeTextArea.value.trim();
     
-		// Remove 'uper:' or 'wer:' prefix if present
-		inputValue = inputValue.replace(/^(uper:|wer:)/i, '');
+		// Remove 'uper:' prefix if present
+		inputValue = inputValue.replace(/^uper:/i, '');
 		
 		// Regular expression to check if the string is a valid hexadecimal
 		const hexRegex = /^[0-9A-Fa-f]+$/;
