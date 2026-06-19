@@ -3,89 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Documentation</title>
+    <title>V2X.tools — API Documentation</title>
+    <meta name="description" content="HTTP API for decoding, encoding, converting and generating ETSI V2X (UPER/WER/XML/JSON) messages.">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #f0f0f0;
-            padding: 20px;
-            margin: 0;
+            font-family: 'Inter', sans-serif; line-height: 1.7;
+            background: #0f1117; color: #cbd5e1; padding: 48px 24px;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1, h2, h3 {
-            color: #333;
-        }
-        pre {
-            background: #f4f4f4;
-            padding: 10px;
-            border: 1px solid #ddd;
-            overflow: auto;
-        }
-        code {
-            background: #f4f4f4;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-        .endpoint {
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-left: 4px solid rgb(36, 156, 244);
-        }
+        .container { max-width: 880px; margin: 0 auto; }
+
+        .wordmark { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.5rem; color: #f1f5f9; letter-spacing: -0.02em; margin-bottom: 4px; }
+        .wordmark span { color: #475569; font-weight: 600; }
+        .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 40px; }
+
+        h2 { font-family: 'Montserrat', sans-serif; color: #f1f5f9; font-size: 1.25rem; margin: 40px 0 12px; padding-top: 16px; border-top: 1px solid #1e2433; }
+        h3 { color: #e2e8f0; font-size: 1rem; margin: 24px 0 8px; display: flex; align-items: center; gap: 10px; }
+        p { margin-bottom: 12px; }
+        a { color: #60a5fa; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul { margin: 8px 0 16px 22px; }
+        li { margin-bottom: 6px; }
+
+        code { font-family: 'Roboto Mono', monospace; background: #1e2433; color: #93c5fd; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; }
+        pre { background: #1a1f2c; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; overflow: auto; margin: 12px 0 20px; }
+        pre code { background: none; color: #e2e8f0; padding: 0; font-size: 0.82rem; line-height: 1.6; }
+
+        .method { font-family: 'Roboto Mono', monospace; font-size: 0.7rem; font-weight: 500; padding: 3px 8px; border-radius: 4px; letter-spacing: 0.05em; }
+        .get  { background: #14302a; color: #4ade80; border: 1px solid #16a34a; }
+        .post { background: #1e2a4a; color: #60a5fa; border: 1px solid #2563eb; }
+        .path { font-family: 'Roboto Mono', monospace; color: #e2e8f0; font-size: 0.95rem; }
+
+        table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 0.85rem; }
+        th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #1e2433; vertical-align: top; }
+        th { color: #64748b; font-weight: 500; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; }
+        td code { font-size: 0.8rem; }
+        .req { color: #f59e0b; font-size: 0.7rem; }
+
+        .note { background: #161b27; border-left: 3px solid #2563eb; border-radius: 0 6px 6px 0; padding: 12px 16px; margin: 16px 0; font-size: 0.88rem; color: #94a3b8; }
+        .toc { background: #161b27; border: 1px solid #1e2433; border-radius: 8px; padding: 16px 20px; margin-bottom: 24px; }
+        .toc a { display: inline-block; margin-right: 18px; font-size: 0.88rem; }
+        footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #1e2433; color: #475569; font-size: 0.8rem; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>API Documentation</h1>
-        
-        <h2>Introduction</h2>
-        <p>Welcome to the API documentation for this service. This API provides access to various resources via HTTP requests.</p>
-        
-        <h2>UPER to JSON</h2>
-        <div class="endpoint">
-            <h3>POST /uper2json</h3>
-            <p>This endpoint allows sending binary data encoded in uPER (unaligned Packed Encoding Rules) format and receiving a structured JSON response.</p>
-            <h4>Request Body</h4>
-            <p>The request body should contain binary data encoded in uPER format.</p>
-            <h4>Example Request</h4>
-            <pre>
-POST /uper2json HTTP/1.1
-Host: www.example.com
-Content-Type: application/octet-stream
+<div class="container">
+    <div class="wordmark">V2X<span>.tools</span></div>
+    <div class="subtitle">HTTP API — decode, encode, convert and generate ETSI V2X messages</div>
 
-[binary data]
-            </pre>
-            <h4>Server Response</h4>
-            <p>The server will respond with a JSON object containing the following fields:</p>
-            <pre>
-{
-    "responseCode": "200",
-    "encoding": "json",
-    "data": "{\"header\": {
-        \"protocolVersion\": 2,
-        \"messageID\": 2,
-        \"stationID\": 0
-        }}"
-}
-            </pre>
-            <p>This is a typical example of the response structure you can expect when interacting with the API.</p>
-        </div>
-        
-        <h2>Additional Considerations</h2>
-        <ul>
-            <li>Ensure requests include appropriate headers like <code>Content-Type</code> and any necessary for authentication if applicable.</li>
-            <li>Handle errors and HTTP response codes appropriately for a smooth user experience.</li>
-            <li>For more details, consult the complete API documentation or contact technical support.</li>
-        </ul>
-        <p>This documentation provides an overview of available resources and how to interact with them via the API service. Be sure to follow best practices and guidelines provided for successful integration.</p>
+    <div class="toc">
+        <a href="#concepts">Concepts</a>
+        <a href="#convert">Convert</a>
+        <a href="#generate">Generate</a>
+        <a href="#discover">Discover</a>
+        <a href="#errors">Errors</a>
     </div>
+
+    <p>Base URL: <code>https://v2x-tools-backend-production.up.railway.app</code></p>
+    <p>The API converts ETSI V2X messages between four encodings — <code>UPER</code>, <code>WER</code>,
+       <code>XML</code> and <code>JSON</code> — and generates sample messages. All requests are plain HTTP;
+       no authentication is required for the public message set.</p>
+
+    <h2 id="concepts">Concepts</h2>
+
+    <h3>Encodings</h3>
+    <ul>
+        <li><code>UPER</code> / <code>WER</code> — binary. Sent/received as hex (text, optional <code>uper:</code>/<code>wer:</code> prefix) or as raw bytes.</li>
+        <li><code>JSON</code> / <code>XML</code> — text, human-readable.</li>
+    </ul>
+
+    <h3>Identifying the message (<code>X-Ref</code>)</h3>
+    <p>UPER/WER are not self-describing, so the API must know which message definition to use. Three ways:</p>
+    <ul>
+        <li><strong>Auto-detect</strong> — omit <code>X-Ref</code>. The API reads the ETSI ITS header
+            (<code>protocolVersion</code> + <code>messageId</code>) from the payload and picks the matching message. The simplest option for decoding.</li>
+        <li><strong>Message ref</strong> — <code>X-Ref: cam_v2</code>. A named, pre-configured message (see <a href="#discover">Discover</a>).</li>
+        <li><strong>Type ref</strong> — <code>X-Ref: cam_v2:CAM</code> (<code>alias:Type</code>). A raw ASN.1 type from a module, no header defaults.</li>
+    </ul>
+
+    <h2 id="convert">Convert</h2>
+    <h3><span class="method post">POST</span> <span class="path">/api/convert</span></h3>
+    <p>Convert a payload from one encoding to another (decode, encode, or re-encode).</p>
+
+    <table>
+        <tr><th>Header</th><th>Required</th><th>Description</th></tr>
+        <tr><td><code>X-From</code></td><td class="req">required</td><td>Input encoding: <code>UPER</code>, <code>WER</code>, <code>XML</code> or <code>JSON</code>.</td></tr>
+        <tr><td><code>X-To</code></td><td class="req">required</td><td>Output encoding.</td></tr>
+        <tr><td><code>X-Ref</code></td><td>optional</td><td>Message/type ref. <strong>Omit to auto-detect</strong> from the payload header.</td></tr>
+        <tr><td><code>Content-Type</code></td><td>optional</td><td><code>text/plain</code> for hex/JSON/XML (default), or <code>application/octet-stream</code> for raw binary input.</td></tr>
+        <tr><td><code>Accept</code></td><td>optional</td><td><code>application/octet-stream</code> to receive UPER/WER as raw bytes instead of hex.</td></tr>
+    </table>
+    <p>The request body is the payload. The response body is the converted payload (text, or bytes when requested).</p>
+
+    <h4>Decode UPER → JSON (auto-detect)</h4>
+    <pre><code>curl -X POST "https://v2x-tools-backend-production.up.railway.app/api/convert" \
+  -H "X-From: UPER" -H "X-To: JSON" \
+  -H "Content-Type: text/plain" \
+  --data "uper:02024c1cd2893d45035379f3eb4ed18dd0..."
+
+# → {"header":{"protocolVersion":2,"messageID":2,"stationID":...},"cam":{...}}</code></pre>
+
+    <h4>Encode JSON → UPER (explicit ref)</h4>
+    <pre><code>curl -X POST "https://v2x-tools-backend-production.up.railway.app/api/convert" \
+  -H "X-Ref: cam_v2" -H "X-From: JSON" -H "X-To: UPER" \
+  -H "Content-Type: text/plain" \
+  --data '{"header":{"protocolVersion":2,"messageID":2,"stationID":1},"cam":{...}}'
+
+# → uper:0202...</code></pre>
+
+    <h4>Decode raw binary</h4>
+    <pre><code>curl -X POST "https://v2x-tools-backend-production.up.railway.app/api/convert" \
+  -H "X-From: UPER" -H "X-To: JSON" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @message.bin</code></pre>
+
+    <div class="note">Auto-detect and the standard header read work for UPER, WER, JSON and XML. A payload
+        whose <code>(protocolVersion, messageId)</code> is not a known message returns a clear error — pass an explicit <code>X-Ref</code> in that case.</div>
+
+    <h2 id="generate">Generate</h2>
+    <h3><span class="method post">POST</span> <span class="path">/api/generate</span></h3>
+    <p>Generate a sample message in the requested encoding.</p>
+
+    <table>
+        <tr><th>Header</th><th>Required</th><th>Description</th></tr>
+        <tr><td><code>X-Ref</code></td><td class="req">required</td><td>Which message to generate (e.g. <code>cam_v2</code>, or a type ref <code>cam_v2:CAM</code>).</td></tr>
+    </table>
+    <p>JSON body (all optional):</p>
+    <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>format</code></td><td>Output encoding: <code>UPER</code> (default), <code>WER</code>, <code>JSON</code>, <code>XML</code>.</td></tr>
+        <tr><td><code>size</code></td><td>How full the random sample is: <code>SMALLEST</code>, <code>SMALL</code> (default), <code>MEDIUM</code>, <code>BIG</code>, <code>BIGGEST</code>.</td></tr>
+        <tr><td><code>minimal</code></td><td><code>true</code> = only mandatory fields with default values (ignores <code>size</code>).</td></tr>
+    </table>
+    <pre><code>curl -X POST "https://v2x-tools-backend-production.up.railway.app/api/generate" \
+  -H "X-Ref: cam_v2" -H "Content-Type: application/json" \
+  --data '{"format":"UPER","size":"SMALL"}'
+
+# → uper:0202...</code></pre>
+
+    <h2 id="discover">Discover</h2>
+    <p>Read-only endpoints to discover the available messages and modules (the valid <code>X-Ref</code> values).</p>
+
+    <h3><span class="method get">GET</span> <span class="path">/api/messages</span></h3>
+    <p>Lists the pre-configured messages. Each <code>name</code> is a valid <code>X-Ref</code>.</p>
+    <pre><code>curl "https://v2x-tools-backend-production.up.railway.app/api/messages"
+
+# → [{"name":"cam_v2","moduleAlias":"cam_v2","rootType":"CAM","description":"...","fixups":[...]}, ...]</code></pre>
+
+    <h3><span class="method get">GET</span> <span class="path">/api/modules</span></h3>
+    <p>Lists the ASN.1 modules with their OID and aliases (use <code>alias:Type</code> as a type ref).</p>
+    <pre><code>curl "https://v2x-tools-backend-production.up.railway.app/api/modules"
+
+# → [{"oid":"CAM_PDU_Descriptions {...}","moduleId":"cam_pdu_descriptions_f73e8d","aliases":["cam_v2"]}, ...]</code></pre>
+
+    <h2 id="errors">Errors &amp; status codes</h2>
+    <ul>
+        <li><code>200</code> — success; body is the converted/generated payload (or the requested list).</li>
+        <li><code>400</code> — the payload could not be decoded/encoded; body is <code>{"error": "..."}</code>.</li>
+        <li><code>404</code> — unknown ref, or auto-detect found no message for the payload's header.</li>
+    </ul>
+
+    <footer>
+        V2X.tools — <a href="/">converter</a> · ETSI ITS message tooling.
+    </footer>
+</div>
 </body>
 </html>
