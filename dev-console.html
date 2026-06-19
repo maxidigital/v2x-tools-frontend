@@ -57,6 +57,7 @@
 
   .divider { border: none; border-top: 1px solid #1e2433; margin: 24px 0; }
   textarea { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 10px 12px; font-family: inherit; font-size: 0.8rem; width: 100%; resize: vertical; }
+  .hint { font-size: 0.7rem; color: #475569; margin-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -64,171 +65,27 @@
 <h1>// dev console</h1>
 
 <div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('repo')">repo</button>
-  <button class="tab-btn"        onclick="switchTab('backend')">backend</button>
-  <button class="tab-btn"        onclick="switchTab('modules')">modules</button>
+  <button class="tab-btn active" onclick="switchTab('modules')">modules</button>
+  <button class="tab-btn"        onclick="switchTab('registry')">aliases &amp; messages</button>
+  <button class="tab-btn"        onclick="switchTab('codec')">convert / generate</button>
 </div>
 
-<!-- ═══════════════════════════════ REPO TAB ═══════════════════════════════ -->
-<div id="tab-repo" class="tab-panel active">
-  <span class="badge repo">v2x-tools-repo · persistent DB</span>
-
-  <div class="section">
-    <div class="section-title">Modules — by user</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="r-userId" type="number" value="0">
-      <button onclick="repoGetModules()">GET all modules</button>
-      <button onclick="repoGetAliases()">GET aliases</button>
-      <button onclick="repoGetMessages()">GET messages only</button>
-      <button class="ghost" onclick="clearOut('r-out')">clear</button>
-    </div>
-    <div class="output" id="r-out">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">Modules — patch IDs</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="r-patch-userId" type="number" value="0">
-      <span class="label">alias</span>
-      <input id="r-patch-alias" type="text" value="cam_v2" style="width:140px">
-      <span class="label">msgId</span>
-      <input id="r-patch-msgId" type="number" value="2" style="width:70px">
-      <span class="label">protocolVersion</span>
-      <input id="r-patch-protVer" type="number" value="2" style="width:70px">
-      <button onclick="repoPatchIds()">PATCH ids</button>
-      <button class="ghost" onclick="clearOut('r-out-patch')">clear</button>
-    </div>
-    <div class="output" id="r-out-patch">—</div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════ BACKEND TAB ════════════════════════════ -->
-<div id="tab-backend" class="tab-panel">
-  <span class="badge backend">v2x-tools-backend · in-memory engine</span>
-
-  <div class="section">
-    <div class="section-title">Engine — load aliases</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="b-userId-load" type="number" value="0">
-      <span class="label">aliases (comma separated)</span>
-      <input id="b-aliases" type="text" value="cam_v2">
-      <button onclick="backendLoad()">POST load</button>
-      <button class="ghost" onclick="clearOut('b-out-load')">clear</button>
-    </div>
-    <div class="output" id="b-out-load">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">Random — generate message</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="b-rnd-userId" type="number" value="0">
-      <span class="label">message</span>
-      <select id="b-rnd-mid">
-        <option value="2:2">CAM v2</option>
-        <option value="1:2">DENM v2</option>
-        <option value="4:2">SPATEM v2</option>
-        <option value="5:2">MAPEM v2</option>
-        <option value="6:2">IVIM v2</option>
-        <option value="9:2">SREM v2</option>
-        <option value="10:2">SSEM v2</option>
-        <option value="14:2">CPM v2</option>
-      </select>
-      <span class="label">format</span>
-      <select id="b-rnd-format">
-        <option value="UPER">UPER</option>
-        <option value="JSON">JSON</option>
-        <option value="XML">XML</option>
-        <option value="WER">WER</option>
-      </select>
-      <span class="label">size</span>
-      <select id="b-rnd-size">
-        <option value="SMALLEST">SMALLEST</option>
-        <option value="SMALL" selected>SMALL</option>
-        <option value="MEDIUM">MEDIUM</option>
-        <option value="BIG">BIG</option>
-        <option value="BIGGEST">BIGGEST</option>
-      </select>
-      <input type="checkbox" id="b-rnd-minimal">
-      <span class="label">minimal</span>
-      <button onclick="backendRandom()">GET random</button>
-      <button class="ghost" onclick="clearOut('b-out-rnd')">clear</button>
-    </div>
-    <div class="output" id="b-out-rnd">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">Engine — aliases &amp; evict</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="b-userId-aliases" type="number" value="0">
-      <button onclick="backendGetAliases()">GET aliases</button>
-      <button class="danger" onclick="backendEvict()">DELETE engine</button>
-      <button class="ghost" onclick="clearOut('b-out-aliases')">clear</button>
-    </div>
-    <div class="output" id="b-out-aliases">—</div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════ MODULES TAB ════════════════════════════ -->
-<div id="tab-modules" class="tab-panel">
-  <span class="badge repo">v2x-tools-repo · module admin</span>
+<!-- ══════════════════════════════ MODULES TAB (repo) ════════════════════════ -->
+<div id="tab-modules" class="tab-panel active">
+  <span class="badge repo">v2x-tools-repo · ASN.1 module authority</span>
 
   <div class="section">
     <div class="section-title">Upload module</div>
-    <div class="row">
-      <input type="checkbox" id="m-is-message" onchange="toggleMessageFields()">
-      <span class="label">es mensaje principal (requiere alias + IDs)</span>
-    </div>
-    <div id="m-message-fields" style="display:none; margin-bottom:8px">
-      <div class="row">
-        <span class="label">alias <span style="color:#f87171">*</span></span>
-        <input id="m-alias" type="text" value="" style="width:140px" placeholder="ej: ivim_v2">
-        <span class="label">mainType <span style="color:#f87171">*</span></span>
-        <input id="m-mainType" type="text" value="" style="width:140px" placeholder="ej: IVIM">
-        <span class="label">msgId <span style="color:#f87171">*</span></span>
-        <input id="m-msgId" type="number" value="" style="width:70px">
-        <span class="label">protVer <span style="color:#f87171">*</span></span>
-        <input id="m-protVer" type="number" value="" style="width:70px">
-      </div>
-    </div>
-    <textarea id="m-content" rows="12" placeholder="Paste ASN.1 content here..."></textarea>
+    <div class="hint">The repo identifies a module by its OID (the name lives in the OID). No alias/messageId here — that lives in the hub.</div>
+    <textarea id="mod-content" rows="12" placeholder="Paste ASN.1 content here (one or more modules)..."></textarea>
     <div class="row" style="margin-top:8px">
-      <button onclick="moduleValidate()">Validate</button>
-      <button onclick="moduleUpload()">Upload</button>
-      <button class="ghost" onclick="clearOut('m-out-validate'); clearOut('m-out-upload')">clear</button>
+      <span class="label">userId</span>
+      <input id="mod-userId" type="number" value="0">
+      <button onclick="modValidate()">Validate</button>
+      <button onclick="modUpload()">Upload</button>
+      <button class="ghost" onclick="clearOut('mod-out')">clear</button>
     </div>
-    <div class="output" id="m-out-validate">—</div>
-    <div class="output" id="m-out-upload" style="margin-top:4px">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">Delete module</div>
-    <div class="row">
-      <span class="label">by alias</span>
-      <input id="m-del-alias" type="text" value="" style="width:160px">
-      <button class="danger" onclick="moduleDeleteByAlias()">DELETE by alias</button>
-    </div>
-    <div class="row">
-      <span class="label">by OID</span>
-      <input id="m-del-oid" type="text" value="" style="width:480px">
-      <button class="danger" onclick="moduleDeleteByOid()">DELETE by OID</button>
-    </div>
-    <div class="row">
-      <button class="ghost" onclick="clearOut('m-out-delete')">clear</button>
-    </div>
-    <div class="output" id="m-out-delete">—</div>
+    <div class="output" id="mod-out">—</div>
   </div>
 
   <hr class="divider">
@@ -236,29 +93,170 @@
   <div class="section">
     <div class="section-title">Find module</div>
     <div class="row">
-      <span class="label">by alias</span>
-      <input id="m-find-alias" type="text" value="" style="width:160px">
-      <button onclick="moduleFindByAlias()">GET by alias</button>
+      <span class="label">by OID</span>
+      <input id="mod-oid" type="text" value="" style="width:480px" placeholder="CAM_PDU_Descriptions {itu-t(0) ...}">
+      <button onclick="modFindOid()">GET by OID</button>
+      <button onclick="hubTypes()">GET types (hub)</button>
     </div>
     <div class="row">
-      <span class="label">by OID</span>
-      <input id="m-find-oid" type="text" value="" style="width:480px">
-      <button onclick="moduleFindByOid()">GET by OID</button>
-      <button class="ghost" onclick="clearOut('m-out-find')">clear</button>
+      <span class="label">by numeric id</span>
+      <input id="mod-id" type="number" value="" style="width:90px">
+      <button onclick="modFindId()">GET by id</button>
+      <button class="ghost" onclick="clearOut('mod-find-out')">clear</button>
     </div>
-    <div class="output" id="m-out-find">—</div>
+    <div class="output" id="mod-find-out">—</div>
   </div>
 
   <hr class="divider">
 
   <div class="section">
-    <div class="section-title">All modules</div>
+    <div class="section-title">Delete module</div>
+    <div class="hint">Uses the OID / numeric id fields above.</div>
     <div class="row">
-      <button onclick="moduleListAll()">GET all</button>
-      <button onclick="moduleListPublic()">GET public</button>
-      <button class="ghost" onclick="clearOut('m-out-list')">clear</button>
+      <button class="danger" onclick="modDelOid()">DELETE by OID</button>
+      <button class="danger" onclick="modDelId()">DELETE by id</button>
+      <button class="ghost" onclick="clearOut('mod-del-out')">clear</button>
     </div>
-    <div class="output" id="m-out-list">—</div>
+    <div class="output" id="mod-del-out">—</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">List modules</div>
+    <div class="row">
+      <button onclick="modList()">repo: all</button>
+      <button onclick="modPublic()">repo: public</button>
+      <button onclick="modByUser()">repo: by userId</button>
+      <button onclick="hubModules()">hub: with aliases</button>
+      <button class="ghost" onclick="clearOut('mod-list-out')">clear</button>
+    </div>
+    <div class="output" id="mod-list-out">—</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ ALIASES & MESSAGES TAB (hub) ═════════════════ -->
+<div id="tab-registry" class="tab-panel">
+  <span class="badge backend">v2x-tools-backend (hub) · alias + saved-message registry</span>
+
+  <div class="section">
+    <div class="section-title">Module aliases</div>
+    <div class="hint">An alias is a readable name for a module OID (e.g. cam_v2 → CAM_PDU_Descriptions). userId 0 = public/default.</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="a-userId" type="number" value="0">
+      <button onclick="aliasList()">GET aliases</button>
+      <button class="ghost" onclick="clearOut('a-out')">clear</button>
+    </div>
+    <div class="row">
+      <span class="label">alias</span>
+      <input id="a-alias" type="text" value="" style="width:160px" placeholder="cam_v2">
+      <span class="label">module OID</span>
+      <input id="a-oid" type="text" value="" style="width:420px" placeholder="CAM_PDU_Descriptions {itu-t(0) ...}">
+      <button onclick="aliasCreate()">POST create</button>
+      <button class="danger" onclick="aliasDelete()">DELETE</button>
+    </div>
+    <div class="output" id="a-out">—</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">Saved messages</div>
+    <div class="hint">A saved message = a named ref bound to (moduleAlias : rootType) plus generation fixups (e.g. header values).</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="msg-userId" type="number" value="0">
+      <button onclick="msgList()">GET messages</button>
+      <button class="ghost" onclick="clearOut('msg-out')">clear</button>
+    </div>
+    <div class="row">
+      <span class="label">name</span>
+      <input id="msg-name" type="text" value="" style="width:140px" placeholder="cam_v2">
+      <span class="label">moduleAlias</span>
+      <input id="msg-alias" type="text" value="" style="width:140px" placeholder="cam_v2">
+      <span class="label">rootType</span>
+      <input id="msg-root" type="text" value="" style="width:140px" placeholder="CAM">
+    </div>
+    <div class="row">
+      <span class="label">description</span>
+      <input id="msg-desc" type="text" value="" style="width:420px" placeholder="ETSI CAM — default">
+    </div>
+    <div class="row" style="align-items:flex-start">
+      <span class="label" style="margin-top:8px">fixups</span>
+      <textarea id="msg-fixups" rows="3" style="width:520px" placeholder='[{"path":"header:protocolVersion","value":2},{"path":"header:messageID","value":2}]'></textarea>
+    </div>
+    <div class="row">
+      <button onclick="msgCreate()">POST create</button>
+      <button class="danger" onclick="msgDelete()">DELETE (by name)</button>
+    </div>
+    <div class="output" id="msg-out">—</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ CONVERT / GENERATE TAB (hub) ═════════════════ -->
+<div id="tab-codec" class="tab-panel">
+  <span class="badge backend">v2x-tools-backend (hub) · codec</span>
+
+  <div class="section">
+    <div class="section-title">Generate</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="g-userId" type="number" value="0">
+      <span class="label">X-Ref</span>
+      <input id="g-ref" type="text" value="cam_v2" style="width:200px" placeholder="cam_v2  or  cam_v2:CAM">
+      <span class="label">format</span>
+      <select id="g-format">
+        <option value="UPER">UPER</option>
+        <option value="WER">WER</option>
+        <option value="JSON">JSON</option>
+        <option value="XML">XML</option>
+      </select>
+      <span class="label">size</span>
+      <select id="g-size">
+        <option value="SMALLEST">SMALLEST</option>
+        <option value="SMALL" selected>SMALL</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="BIG">BIG</option>
+        <option value="BIGGEST">BIGGEST</option>
+      </select>
+      <input type="checkbox" id="g-minimal">
+      <span class="label">minimal</span>
+      <button onclick="hubGenerate()">POST generate</button>
+      <button class="ghost" onclick="clearOut('g-out')">clear</button>
+    </div>
+    <div class="output" id="g-out">—</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section">
+    <div class="section-title">Convert</div>
+    <div class="hint">Leave X-Ref blank to auto-detect the message from the payload's ITS header (protocolVersion + messageId).</div>
+    <div class="row">
+      <span class="label">userId</span>
+      <input id="c-userId" type="number" value="0">
+      <span class="label">X-Ref (optional)</span>
+      <input id="c-ref" type="text" value="" style="width:180px" placeholder="(auto-detect)">
+      <span class="label">from</span>
+      <select id="c-from">
+        <option value="UPER">UPER</option>
+        <option value="WER">WER</option>
+        <option value="JSON">JSON</option>
+        <option value="XML">XML</option>
+      </select>
+      <span class="label">to</span>
+      <select id="c-to">
+        <option value="JSON" selected>JSON</option>
+        <option value="XML">XML</option>
+        <option value="UPER">UPER</option>
+        <option value="WER">WER</option>
+      </select>
+      <button onclick="hubConvert()">POST convert</button>
+      <button class="ghost" onclick="clearOut('c-out')">clear</button>
+    </div>
+    <textarea id="c-payload" rows="6" placeholder="payload (uper:hex / wer:hex / JSON / XML)"></textarea>
+    <div class="output" id="c-out" style="margin-top:8px">—</div>
   </div>
 </div>
 
@@ -279,17 +277,22 @@
     el.className = 'output';
   }
 
-  async function call(method, url, body, outId, extraHeaders = {}) {
+  function v(id) { return document.getElementById(id).value; }
+
+  async function call(method, url, body, outId, extraHeaders = {}, contentType = 'application/json') {
     const out = document.getElementById(outId);
     out.textContent = 'loading...';
     out.className = 'output';
     try {
       const opts = { method, headers: { ...extraHeaders } };
-      if (body) { opts.body = body; opts.headers['Content-Type'] = 'application/json'; }
+      if (body !== null && body !== undefined && body !== '') {
+        opts.body = body;
+        opts.headers['Content-Type'] = contentType;
+      }
       const res = await fetch(url, opts);
       const text = await res.text();
       try { out.textContent = JSON.stringify(JSON.parse(text), null, 2); }
-      catch { out.textContent = text; }
+      catch { out.textContent = text || '(empty)'; }
       out.classList.add(res.ok ? 'ok' : 'err');
     } catch (e) {
       out.textContent = e.message;
@@ -297,153 +300,63 @@
     }
   }
 
-  // ── Repo ──────────────────────────────────────────────────────────────────
-  function repoGetModules()  { call('GET',   `${REPO}/api/modules/by-user?userId=${v('r-userId')}`,  null, 'r-out'); }
-  function repoGetAliases()  { call('GET',   `${REPO}/api/modules/aliases?userId=${v('r-userId')}`,   null, 'r-out'); }
-  function repoGetMessages() { call('GET',   `${REPO}/api/modules/messages?userId=${v('r-userId')}`,  null, 'r-out'); }
-  function repoPatchIds() {
-    const alias   = v('r-patch-alias');
-    const userId  = v('r-patch-userId');
-    const msgId   = v('r-patch-msgId');
-    const protVer = v('r-patch-protVer');
-    call('PATCH', `${REPO}/api/modules/${alias}/ids?userId=${userId}&messageId=${msgId}&protocolVersion=${protVer}`, null, 'r-out-patch');
+  // ── modules (repo) ──────────────────────────────────────────────────────────
+  function modValidate() {
+    call('POST', `${REPO}/api/modules/validate`, v('mod-content'), 'mod-out', {}, 'text/plain');
   }
-
-  // ── Backend ───────────────────────────────────────────────────────────────
-  function backendLoad() {
-    const aliases = document.getElementById('b-aliases').value
-      .split(',').map(s => s.trim()).filter(Boolean);
-    const userId = v('b-userId-load');
-    call('POST', `${API}/api/v2x/messages/load`, JSON.stringify(aliases), 'b-out-load', { 'X-User-Id': userId });
+  function modUpload() {
+    const uid = encodeURIComponent(v('mod-userId'));
+    call('POST', `${REPO}/api/modules/upload?userId=${uid}`, v('mod-content'), 'mod-out', {}, 'text/plain');
   }
-  function backendGetAliases() {
-    const userId = v('b-userId-aliases');
-    call('GET', `${API}/api/v2x/messages`, null, 'b-out-aliases', { 'X-User-Id': userId });
-  }
-  function backendEvict() {
-    const userId = v('b-userId-aliases');
-    call('DELETE', `${API}/api/v2x/messages`, null, 'b-out-aliases', { 'X-User-Id': userId });
-  }
+  function modList()    { call('GET', `${REPO}/api/modules`, null, 'mod-list-out'); }
+  function modPublic()  { call('GET', `${REPO}/api/modules/public`, null, 'mod-list-out'); }
+  function modByUser()  { call('GET', `${REPO}/api/modules/by-user?userId=${encodeURIComponent(v('mod-userId'))}`, null, 'mod-list-out'); }
+  function modFindOid() { call('GET', `${REPO}/api/modules/by-oid?oid=${encodeURIComponent(v('mod-oid'))}`, null, 'mod-find-out'); }
+  function modFindId()  { call('GET', `${REPO}/api/modules/${encodeURIComponent(v('mod-id'))}`, null, 'mod-find-out'); }
+  function modDelOid()  { call('DELETE', `${REPO}/api/modules/by-oid?oid=${encodeURIComponent(v('mod-oid'))}`, null, 'mod-del-out'); }
+  function modDelId()   { call('DELETE', `${REPO}/api/modules/${encodeURIComponent(v('mod-id'))}`, null, 'mod-del-out'); }
 
-  async function backendRandom() {
-    const out     = document.getElementById('b-out-rnd');
-    const userId  = v('b-rnd-userId');
-    const mid     = v('b-rnd-mid');
-    const format  = v('b-rnd-format');
-    const size    = v('b-rnd-size');
-    const minimal = document.getElementById('b-rnd-minimal').checked;
-    const url     = `${API}/api/v2x/generate?mid=${mid}&format=${format}&minimal=${minimal}&size=${size}`;
+  // ── modules browse (hub: joins repo list with the alias table) ────────────────
+  function hubModules() { call('GET', `${API}/api/modules`, null, 'mod-list-out', { 'X-User-Id': v('mod-userId') }); }
+  function hubTypes()   { call('GET', `${API}/api/modules/types`, null, 'mod-find-out', { 'X-Module-Oid': v('mod-oid') }); }
 
-    out.textContent = 'loading...';
-    out.className = 'output';
-    try {
-      const res  = await fetch(url, { headers: { 'X-User-Id': userId } });
-      const text = await res.text();
-      try { out.textContent = JSON.stringify(JSON.parse(text), null, 2); }
-      catch { out.textContent = text; }
-      out.classList.add(res.ok ? 'ok' : 'err');
-    } catch (e) {
-      out.textContent = e.message;
-      out.classList.add('err');
-    }
-  }
+  // ── aliases (hub) ─────────────────────────────────────────────────────────────
+  function aliasList()   { call('GET', `${API}/api/aliases`, null, 'a-out', { 'X-User-Id': v('a-userId') }); }
+  function aliasCreate() { call('POST', `${API}/api/aliases`, null, 'a-out', { 'X-User-Id': v('a-userId'), 'X-Alias': v('a-alias'), 'X-Module-Oid': v('a-oid') }); }
+  function aliasDelete() { call('DELETE', `${API}/api/aliases`, null, 'a-out', { 'X-User-Id': v('a-userId'), 'X-Alias': v('a-alias') }); }
 
-  function v(id) { return document.getElementById(id).value; }
-
-  // ── Modules admin ─────────────────────────────────────────────────────────
-  async function moduleValidate() {
-    const out = document.getElementById('m-out-validate');
-    out.textContent = 'validating...'; out.className = 'output';
-    const content = document.getElementById('m-content').value;
-    if (!content.trim()) { out.textContent = 'No content'; out.classList.add('err'); return; }
-    try {
-      const res = await fetch(`${REPO}/api/modules/validate`, {
-        method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: content
-      });
-      const data = await res.json();
-      if (data.valid) {
-        const imp = data.imports && data.imports.length
-          ? '\nimports: ' + data.imports.map(i => i.name).join(', ') : '';
-        out.textContent = `✓ ${data.moduleName}\noid: ${data.oid || '(none)'}${imp}`;
-        out.classList.add('ok');
-      } else {
-        out.textContent = `✗ ${data.error}`;
-        out.classList.add('err');
+  // ── saved messages (hub) ──────────────────────────────────────────────────────
+  function msgList() { call('GET', `${API}/api/messages`, null, 'msg-out', { 'X-User-Id': v('msg-userId') }); }
+  function msgCreate() {
+    let fixups = [];
+    const ft = v('msg-fixups').trim();
+    if (ft) {
+      try { fixups = JSON.parse(ft); }
+      catch (e) {
+        const out = document.getElementById('msg-out');
+        out.textContent = 'invalid fixups JSON: ' + e.message; out.className = 'output err';
+        return;
       }
-    } catch(e) { out.textContent = e.message; out.classList.add('err'); }
-  }
-
-  function toggleMessageFields() {
-    const show = document.getElementById('m-is-message').checked;
-    document.getElementById('m-message-fields').style.display = show ? 'block' : 'none';
-  }
-
-  async function moduleUpload() {
-    const out = document.getElementById('m-out-upload');
-    out.textContent = 'uploading...'; out.className = 'output';
-
-    const content = document.getElementById('m-content').value;
-    if (!content.trim()) { out.textContent = 'No content'; out.classList.add('err'); return; }
-
-    const isMessage = document.getElementById('m-is-message').checked;
-    const params = new URLSearchParams();
-
-    if (isMessage) {
-      const alias = v('m-alias');
-      if (!alias.trim()) { out.textContent = 'alias requerido para módulo de mensaje'; out.classList.add('err'); return; }
-      params.set('alias', alias);
-      const mainType = v('m-mainType'); if (mainType) params.set('mainType', mainType);
-      const msgId   = v('m-msgId');    if (msgId)    params.set('messageId', msgId);
-      const protVer = v('m-protVer');  if (protVer)  params.set('protocolVersion', protVer);
     }
-
-    try {
-      const res = await fetch(`${REPO}/api/modules/upload?${params}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: content
-      });
-      const text = await res.text();
-      try {
-        const data = JSON.parse(text);
-        if (Array.isArray(data)) {
-          // Multi-module response: render a compact table
-          const lines = data.map(r => {
-            const icon = r.status === 'ok' ? '✓' : r.status === 'skipped' ? '—' : '✗';
-            const err  = r.error ? `  (${r.error})` : '';
-            return `${icon} ${r.moduleName}${err}`;
-          });
-          out.textContent = lines.join('\n');
-          const hasError = data.some(r => r.status === 'error');
-          out.classList.add(hasError ? 'err' : 'ok');
-        } else {
-          out.textContent = JSON.stringify(data, null, 2);
-          out.classList.add(res.ok ? 'ok' : 'err');
-        }
-      } catch { out.textContent = text; out.classList.add(res.ok ? 'ok' : 'err'); }
-    } catch(e) { out.textContent = e.message; out.classList.add('err'); }
+    const body = JSON.stringify({
+      name: v('msg-name'), moduleAlias: v('msg-alias'), rootType: v('msg-root'),
+      description: v('msg-desc'), fixups
+    });
+    call('POST', `${API}/api/messages`, body, 'msg-out', { 'X-User-Id': v('msg-userId') }, 'application/json');
   }
+  function msgDelete() { call('DELETE', `${API}/api/messages`, null, 'msg-out', { 'X-User-Id': v('msg-userId'), 'X-Message-Name': v('msg-name') }); }
 
-  function moduleDeleteByAlias() {
-    const alias = v('m-del-alias');
-    call('DELETE', `${REPO}/api/modules/${encodeURIComponent(alias)}`, null, 'm-out-delete');
+  // ── codec (hub) ───────────────────────────────────────────────────────────────
+  function hubGenerate() {
+    const body = JSON.stringify({ format: v('g-format'), size: v('g-size'), minimal: document.getElementById('g-minimal').checked });
+    call('POST', `${API}/api/generate`, body, 'g-out', { 'X-Ref': v('g-ref'), 'X-User-Id': v('g-userId') }, 'application/json');
   }
-
-  function moduleDeleteByOid() {
-    const oid = v('m-del-oid');
-    call('DELETE', `${REPO}/api/modules/by-oid?oid=${encodeURIComponent(oid)}`, null, 'm-out-delete');
+  function hubConvert() {
+    const headers = { 'X-From': v('c-from'), 'X-To': v('c-to'), 'X-User-Id': v('c-userId') };
+    const ref = v('c-ref').trim();
+    if (ref) headers['X-Ref'] = ref;   // blank → auto-detect
+    call('POST', `${API}/api/convert`, v('c-payload'), 'c-out', headers, 'text/plain');
   }
-
-  function moduleFindByAlias() {
-    call('GET', `${REPO}/api/modules/by-alias?alias=${encodeURIComponent(v('m-find-alias'))}`, null, 'm-out-find');
-  }
-
-  function moduleFindByOid() {
-    call('GET', `${REPO}/api/modules/by-oid?oid=${encodeURIComponent(v('m-find-oid'))}`, null, 'm-out-find');
-  }
-
-  function moduleListAll()    { call('GET', `${REPO}/api/modules`,        null, 'm-out-list'); }
-  function moduleListPublic() { call('GET', `${REPO}/api/modules/public`, null, 'm-out-list'); }
 </script>
 </body>
 </html>
