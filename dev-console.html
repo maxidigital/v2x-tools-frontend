@@ -128,7 +128,8 @@
       <button onclick="modList()">repo: all</button>
       <button onclick="modPublic()">repo: public</button>
       <button onclick="modByUser()">repo: by userId</button>
-      <button onclick="hubModules()">hub: with aliases</button>
+      <button onclick="hubModules()">hub: by name</button>
+      <button onclick="hubModules('uploaded')">hub: by upload date</button>
       <button class="ghost" onclick="clearOut('mod-list-out')">clear</button>
     </div>
     <div class="output" id="mod-list-out">—</div>
@@ -314,7 +315,7 @@
   function modDelId()   { call('DELETE', `${REPO}/api/modules/${encodeURIComponent(v('mod-id'))}`, null, 'mod-del-out'); }
 
   // ── modules browse (hub: joins repo list with the alias table) ────────────────
-  function hubModules() { call('GET', `${API}/api/modules`, null, 'mod-list-out', { 'X-User-Id': v('mod-userId') }); }
+  function hubModules(sort) { call('GET', `${API}/api/modules?sort=${sort||'name'}`, null, 'mod-list-out', { 'X-User-Id': v('mod-userId') }); }
   function hubTypes()   { call('GET', `${API}/api/modules/types`, null, 'mod-find-out', { 'X-Module-Oid': v('mod-oid') }); }
 
   // ── aliases (hub) ─────────────────────────────────────────────────────────────
