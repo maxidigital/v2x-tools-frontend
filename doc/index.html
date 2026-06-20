@@ -153,10 +153,14 @@
 # → [{"name":"cam_v2","moduleAlias":"cam_v2","rootType":"CAM","description":"...","fixups":[...]}, ...]</code></pre>
 
     <h3><span class="method get">GET</span> <span class="path">/api/modules</span></h3>
-    <p>Lists the ASN.1 modules with their OID and aliases (use <code>alias:Type</code> as a type ref).</p>
+    <p>Lists the ASN.1 modules as <code>{moduleId, oid}</code> (combine a module's alias from
+    <code>/api/aliases</code> with a type name to form an <code>alias:Type</code> ref). Optional
+    <code>sort</code> query param: <code>name</code> (default) sorts alphabetically by the module name in the
+    OID; <code>uploaded</code> sorts by upload date (oldest first).</p>
     <pre><code>curl "https://v2x.tools/api/modules"
+curl "https://v2x.tools/api/modules?sort=uploaded"
 
-# → [{"oid":"CAM_PDU_Descriptions {...}","moduleId":"cam_pdu_descriptions_f73e8d","aliases":["cam_v2"]}, ...]</code></pre>
+# → [{"moduleId":"cam_pdu_descriptions_f73e8d","oid":"CAM_PDU_Descriptions {...}"}, ...]</code></pre>
 
     <h2 id="errors">Errors &amp; status codes</h2>
     <ul>
