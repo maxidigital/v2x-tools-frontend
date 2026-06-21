@@ -8,21 +8,20 @@
 	encode gzip
 
 	# Public API surface, reached through v2x.tools (same-origin → no CORS).
+	# Upstreams use Railway PRIVATE networking (<service>.railway.internal:8080 — the port each app's
+	# Tomcat binds). No Host rewrite needed internally (no public edge in the path). If private networking
+	# ever breaks, revert to the public URLs: https://v2x-tools-{hub,backend}-production.up.railway.app
+	# (with `header_up Host <that-domain>`).
 	# Split after the hub detach:
 	#   - legacy non-V2X cruft stays on v2x-tools-backend (contact form, stats, monitoring/Telegram)
 	#   - everything else (convert/generate/messages/aliases/modules) goes to the v2x-tools-hub service
-	# More-specific matchers must come before the catch-all /api/*.
 	@legacy path /api/contact* /api/access-stats* /api/monitoring*
 	handle @legacy {
-		reverse_proxy https://v2x-tools-backend-production.up.railway.app {
-			header_up Host v2x-tools-backend-production.up.railway.app
-		}
+		reverse_proxy http://v2x-tools-backend.railway.internal:8080
 	}
 
 	handle /api/* {
-		reverse_proxy https://v2x-tools-hub-production.up.railway.app {
-			header_up Host v2x-tools-hub-production.up.railway.app
-		}
+		reverse_proxy http://v2x-tools-hub.railway.internal:8080
 	}
 
 	# Everything else is the static site.
