@@ -209,6 +209,7 @@
       <span class="label">format</span>
       <select id="g-format">
         <option value="UPER">UPER</option>
+        <option value="WER">WER</option>
         <option value="JSON">JSON</option>
         <option value="XML">XML</option>
       </select>
@@ -241,6 +242,7 @@
       <span class="label">from</span>
       <select id="c-from">
         <option value="UPER">UPER</option>
+        <option value="WER">WER</option>
         <option value="JSON">JSON</option>
         <option value="XML">XML</option>
       </select>
@@ -249,11 +251,12 @@
         <option value="JSON" selected>JSON</option>
         <option value="XML">XML</option>
         <option value="UPER">UPER</option>
+        <option value="WER">WER</option>
       </select>
       <button onclick="hubConvert()">POST convert</button>
       <button class="ghost" onclick="clearOut('c-out')">clear</button>
     </div>
-    <textarea id="c-payload" rows="6" placeholder="payload (uper:hex / JSON / XML)"></textarea>
+    <textarea id="c-payload" rows="6" placeholder="payload (uper:hex / wer:hex / JSON / XML)"></textarea>
     <div class="output" id="c-out" style="margin-top:8px">—</div>
   </div>
 </div>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V2X.tools — API Documentation</title>
-    <meta name="description" content="HTTP API for decoding, encoding, converting and generating ETSI V2X (UPER/XML/JSON) messages.">
+    <meta name="description" content="HTTP API for decoding, encoding, converting and generating ETSI V2X (UPER/WER/XML/JSON) messages.">
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -62,7 +62,7 @@
     </div>
 
     <p>Base URL: <code>https://v2x.tools</code></p>
-    <p>The API converts ETSI V2X messages between three encodings — <code>UPER</code>,
+    <p>The API converts ETSI V2X messages between four encodings — <code>UPER</code>, <code>WER</code>,
        <code>XML</code> and <code>JSON</code> — and generates sample messages. All requests are plain HTTP;
        no authentication is required for the public message set.</p>
 
@@ -70,12 +70,12 @@
 
     <h3>Encodings</h3>
     <ul>
-        <li><code>UPER</code> — binary. Sent/received as hex (text, optional <code>uper:</code> prefix) or as raw bytes.</li>
+        <li><code>UPER</code> / <code>WER</code> — binary. Sent/received as hex (text, optional <code>uper:</code>/<code>wer:</code> prefix) or as raw bytes.</li>
         <li><code>JSON</code> / <code>XML</code> — text, human-readable.</li>
     </ul>
 
     <h3>Identifying the message (<code>X-Ref</code>)</h3>
-    <p>UPER is not self-describing, so the API must know which message definition to use. Three ways:</p>
+    <p>UPER/WER are not self-describing, so the API must know which message definition to use. Three ways:</p>
     <ul>
         <li><strong>Auto-detect</strong> — omit <code>X-Ref</code>. The API reads the ETSI ITS header
             (<code>protocolVersion</code> + <code>messageId</code>) from the payload and picks the matching message. The simplest option for decoding.</li>
@@ -89,11 +89,11 @@
 
     <table>
         <tr><th>Header</th><th>Required</th><th>Description</th></tr>
-        <tr><td><code>X-From</code></td><td class="req">required</td><td>Input encoding: <code>UPER</code>, <code>XML</code> or <code>JSON</code>.</td></tr>
+        <tr><td><code>X-From</code></td><td class="req">required</td><td>Input encoding: <code>UPER</code>, <code>WER</code>, <code>XML</code> or <code>JSON</code>.</td></tr>
         <tr><td><code>X-To</code></td><td class="req">required</td><td>Output encoding.</td></tr>
         <tr><td><code>X-Ref</code></td><td>optional</td><td>Message/type ref. <strong>Omit to auto-detect</strong> from the payload header.</td></tr>
         <tr><td><code>Content-Type</code></td><td>optional</td><td><code>text/plain</code> for hex/JSON/XML (default), or <code>application/octet-stream</code> for raw binary input.</td></tr>
-        <tr><td><code>Accept</code></td><td>optional</td><td><code>application/octet-stream</code> to receive UPER as raw bytes instead of hex.</td></tr>
+        <tr><td><code>Accept</code></td><td>optional</td><td><code>application/octet-stream</code> to receive UPER/WER as raw bytes instead of hex.</td></tr>
     </table>
     <p>The request body is the payload. The response body is the converted payload (text, or bytes when requested).</p>
 
@@ -119,7 +119,7 @@
   -H "Content-Type: application/octet-stream" \
   --data-binary @message.bin</code></pre>
 
-    <div class="note">Auto-detect and the standard header read work for UPER, JSON and XML. A payload
+    <div class="note">Auto-detect and the standard header read work for UPER, WER, JSON and XML. A payload
         whose <code>(protocolVersion, messageId)</code> is not a known message returns a clear error — pass an explicit <code>X-Ref</code> in that case.</div>
 
     <h2 id="generate">Generate</h2>
@@ -133,7 +133,7 @@
     <p>JSON body (all optional):</p>
     <table>
         <tr><th>Field</th><th>Description</th></tr>
-        <tr><td><code>format</code></td><td>Output encoding: <code>UPER</code> (default), <code>JSON</code>, <code>XML</code>.</td></tr>
+        <tr><td><code>format</code></td><td>Output encoding: <code>UPER</code> (default), <code>WER</code>, <code>JSON</code>, <code>XML</code>.</td></tr>
         <tr><td><code>size</code></td><td>How full the random sample is: <code>SMALLEST</code>, <code>SMALL</code> (default), <code>MEDIUM</code>, <code>BIG</code>, <code>BIGGEST</code>.</td></tr>
         <tr><td><code>minimal</code></td><td><code>true</code> = only mandatory fields with default values (ignores <code>size</code>).</td></tr>
     </table>
