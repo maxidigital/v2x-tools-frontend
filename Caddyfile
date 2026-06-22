@@ -24,10 +24,10 @@
 		reverse_proxy http://v2x-tools-hub.railway.internal:8080
 	}
 
-	# Everything else is the static site.
+	# Everything else is the static site (Vite dist). SPA fallback to index.html
+	# for unknown paths; real files (dev-console.html, stats.html, doc/…) win first.
 	handle {
-		file_server {
-			hide Caddyfile
-		}
+		try_files {path} /index.html
+		file_server
 	}
 }
