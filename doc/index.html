@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V2X.tools — API Documentation</title>
-    <meta name="description" content="HTTP API for decoding, encoding, converting and generating ETSI V2X (UPER/WER/XML/JSON) messages.">
+    <meta name="description" content="HTTP API for decoding, encoding, converting and generating ETSI V2X (UPER/WER/XER/JER) messages.">
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
@@ -63,7 +63,7 @@
 
     <p>Base URL: <code>https://v2x.tools</code></p>
     <p>The API converts ETSI V2X messages between four encodings — <code>UPER</code>, <code>WER</code>,
-       <code>XML</code> and <code>JSON</code> — and generates sample messages. All requests are plain HTTP;
+       <code>XER</code> and <code>JER</code> — and generates sample messages. All requests are plain HTTP;
        no authentication is required for the public message set.</p>
 
     <h2 id="concepts">Concepts</h2>
@@ -71,7 +71,7 @@
     <h3>Encodings</h3>
     <ul>
         <li><code>UPER</code> / <code>WER</code> — binary. Sent/received as hex (text, optional <code>uper:</code>/<code>wer:</code> prefix) or as raw bytes.</li>
-        <li><code>JSON</code> / <code>XML</code> — text, human-readable.</li>
+        <li><code>JER</code> / <code>XER</code> — the ASN.1 JSON (X.697) and XML (X.693) encoding rules; text, human-readable (JSON / XML representation).</li>
     </ul>
 
     <h3>Identifying the message (<code>X-Ref</code>)</h3>
@@ -89,7 +89,7 @@
 
     <table>
         <tr><th>Header</th><th>Required</th><th>Description</th></tr>
-        <tr><td><code>X-From</code></td><td class="req">required</td><td>Input encoding: <code>UPER</code>, <code>WER</code>, <code>XML</code> or <code>JSON</code>.</td></tr>
+        <tr><td><code>X-From</code></td><td class="req">required</td><td>Input encoding: <code>UPER</code>, <code>WER</code>, <code>XER</code> or <code>JER</code>.</td></tr>
         <tr><td><code>X-To</code></td><td class="req">required</td><td>Output encoding.</td></tr>
         <tr><td><code>X-Ref</code></td><td>optional</td><td>Message/type ref. <strong>Omit to auto-detect</strong> from the payload header.</td></tr>
         <tr><td><code>Content-Type</code></td><td>optional</td><td><code>text/plain</code> for hex/JSON/XML (default), or <code>application/octet-stream</code> for raw binary input.</td></tr>
@@ -97,17 +97,17 @@
     </table>
     <p>The request body is the payload. The response body is the converted payload (text, or bytes when requested).</p>
 
-    <h4>Decode UPER → JSON (auto-detect)</h4>
+    <h4>Decode UPER → JER (auto-detect)</h4>
     <pre><code>curl -X POST "https://v2x.tools/api/convert" \
-  -H "X-From: UPER" -H "X-To: JSON" \
+  -H "X-From: UPER" -H "X-To: JER" \
   -H "Content-Type: text/plain" \
   --data "uper:02024c1cd2893d45035379f3eb4ed18dd0..."
 
 # → {"header":{"protocolVersion":2,"messageID":2,"stationID":...},"cam":{...}}</code></pre>
 
-    <h4>Encode JSON → UPER (explicit ref)</h4>
+    <h4>Encode JER → UPER (explicit ref)</h4>
     <pre><code>curl -X POST "https://v2x.tools/api/convert" \
-  -H "X-Ref: cam_v2" -H "X-From: JSON" -H "X-To: UPER" \
+  -H "X-Ref: cam_v2" -H "X-From: JER" -H "X-To: UPER" \
   -H "Content-Type: text/plain" \
   --data '{"header":{"protocolVersion":2,"messageID":2,"stationID":1},"cam":{...}}'
 
@@ -115,11 +115,11 @@
 
     <h4>Decode raw binary</h4>
     <pre><code>curl -X POST "https://v2x.tools/api/convert" \
-  -H "X-From: UPER" -H "X-To: JSON" \
+  -H "X-From: UPER" -H "X-To: JER" \
   -H "Content-Type: application/octet-stream" \
   --data-binary @message.bin</code></pre>
 
-    <div class="note">Auto-detect and the standard header read work for UPER, WER, JSON and XML. A payload
+    <div class="note">Auto-detect and the standard header read work for UPER, WER, JER and XER. A payload
         whose <code>(protocolVersion, messageId)</code> is not a known message returns a clear error — pass an explicit <code>X-Ref</code> in that case.</div>
 
     <h2 id="generate">Generate</h2>
@@ -133,7 +133,7 @@
     <p>JSON body (all optional):</p>
     <table>
         <tr><th>Field</th><th>Description</th></tr>
-        <tr><td><code>format</code></td><td>Output encoding: <code>UPER</code> (default), <code>WER</code>, <code>JSON</code>, <code>XML</code>.</td></tr>
+        <tr><td><code>format</code></td><td>Output encoding: <code>UPER</code> (default), <code>WER</code>, <code>JER</code>, <code>XER</code>.</td></tr>
         <tr><td><code>size</code></td><td>How full the random sample is: <code>SMALLEST</code>, <code>SMALL</code> (default), <code>MEDIUM</code>, <code>BIG</code>, <code>BIGGEST</code>.</td></tr>
         <tr><td><code>minimal</code></td><td><code>true</code> = only mandatory fields with default values (ignores <code>size</code>).</td></tr>
     </table>

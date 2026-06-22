@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
             (inputValue.startsWith('[') && inputValue.endsWith(']'))) {
             try {
                 JSON.parse(inputValue);
-                detectedFormat = "JSON";
+                detectedFormat = "JER";
                 detected = true;
             } catch (e) {
                 // Not valid JSON, continue checking other formats
@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Check if it's XML
         if (!detected && inputValue.startsWith('<') && inputValue.endsWith('>')) {
-            detectedFormat = "XML";
+            detectedFormat = "XER";
             detected = true;
         }
         
@@ -1270,20 +1270,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Set the appropriate language class based on format
+        // Set the appropriate language class based on format (JER = JSON, XER = XML)
         let languageClass = 'language-none';
-        if (outputFormat === 'JSON') {
+        if (outputFormat === 'JSON' || outputFormat === 'JER') {
             languageClass = 'language-json';
-        } else if (outputFormat === 'XML') {
+        } else if (outputFormat === 'XML' || outputFormat === 'XER') {
             languageClass = 'language-xml';
         }
-        
+
         // Update the code content and class
         codeElement.textContent = outputContent;
         codeElement.className = languageClass;
-        
+
         // Apply Prism highlighting
-        if (outputFormat === 'JSON' || outputFormat === 'XML') {
+        if (languageClass !== 'language-none') {
             Prism.highlightElement(codeElement);
         }
     }
