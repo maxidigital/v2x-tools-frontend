@@ -486,7 +486,7 @@
 
         .resizable-divider {
             width: 8px;
-            background: linear-gradient(to right, transparent 2px, #e5e7eb 2px, #e5e7eb 6px, transparent 6px);
+            background: linear-gradient(to right, transparent 2px, #94a3b8 2px, #94a3b8 6px, transparent 6px);
             cursor: ew-resize;
             position: relative;
             flex-shrink: 0;
@@ -498,11 +498,11 @@
         }
 
         .dark .resizable-divider {
-            background: linear-gradient(to right, transparent 2px, #4b5563 2px, #4b5563 6px, transparent 6px);
+            background: linear-gradient(to right, transparent 2px, #94a3b8 2px, #94a3b8 6px, transparent 6px);
         }
 
         .dark .resizable-divider:hover {
-            background: linear-gradient(to right, transparent 1px, #3b82f6 1px, #3b82f6 7px, transparent 7px);
+            background: linear-gradient(to right, transparent 1px, #60a5fa 1px, #60a5fa 7px, transparent 7px);
         }
 
         .resizable-divider::before {
@@ -511,26 +511,27 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 4px;
-            height: 20px;
+            width: 6px;
+            height: 28px;
             background: repeating-linear-gradient(
                 to bottom,
-                #9ca3af 0px,
-                #9ca3af 2px,
+                #64748b 0px,
+                #64748b 2px,
                 transparent 2px,
                 transparent 4px
             );
-            opacity: 0.5;
+            opacity: 0.9;
         }
 
         .dark .resizable-divider::before {
             background: repeating-linear-gradient(
                 to bottom,
-                #6b7280 0px,
-                #6b7280 2px,
+                #cbd5e1 0px,
+                #cbd5e1 2px,
                 transparent 2px,
                 transparent 4px
             );
+            opacity: 0.9;
         }
 
         /* Hide divider on mobile */
