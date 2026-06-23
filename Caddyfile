@@ -24,10 +24,10 @@
 		reverse_proxy http://v2x-tools-hub.railway.internal:8080
 	}
 
-	# Everything else is the static site (Vite dist). SPA fallback to index.html
-	# for unknown paths; real files (dev-console.html, stats.html, doc/…) win first.
+	# Everything else is the static site (Vite dist). Real files win first, then
+	# directory index (so /doc/ → /doc/index.html), then SPA fallback to index.html.
 	handle {
-		try_files {path} /index.html
+		try_files {path} {path}/index.html /index.html
 		file_server
 	}
 }
