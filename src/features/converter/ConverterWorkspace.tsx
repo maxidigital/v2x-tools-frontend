@@ -29,9 +29,9 @@ export function ConverterWorkspace() {
       key={direction}
       direction={direction}
       autoSaveId={`v2x-workspace-${direction}`}
-      className="min-h-0 flex-1"
+      className="min-h-0 flex-1 bg-background"
     >
-      <Panel defaultSize={50} minSize={28} className="flex flex-col border-r border-border">
+      <Panel defaultSize={50} minSize={28} className="flex flex-col bg-card">
         {inputMode === 'generate' ? (
           <Suspense fallback={<PanelFallback />}>
             <GeneratePanel />
@@ -40,10 +40,16 @@ export function ConverterWorkspace() {
           <InputPanel />
         )}
       </Panel>
-      <PanelResizeHandle
-        className={`${isWide ? 'w-px' : 'h-px'} bg-border transition-colors data-[resize-handle-state=drag]:bg-primary data-[resize-handle-state=hover]:bg-primary`}
-      />
-      <Panel defaultSize={50} minSize={28} className="flex flex-col">
+      <PanelResizeHandle className={`group relative bg-background ${isWide ? 'w-2' : 'h-2'}`}>
+        <div
+          className={`absolute bg-border transition-colors group-hover:bg-primary group-data-[resize-handle-state=drag]:bg-primary ${
+            isWide
+              ? 'inset-y-0 left-1/2 w-px -translate-x-1/2'
+              : 'inset-x-0 top-1/2 h-px -translate-y-1/2'
+          }`}
+        />
+      </PanelResizeHandle>
+      <Panel defaultSize={50} minSize={28} className="flex flex-col bg-card">
         <OutputPanel />
       </Panel>
     </PanelGroup>

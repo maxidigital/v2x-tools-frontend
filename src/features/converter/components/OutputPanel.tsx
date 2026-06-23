@@ -27,7 +27,7 @@ export function OutputPanel() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between gap-2 border-b border-border pr-2">
+      <div className="flex h-10 shrink-0 items-center justify-between gap-2 border-b border-border pr-2">
         <div className="min-w-0 flex-1">
           <ResultTabs />
         </div>

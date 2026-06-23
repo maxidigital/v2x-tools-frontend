@@ -66,7 +66,7 @@ function TabButton({ tab, active }: { tab: ResultTab; active: boolean }) {
 export function ResultTabs() {
   const { tabs, activeTabId } = useConverterStore();
   return (
-    <div className="flex min-h-9 items-end gap-0.5 overflow-x-auto border-b border-border px-2">
+    <div className="flex h-full items-end gap-0.5 overflow-x-auto px-2">
       {tabs.map((t) => (
         <TabButton key={t.id} tab={t} active={t.id === activeTabId} />
       ))}
