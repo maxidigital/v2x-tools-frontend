@@ -1,6 +1,8 @@
-import { BookText, Code2 } from 'lucide-react';
+import { BookText, Code2, LogIn } from 'lucide-react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ThemeToggle } from './ThemeToggle';
 import { analytics } from '@/services/analytics';
 
@@ -31,6 +33,19 @@ export function TopBar() {
           </a>
         </Button>
         <ThemeToggle />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => toast('Login coming soon')}
+              aria-label="Log in"
+            >
+              <LogIn className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Log in</TooltipContent>
+        </Tooltip>
       </nav>
     </header>
   );
