@@ -26,7 +26,7 @@ function LegalLink({ title, children }: { title: string; children: ReactNode }) 
 export function Footer() {
   return (
     <footer className="flex h-9 shrink-0 flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-border px-4 text-xs text-muted-foreground">
-      <span>© {new Date().getFullYear()} V2X.tools</span>
+      <span>© {new Date().getFullYear()} v2xnow.de</span>
       <LegalLink title="Impressum">
         <p>
           <strong>Maximiliano Bottazzi</strong>
@@ -36,7 +36,7 @@ export function Footer() {
           12049 Berlin, Deutschland
         </p>
         <p>
-          <strong>E-Mail:</strong> maxidigital@gmail.com
+          <strong>E-Mail:</strong> hello@v2xnow.de
           <br />
           <strong>Telefon:</strong> +49 176 78188784
         </p>
@@ -74,7 +74,7 @@ export function Footer() {
         </ul>
         <p>
           <strong>Security:</strong> Data transmission is encrypted via HTTPS. Processing occurs in
-          isolated server environments. Contact: maxidigital@gmail.com
+          isolated server environments. Contact: hello@v2xnow.de
         </p>
       </LegalLink>
       <LegalLink title="Terms of Use & Disclaimer">
