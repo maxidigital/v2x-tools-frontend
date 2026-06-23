@@ -24,7 +24,7 @@
 	# /api/auth/.well-known/jwks.json, covered by /api/auth/*. Must come before the generic /api/* below.
 	@auth path /api/auth/*
 	handle @auth {
-		reverse_proxy http://v2x-tools-users.railway.internal:8095
+		reverse_proxy http://users.railway.internal:8095
 	}
 
 	handle /api/* {
