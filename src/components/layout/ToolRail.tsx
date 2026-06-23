@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { BarChart3, FileInput, Settings2, Shuffle, TreePine } from 'lucide-react';
+import { FileInput, Shuffle, TreePine } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUiStore, type InputMode } from '@/stores/useUiStore';
@@ -53,8 +53,6 @@ export function ToolRail() {
       <RailButton icon={Shuffle} label="Generate" active={inputMode === 'generate'} onClick={set('generate')} />
       <div className="my-1 h-px w-6 bg-border" />
       <RailButton icon={TreePine} label="ASN.1 Explorer" disabled />
-      <RailButton icon={BarChart3} label="Statistics" href="/stats.html" />
-      <RailButton icon={Settings2} label="Admin console" href="/dev-console.html" />
     </aside>
   );
 }
