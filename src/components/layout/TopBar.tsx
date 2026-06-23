@@ -1,12 +1,30 @@
-import { BookText, Code2, LogIn } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from 'react';
+import { BookText, Code2, LogIn, LogOut, Ticket, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from './ThemeToggle';
+import { RedeemDialog } from '@/components/auth/RedeemDialog';
 import { analytics } from '@/services/analytics';
+import { useAuth, type Plan } from '@/stores/useAuthStore';
+
+const PLAN_BADGE: Record<Plan, { label: string; variant: 'default' | 'primary' | 'success' }> = {
+  FREE: { label: 'Free', variant: 'default' },
+  BETA: { label: 'Beta', variant: 'success' },
+  PRO: { label: 'Pro', variant: 'primary' },
+  ORG: { label: 'Org', variant: 'primary' },
+};
 
 export function TopBar() {
+  const { user, login, logout, isAuthenticated } = useAuth();
+  const [redeemOpen, setRedeemOpen] = useState(false);
+
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
       <div className="flex items-center gap-2.5">
@@ -33,20 +51,56 @@ export function TopBar() {
           </a>
         </Button>
         <ThemeToggle />
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => toast('Login coming soon')}
-              aria-label="Log in"
-            >
-              <LogIn className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Log in</TooltipContent>
-        </Tooltip>
+
+        {!isAuthenticated ? (
+          <Button variant="outline" size="sm" onClick={() => login('google')} aria-label="Sign in with Google">
+            <LogIn className="h-4 w-4" />
+            <span className="hidden sm:inline">Sign in</span>
+          </Button>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="ml-1 grid h-8 w-8 place-items-center overflow-hidden rounded-full border border-border bg-secondary text-secondary-foreground"
+                aria-label="Account menu"
+              >
+                {user?.pictureUrl ? (
+                  <img src={user.pictureUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <User className="h-4 w-4" />
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-60">
+              <div className="px-2 py-1.5">
+                <p className="truncate text-sm font-medium">{user?.displayName ?? user?.email}</p>
+                <p className="truncate text-xs text-muted-foreground">{user?.email}</p>
+                <div className="mt-1.5 flex items-center gap-1.5">
+                  {user && (
+                    <Badge variant={PLAN_BADGE[user.plan].variant}>{PLAN_BADGE[user.plan].label}</Badge>
+                  )}
+                  {user?.organization && (
+                    <span className="truncate text-xs text-muted-foreground">{user.organization.name}</span>
+                  )}
+                </div>
+              </div>
+              <DropdownMenuSeparator />
+              {user?.plan === 'FREE' && (
+                <DropdownMenuItem onSelect={() => setRedeemOpen(true)}>
+                  <Ticket className="mr-2 h-4 w-4" />
+                  Redeem invite code
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onSelect={() => logout()}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </nav>
+
+      <RedeemDialog open={redeemOpen} onOpenChange={setRedeemOpen} />
     </header>
   );
 }

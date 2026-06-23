@@ -1,11 +1,21 @@
 import type { ConvertRequest, GenerateRequest } from '@/types';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 /**
  * Same-origin client for the hub (`/api/*`). In prod Caddy proxies these to the
  * v2x-tools-hub service; in dev Vite proxies to VITE_API_TARGET (see vite.config.ts).
  */
 const BASE = import.meta.env.VITE_API_BASE ?? '';
-const USER_ID = '0'; // public scope
+
+/**
+ * Identity headers. The hub derives the userId + plan from this Bearer token (the JWT minted by
+ * v2x-tools-users) and ignores any client-set X-User-Id. No token → the hub treats us as anonymous
+ * (userId 0 / public scope), so we send nothing.
+ */
+function authHeaders(): Record<string, string> {
+  const token = useAuthStore.getState().token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export class HubError extends Error {
   constructor(
@@ -38,7 +48,7 @@ export async function convert({ payload, from, to, ref }: ConvertRequest): Promi
     'Content-Type': 'text/plain',
     'X-From': from,
     'X-To': to,
-    'X-User-Id': USER_ID,
+    ...authHeaders(),
   };
   if (ref) headers['X-Ref'] = ref;
 
@@ -62,7 +72,7 @@ export async function generate({ ref, format, size, minimal }: GenerateRequest):
     headers: {
       'Content-Type': 'application/json',
       'X-Ref': ref,
-      'X-User-Id': USER_ID,
+      ...authHeaders(),
     },
     body: JSON.stringify({ format, size, minimal }),
   });

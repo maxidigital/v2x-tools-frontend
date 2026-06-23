@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { TopBar } from '@/components/layout/TopBar';
@@ -5,9 +6,15 @@ import { ToolRail } from '@/components/layout/ToolRail';
 import { Footer } from '@/components/layout/Footer';
 import { ConverterWorkspace } from '@/features/converter/ConverterWorkspace';
 import { useTheme } from '@/hooks/useTheme';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function App() {
   const { isDark } = useTheme();
+
+  // Resolve the session once on load: consume the OAuth callback fragment, then hydrate via /me.
+  useEffect(() => {
+    void useAuthStore.getState().init();
+  }, []);
 
   return (
     <TooltipProvider delayDuration={300}>
