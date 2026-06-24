@@ -14,6 +14,12 @@ import { RedeemDialog } from '@/components/auth/RedeemDialog';
 import { analytics } from '@/services/analytics';
 import { useAuth, type Plan } from '@/stores/useAuthStore';
 
+// Single asn1click login, shared by all products (Lovable design + wired OAuth in v2x-connect-now).
+// Swap to asn1click.io once DNS is pointed. It bounces back here with #token via ?redirect=<origin>.
+const CENTRAL_LOGIN_URL =
+  import.meta.env.VITE_LOGIN_URL ??
+  'https://v2x-now-frontend-production.up.railway.app/asn1click/login';
+
 const PLAN_BADGE: Record<Plan, { label: string; variant: 'default' | 'primary' | 'success' }> = {
   FREE: { label: 'Free', variant: 'default' },
   BETA: { label: 'Beta', variant: 'success' },
@@ -56,7 +62,11 @@ export function TopBar() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => window.location.assign('/login')}
+            onClick={() =>
+              window.location.assign(
+                `${CENTRAL_LOGIN_URL}?redirect=${encodeURIComponent(window.location.origin)}`
+              )
+            }
             aria-label="Sign in"
           >
             <LogIn className="h-4 w-4" />
