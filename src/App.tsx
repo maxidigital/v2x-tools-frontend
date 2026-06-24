@@ -5,6 +5,7 @@ import { TopBar } from '@/components/layout/TopBar';
 import { ToolRail } from '@/components/layout/ToolRail';
 import { Footer } from '@/components/layout/Footer';
 import { ConverterWorkspace } from '@/features/converter/ConverterWorkspace';
+import { LoginPage } from '@/components/auth/LoginPage';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -15,6 +16,12 @@ export default function App() {
   useEffect(() => {
     void useAuthStore.getState().init();
   }, []);
+
+  // Dedicated login page lives at /login (Caddy serves index.html, the SPA renders this). Standalone —
+  // no TopBar/workspace, its own brand aesthetic.
+  if (typeof window !== 'undefined' && window.location.pathname === '/login') {
+    return <LoginPage />;
+  }
 
   return (
     <TooltipProvider delayDuration={300}>
