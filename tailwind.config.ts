@@ -43,12 +43,12 @@ const config: Config = {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
-        // asn1click brand aurora (green-predominant) — used by the /login brand page only.
-        'brand-1': 'oklch(0.72 0.24 150 / <alpha-value>)',
-        'brand-2': 'oklch(0.82 0.22 135 / <alpha-value>)',
-        'brand-3': 'oklch(0.7 0.18 185 / <alpha-value>)',
-        'brand-4': 'oklch(0.8 0.2 110 / <alpha-value>)',
-        night: 'oklch(0.16 0.03 155)',
+        // asn1click brand aurora (exact palette from Lovable's asn1click.login) — /login brand page only.
+        'brand-1': 'oklch(0.78 0.28 150 / <alpha-value>)',
+        'brand-2': 'oklch(0.88 0.26 135 / <alpha-value>)',
+        'brand-3': 'oklch(0.78 0.22 185 / <alpha-value>)',
+        'brand-4': 'oklch(0.85 0.24 110 / <alpha-value>)',
+        night: 'oklch(0.14 0.04 150)',
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -60,7 +60,7 @@ const config: Config = {
         mono: ['"JetBrains Mono"', '"Roboto Mono"', 'monospace'],
       },
       boxShadow: {
-        glow: '0 10px 40px -10px color-mix(in oklab, oklch(0.82 0.22 135) 50%, transparent)',
+        glow: '0 10px 40px -10px color-mix(in oklab, oklch(0.88 0.26 135) 50%, transparent)',
       },
       keyframes: {
         aurora1: {
