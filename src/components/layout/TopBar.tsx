@@ -15,10 +15,10 @@ import { analytics } from '@/services/analytics';
 import { useAuth, type Plan } from '@/stores/useAuthStore';
 
 // Single asn1click login, shared by all products (Lovable design + wired OAuth in v2x-connect-now).
-// Swap to asn1click.io once DNS is pointed. It bounces back here with #token via ?redirect=<origin>.
+// Bounces back here with #token via ?redirect=<origin>. Swap to asn1click.io/login once that's a
+// direct custom domain (override via VITE_LOGIN_URL).
 const CENTRAL_LOGIN_URL =
-  import.meta.env.VITE_LOGIN_URL ??
-  'https://v2x-now-frontend-production.up.railway.app/asn1click/login';
+  import.meta.env.VITE_LOGIN_URL ?? 'https://v2xnow.de/asn1click/login';
 
 const PLAN_BADGE: Record<Plan, { label: string; variant: 'default' | 'primary' | 'success' }> = {
   FREE: { label: 'Free', variant: 'default' },
