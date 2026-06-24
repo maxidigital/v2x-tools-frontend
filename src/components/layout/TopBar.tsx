@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from './ThemeToggle';
 import { RedeemDialog } from '@/components/auth/RedeemDialog';
+import { LoginDialog } from '@/components/auth/LoginDialog';
 import { analytics } from '@/services/analytics';
 import { useAuth, type Plan } from '@/stores/useAuthStore';
 
@@ -22,8 +23,9 @@ const PLAN_BADGE: Record<Plan, { label: string; variant: 'default' | 'primary' |
 };
 
 export function TopBar() {
-  const { user, login, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const [redeemOpen, setRedeemOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
@@ -53,7 +55,7 @@ export function TopBar() {
         <ThemeToggle />
 
         {!isAuthenticated ? (
-          <Button variant="outline" size="sm" onClick={() => login('google')} aria-label="Sign in with Google">
+          <Button variant="outline" size="sm" onClick={() => setLoginOpen(true)} aria-label="Sign in">
             <LogIn className="h-4 w-4" />
             <span className="hidden sm:inline">Sign in</span>
           </Button>
@@ -100,6 +102,7 @@ export function TopBar() {
         )}
       </nav>
 
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
       <RedeemDialog open={redeemOpen} onOpenChange={setRedeemOpen} />
     </header>
   );
