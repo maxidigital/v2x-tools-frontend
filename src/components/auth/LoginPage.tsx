@@ -16,9 +16,9 @@ function GoogleMark() {
 }
 
 /**
- * Dedicated login page (route {@code /login}) — the asn1click brand moment: aurora night background and
- * a glassy card with the provider chooser. Standalone from the app's neutral converter UI. Adding GitHub
- * or our own email login later is just another button here.
+ * Dedicated login page (route {@code /login}) — the asn1click brand moment. Mirrors the v2x-connect-now
+ * portal: aurora-night background and a glassy card with the provider chooser. Wrapped in {@code dark} so
+ * the card/border/muted tokens read as the dark glassy treatment regardless of the app theme.
  */
 export function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -29,51 +29,28 @@ export function LoginPage() {
   }, [isAuthenticated]);
 
   return (
-    <div className="relative min-h-screen text-white" style={{ background: 'var(--night)' }}>
+    <div className="dark relative min-h-screen bg-night text-foreground">
       <AuroraBackground />
 
       <header className="relative z-10 flex items-center justify-between px-6 py-5">
         <a href="/" className="flex items-center gap-2.5">
-          <span
-            className="grid h-8 w-8 place-items-center rounded-lg text-[oklch(0.16_0.03_155)]"
-            style={{ background: 'linear-gradient(135deg, var(--brand-1), var(--brand-2))' }}
-          >
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-brand-1 to-brand-2 text-night">
             <Code2 className="h-[18px] w-[18px]" />
           </span>
-          <span
-            className="text-lg font-semibold tracking-tight"
-            style={{
-              background: 'linear-gradient(to right, var(--brand-1), var(--brand-2), var(--brand-3))',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              color: 'transparent',
-            }}
-          >
+          <span className="bg-gradient-to-r from-brand-1 via-brand-2 to-brand-3 bg-clip-text text-lg font-semibold tracking-tight text-transparent">
             asn1click
           </span>
         </a>
-        <a href="/" className="text-sm text-white/55 transition hover:text-white">
+        <a href="/" className="text-sm text-muted-foreground transition hover:text-foreground">
           ← Back
         </a>
       </header>
 
       <main className="relative z-10 flex min-h-[calc(100vh-72px)] items-center justify-center px-6 pb-16">
-        <div
-          className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
-          style={{ boxShadow: '0 10px 40px -10px color-mix(in oklab, var(--brand-2) 50%, transparent)' }}
-        >
-          {/* corner brand glow, echoing the asn1click cards */}
-          <div
-            aria-hidden
-            className="absolute -right-12 -top-12 h-40 w-40 rounded-full blur-2xl"
-            style={{
-              background: 'linear-gradient(to bottom right, var(--brand-1), var(--brand-3))',
-              opacity: 0.3,
-            }}
-          />
-          <h1 className="relative text-2xl font-semibold tracking-tight">Sign in</h1>
-          <p className="mt-1.5 text-sm text-white/55">
-            Continue to <span className="font-medium text-white/80">V2X.tools</span>
+        <div className="w-full max-w-md rounded-2xl border border-border/60 bg-card/40 p-8 backdrop-blur-xl shadow-glow">
+          <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Continue to <span className="font-medium text-foreground">V2X.tools</span>
           </p>
 
           <div className="mt-7 flex flex-col gap-3">
@@ -87,18 +64,18 @@ export function LoginPage() {
 
             <button
               disabled
-              className="flex h-11 cursor-not-allowed items-center justify-center gap-3 rounded-lg border border-white/10 bg-white/5 px-4 text-sm font-medium text-white/45"
+              className="flex h-11 cursor-not-allowed items-center justify-center gap-3 rounded-lg border border-border/60 bg-background/40 px-4 text-sm font-medium text-muted-foreground"
             >
               <Github className="h-[18px] w-[18px]" />
               Continue with GitHub
-              <span className="ml-auto rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-white/40">
+              <span className="ml-auto rounded-full border border-border/60 px-2 py-0.5 text-[10px] uppercase tracking-wide">
                 soon
               </span>
             </button>
           </div>
 
-          <div className="mt-7 h-px w-full bg-white/10" />
-          <p className="mt-4 text-center text-xs leading-relaxed text-white/40">
+          <div className="mt-7 h-px w-full bg-border/60" />
+          <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
             V2X.tools is part of the asn1click platform. You can keep using the public tools without an
             account — sign in to save private messages and unlock beta features.
           </p>
