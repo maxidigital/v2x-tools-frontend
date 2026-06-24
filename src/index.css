@@ -70,11 +70,12 @@
 /* asn1click brand — the aurora aesthetic, used by the dedicated /login page (the brand moment).
    Kept out of the app's neutral converter UI on purpose. */
 :root {
-  --brand-1: oklch(0.65 0.23 300); /* electric violet */
-  --brand-2: oklch(0.78 0.19 220); /* cyan blue */
-  --brand-3: oklch(0.72 0.21 160); /* teal / mint */
-  --brand-4: oklch(0.72 0.21 30); /* warm amber */
-  --night: oklch(0.16 0.03 270); /* deep automotive night */
+  /* asn1click is GREEN-predominant (matches the landing aurora). */
+  --brand-1: oklch(0.72 0.24 150); /* vivid emerald (lead) */
+  --brand-2: oklch(0.82 0.22 135); /* bright lime-green */
+  --brand-3: oklch(0.7 0.18 185); /* teal counterpoint */
+  --brand-4: oklch(0.8 0.2 110); /* yellow-green warm accent */
+  --night: oklch(0.16 0.03 155); /* deep night, faint green tint */
 }
 
 @keyframes aurora1 {

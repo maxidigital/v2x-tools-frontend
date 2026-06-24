@@ -8,20 +8,20 @@ export function AuroraBackground() {
       <div className="absolute inset-0" style={{ background: 'var(--night)' }} />
 
       <div
-        className="absolute -top-40 -left-40 h-[55vw] w-[55vw] rounded-full blur-[120px]"
-        style={{ background: 'var(--brand-1)', opacity: 0.4, animation: 'aurora1 22s ease-in-out infinite' }}
+        className="absolute -top-48 -left-40 h-[60vw] w-[60vw] rounded-full blur-[110px]"
+        style={{ background: 'var(--brand-1)', opacity: 0.55, animation: 'aurora1 22s ease-in-out infinite' }}
       />
       <div
-        className="absolute top-1/3 -right-32 h-[50vw] w-[50vw] rounded-full blur-[120px]"
-        style={{ background: 'var(--brand-2)', opacity: 0.35, animation: 'aurora2 28s ease-in-out infinite' }}
+        className="absolute top-1/4 -right-32 h-[55vw] w-[55vw] rounded-full blur-[110px]"
+        style={{ background: 'var(--brand-2)', opacity: 0.5, animation: 'aurora2 28s ease-in-out infinite' }}
       />
       <div
-        className="absolute -bottom-40 left-1/4 h-[55vw] w-[55vw] rounded-full blur-[140px]"
-        style={{ background: 'var(--brand-3)', opacity: 0.4, animation: 'aurora3 32s ease-in-out infinite' }}
+        className="absolute -bottom-48 left-1/4 h-[60vw] w-[60vw] rounded-full blur-[130px]"
+        style={{ background: 'var(--brand-3)', opacity: 0.5, animation: 'aurora3 32s ease-in-out infinite' }}
       />
       <div
-        className="absolute top-1/2 left-1/2 h-[40vw] w-[40vw] rounded-full blur-[140px]"
-        style={{ background: 'var(--brand-4)', opacity: 0.25, animation: 'aurora4 36s ease-in-out infinite' }}
+        className="absolute top-1/2 left-1/2 h-[45vw] w-[45vw] rounded-full blur-[130px]"
+        style={{ background: 'var(--brand-4)', opacity: 0.35, animation: 'aurora4 36s ease-in-out infinite' }}
       />
 
       {/* Faint grid */}

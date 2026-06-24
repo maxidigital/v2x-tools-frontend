@@ -35,13 +35,21 @@ export function LoginPage() {
       <header className="relative z-10 flex items-center justify-between px-6 py-5">
         <a href="/" className="flex items-center gap-2.5">
           <span
-            className="grid h-7 w-7 place-items-center rounded-md text-white"
+            className="grid h-8 w-8 place-items-center rounded-lg text-[oklch(0.16_0.03_155)]"
             style={{ background: 'linear-gradient(135deg, var(--brand-1), var(--brand-2))' }}
           >
-            <Code2 className="h-4 w-4" />
+            <Code2 className="h-[18px] w-[18px]" />
           </span>
-          <span className="text-base font-semibold tracking-tight">
-            asn1<span className="text-white/60">click</span>
+          <span
+            className="text-lg font-semibold tracking-tight"
+            style={{
+              background: 'linear-gradient(to right, var(--brand-1), var(--brand-2), var(--brand-3))',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
+            asn1click
           </span>
         </a>
         <a href="/" className="text-sm text-white/55 transition hover:text-white">
@@ -51,10 +59,19 @@ export function LoginPage() {
 
       <main className="relative z-10 flex min-h-[calc(100vh-72px)] items-center justify-center px-6 pb-16">
         <div
-          className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
+          className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl"
           style={{ boxShadow: '0 10px 40px -10px color-mix(in oklab, var(--brand-2) 50%, transparent)' }}
         >
-          <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
+          {/* corner brand glow, echoing the asn1click cards */}
+          <div
+            aria-hidden
+            className="absolute -right-12 -top-12 h-40 w-40 rounded-full blur-2xl"
+            style={{
+              background: 'linear-gradient(to bottom right, var(--brand-1), var(--brand-3))',
+              opacity: 0.3,
+            }}
+          />
+          <h1 className="relative text-2xl font-semibold tracking-tight">Sign in</h1>
           <p className="mt-1.5 text-sm text-white/55">
             Continue to <span className="font-medium text-white/80">V2X.tools</span>
           </p>
