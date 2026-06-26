@@ -12,6 +12,16 @@ export function loginUrl(provider: string, returnTo: string): string {
   return `${BASE}/api/auth/${provider}/login?redirect=${encodeURIComponent(returnTo)}`;
 }
 
+/** Silent SSO check against the IdP — bounces back #token=… (already signed in elsewhere) or #nosession=1. */
+export function ssoUrl(returnTo: string): string {
+  return `${BASE}/api/auth/sso?redirect=${encodeURIComponent(returnTo)}`;
+}
+
+/** Global logout — clears the IdP session cookie, then bounces back #loggedout=1. */
+export function logoutUrl(returnTo: string): string {
+  return `${BASE}/api/auth/logout?redirect=${encodeURIComponent(returnTo)}`;
+}
+
 async function readError(res: Response, fallback: string): Promise<string> {
   const text = await res.text().catch(() => '');
   try {

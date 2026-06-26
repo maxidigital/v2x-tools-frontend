@@ -75,6 +75,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: () => {
     persistToken(null);
     set({ user: null, token: null });
+    // Global logout: clear the IdP session cookie too, else the silent SSO would sign us back in.
+    window.location.href = usersClient.logoutUrl(window.location.origin);
   },
 
   redeem: async (code: string) => {
@@ -90,13 +92,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const incomingError = takeHashParam('error');
     if (incomingError) toast.error(`Login failed: ${incomingError}`);
 
+    // Outcomes of a silent-SSO / logout bounce (consume + clean the URL).
+    if (takeHashParam('loggedout')) {
+      try { sessionStorage.setItem('sso_tried', '1'); } catch { /* ignore */ }
+    }
+    const noSession = takeHashParam('nosession') != null;
+
     const incomingToken = takeHashParam('token');
     if (incomingToken) {
       persistToken(incomingToken);
       set({ token: incomingToken });
     }
 
-    const token = get().token;
+    let token = get().token;
     if (token) {
       try {
         const user = await usersClient.me(token);
@@ -105,8 +113,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // expired / invalid → drop it, fall back to anonymous
         persistToken(null);
         set({ user: null, token: null });
+        token = null;
       }
     }
+
+    // Single sign-on: no local session, and we haven't asked the IdP this browser session.
+    // A valid IdP cookie bounces us back with #token; otherwise #nosession (handled above).
+    let tried = false;
+    try { tried = sessionStorage.getItem('sso_tried') != null; } catch { /* ignore */ }
+    if (!token && !noSession && !tried) {
+      try { sessionStorage.setItem('sso_tried', '1'); } catch { /* ignore */ }
+      window.location.href = usersClient.ssoUrl(window.location.href);
+      return; // redirecting — stay not-ready until we come back
+    }
+
     set({ ready: true });
   },
 }));
