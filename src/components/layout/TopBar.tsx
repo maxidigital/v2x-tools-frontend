@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookText, Code2, LogIn, LogOut, Ticket, User } from 'lucide-react';
+import { BookText, Code2, LayoutGrid, LogIn, LogOut, Settings, Ticket, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +19,16 @@ import { useAuth, type Plan } from '@/stores/useAuthStore';
 // direct custom domain (override via VITE_LOGIN_URL).
 const CENTRAL_LOGIN_URL =
   import.meta.env.VITE_LOGIN_URL ?? 'https://v2xnow.de/asn1click/login';
+
+// The asn1click account app (account/dashboard) — a separate product surface under *.asn1click.com.
+// Override with VITE_APP_URL.
+const APP_URL = import.meta.env.VITE_APP_URL ?? 'https://app.asn1click.com';
+
+const ACCOUNT_LINKS = [
+  { href: `${APP_URL}/account`, label: 'Overview', icon: LayoutGrid },
+  { href: `${APP_URL}/account/profile`, label: 'Profile', icon: User },
+  { href: `${APP_URL}/account/settings`, label: 'Settings', icon: Settings },
+] as const;
 
 const PLAN_BADGE: Record<Plan, { label: string; variant: 'default' | 'primary' | 'success' }> = {
   FREE: { label: 'Free', variant: 'default' },
@@ -99,6 +109,15 @@ export function TopBar() {
                   )}
                 </div>
               </div>
+              <DropdownMenuSeparator />
+              {ACCOUNT_LINKS.map(({ href, label, icon: Icon }) => (
+                <DropdownMenuItem key={href} asChild>
+                  <a href={href}>
+                    <Icon className="mr-2 h-4 w-4" />
+                    {label}
+                  </a>
+                </DropdownMenuItem>
+              ))}
               <DropdownMenuSeparator />
               {user?.plan === 'FREE' && (
                 <DropdownMenuItem onSelect={() => setRedeemOpen(true)}>
