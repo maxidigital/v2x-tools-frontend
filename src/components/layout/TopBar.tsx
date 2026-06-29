@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BookText, Code2, LayoutGrid, LogIn, LogOut, Settings, Ticket, User } from 'lucide-react';
+import { Code2, LayoutGrid, LogIn, LogOut, Settings, Ticket, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,6 +24,10 @@ const CENTRAL_LOGIN_URL =
 // Override with VITE_APP_URL.
 const APP_URL = import.meta.env.VITE_APP_URL ?? 'https://app.asn1click.com';
 
+// Product-level destinations: the asn1click landing (brand wordmark) and the sibling API tool.
+const LANDING_URL = import.meta.env.VITE_LANDING_URL ?? 'https://asn1click.com';
+const API_URL = import.meta.env.VITE_API_URL ?? 'https://api.asn1click.com';
+
 const ACCOUNT_LINKS = [
   { href: `${APP_URL}/account`, label: 'Overview', icon: LayoutGrid },
   { href: `${APP_URL}/account/profile`, label: 'Profile', icon: User },
@@ -44,27 +48,30 @@ export function TopBar() {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4">
       <div className="flex items-center gap-2.5">
-        <span className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 text-primary">
-          <Code2 className="h-4 w-4" />
-        </span>
-        <span className="text-base font-semibold tracking-tight">V2X.tools</span>
-        <Badge variant="primary" className="ml-1">
+        {/* Brand: the logo (kept) + the asn1click wordmark → product landing, then this tool's name. */}
+        <a
+          href={LANDING_URL}
+          className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
+          aria-label="asn1click home"
+        >
+          <span className="grid h-7 w-7 place-items-center rounded-md bg-primary/15 text-primary">
+            <Code2 className="h-4 w-4" />
+          </span>
+          <span className="text-base font-semibold tracking-tight">asn1click</span>
+        </a>
+        <span className="text-sm font-medium text-muted-foreground">Web Tools</span>
+        <Badge variant="primary" className="ml-0.5">
           BETA
         </Badge>
       </div>
 
       <nav className="flex items-center gap-1">
-        <Button variant="ghost" size="sm" asChild onClick={() => analytics.apiDocsClick()}>
-          <a href="/doc/" target="_blank" rel="noreferrer">
-            <BookText className="h-4 w-4" />
-            <span className="hidden sm:inline">Docs</span>
-          </a>
-        </Button>
+        {/* Product switcher: sibling tools (the current one, Web Tools, is named in the brand). */}
         <Button variant="ghost" size="sm" asChild>
-          <a href="/doc/#convert" target="_blank" rel="noreferrer">
-            <Code2 className="h-4 w-4" />
-            <span className="hidden sm:inline">API</span>
-          </a>
+          <a href={API_URL} target="_blank" rel="noreferrer">API</a>
+        </Button>
+        <Button variant="ghost" size="sm" asChild onClick={() => analytics.apiDocsClick()}>
+          <a href="/doc/" target="_blank" rel="noreferrer">Docs</a>
         </Button>
         <ThemeToggle />
 
