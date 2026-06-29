@@ -13,6 +13,8 @@ import { ThemeToggle } from './ThemeToggle';
 import { RedeemDialog } from '@/components/auth/RedeemDialog';
 import { analytics } from '@/services/analytics';
 import { useAuth, type Plan } from '@/stores/useAuthStore';
+import { allowNavigation } from '@/hooks/useReloadGuard';
+import { leaveApp } from '@/lib/leaveApp';
 
 // Single asn1click login, shared by all products (Lovable design + wired OAuth in v2x-connect-now).
 // Bounces back here with #token via ?redirect=<origin>. Swap to asn1click.io/login once that's a
@@ -80,9 +82,9 @@ export function TopBar() {
             variant="outline"
             size="sm"
             onClick={() =>
-              window.location.assign(
-                `${CENTRAL_LOGIN_URL}?redirect=${encodeURIComponent(window.location.origin)}`
-              )
+              leaveApp(`${CENTRAL_LOGIN_URL}?redirect=${encodeURIComponent(window.location.origin)}`, {
+                preserve: true,
+              })
             }
             aria-label="Sign in"
           >
@@ -119,7 +121,7 @@ export function TopBar() {
               <DropdownMenuSeparator />
               {ACCOUNT_LINKS.map(({ href, label, icon: Icon }) => (
                 <DropdownMenuItem key={href} asChild>
-                  <a href={href}>
+                  <a href={href} onClick={() => allowNavigation()}>
                     <Icon className="mr-2 h-4 w-4" />
                     {label}
                   </a>
