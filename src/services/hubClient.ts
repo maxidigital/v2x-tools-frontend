@@ -27,15 +27,24 @@ export class HubError extends Error {
   }
 }
 
-async function readError(res: Response, fallback: string): Promise<string> {
-  const text = await res.text().catch(() => '');
-  try {
-    const json = JSON.parse(text);
-    if (json?.error) return String(json.error);
-  } catch {
-    // not JSON
+/**
+ * Build a human-readable error from an ALREADY-READ response body (never re-reads the Response — a body
+ * can only be read once; re-reading returns empty and silently loses the server's real message, which is
+ * how a precise hub error like {"error":"no saved message: cam_v2"} used to surface as a generic toast).
+ * Prefers the hub's `{error}` field, then a short plain-text body, else the fallback + HTTP status.
+ */
+function parseError(text: string, status: number, fallback: string): string {
+  const trimmed = text.trim();
+  if (trimmed) {
+    try {
+      const json = JSON.parse(trimmed);
+      if (json?.error) return `${String(json.error)} (HTTP ${status})`;
+    } catch {
+      // not JSON — fall through to the raw body
+    }
+    if (trimmed.length <= 300) return `${trimmed} (HTTP ${status})`;
   }
-  return text || fallback;
+  return `${fallback} (HTTP ${status})`;
 }
 
 function looksLikeDecodeError(text: string): boolean {
@@ -56,10 +65,8 @@ export async function convert({ payload, from, to, ref }: ConvertRequest): Promi
   const text = await res.text();
 
   if (!res.ok) {
-    throw new HubError(
-      res.status === 400 ? 'Bad Request: check your input' : await readError(res, 'Conversion failed'),
-      res.status
-    );
+    const fallback = res.status === 400 ? 'Bad request — check your input' : 'Conversion failed';
+    throw new HubError(parseError(text, res.status, fallback), res.status);
   }
   if (looksLikeDecodeError(text)) throw new HubError(text.trim());
   return text;
@@ -77,7 +84,7 @@ export async function generate({ ref, format, size, minimal }: GenerateRequest):
     body: JSON.stringify({ format, size, minimal }),
   });
   const text = await res.text();
-  if (!res.ok) throw new HubError(await readError(res, 'Generation failed'), res.status);
+  if (!res.ok) throw new HubError(parseError(text, res.status, 'Generation failed'), res.status);
   return text;
 }
 
@@ -105,7 +112,13 @@ export async function shareEmail(input: ShareEmailInput): Promise<void> {
       message: input.message,
     }),
   });
-  if (!res.ok) throw new HubError(await readError(res, 'Could not send email'), res.status);
-  const data = await res.json().catch(() => ({}));
+  const text = await res.text();
+  if (!res.ok) throw new HubError(parseError(text, res.status, 'Could not send email'), res.status);
+  let data: { status?: string } = {};
+  try {
+    data = JSON.parse(text);
+  } catch {
+    // not JSON
+  }
   if (data?.status !== 'success') throw new HubError('Could not send email');
 }
