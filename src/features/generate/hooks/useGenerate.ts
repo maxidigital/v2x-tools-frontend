@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { generate, HubError } from '@/services/hubClient';
 import { useConverterStore } from '@/stores/useConverterStore';
-import { useNudgeStore } from '@/stores/useNudgeStore';
 import type { Format, GenerateSize } from '@/types';
 
 interface GenerateOptions {
@@ -27,7 +26,6 @@ export function useGenerate() {
       setInputFormat(opts.format);
       setRef(opts.ref);
       toast.success('Sample payload generated');
-      useNudgeStore.getState().recordAction();
     } catch (err) {
       toast.error(err instanceof HubError ? err.message : 'Generation failed');
     } finally {

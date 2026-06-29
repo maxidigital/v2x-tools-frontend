@@ -3,7 +3,6 @@ import { toast } from 'sonner';
 import { convert, HubError } from '@/services/hubClient';
 import { analytics } from '@/services/analytics';
 import { useConverterStore } from '@/stores/useConverterStore';
-import { useNudgeStore } from '@/stores/useNudgeStore';
 
 /** Runs a conversion: validates, applies the same-format short-circuit, then
  *  calls the hub and pushes the result into a new output tab. */
@@ -35,7 +34,6 @@ export function useConvert() {
       });
       addTab({ format: outputFormat, content: result, originalInput: payload });
       analytics.conversionSuccess(inputFormat, outputFormat);
-      useNudgeStore.getState().recordAction();
     } catch (err) {
       const message = err instanceof HubError ? err.message : 'Conversion failed';
       toast.error(message);
