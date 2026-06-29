@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { toast } from 'sonner';
 import * as usersClient from '@/services/usersClient';
 import { setTheme } from '@/hooks/useTheme';
+import { allowNavigation } from '@/hooks/useReloadGuard';
 
 const TOKEN_KEY = 'v2x-auth';
 
@@ -74,12 +75,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   ready: false,
 
   login: (provider = 'google') => {
+    allowNavigation(); // intentional nav — skip the unsaved-work warning
     window.location.href = usersClient.loginUrl(provider, window.location.origin);
   },
 
   logout: () => {
     persistToken(null);
     set({ user: null, token: null });
+    allowNavigation(); // intentional nav — skip the unsaved-work warning
     // Global logout: clear the IdP session cookie too, else the silent SSO would sign us back in.
     window.location.href = usersClient.logoutUrl(window.location.origin);
   },

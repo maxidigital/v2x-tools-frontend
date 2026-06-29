@@ -80,3 +80,31 @@ export const useConverterStore = create<ConverterState>((set) => ({
 
   setActiveTab: (activeTabId) => set({ activeTabId }),
 }));
+
+// ── Preserve work across a login round-trip ──────────────────────────────────────
+// The converter state is in-memory only. Before an intentional navigation to login we stash a one-shot
+// snapshot in sessionStorage (survives the same-tab navigation to the login page and back; auto-clears
+// when the tab closes); on the next module load we restore it once and drop it. NOT permanent persistence,
+// and NOT a Radix dialog/overlay — just a storage write + a guarded restore, so it can't block the UI.
+const SNAPSHOT_KEY = 'v2x-converter-snapshot';
+
+/** Stash the current converter state (incl. open tabs) so it survives a login navigation. */
+export function snapshotConverter() {
+  try {
+    sessionStorage.setItem(SNAPSHOT_KEY, JSON.stringify(useConverterStore.getState()));
+  } catch {
+    // quota / unavailable — non-fatal (we just fall back to losing the work)
+  }
+}
+
+(function restoreConverterSnapshot() {
+  try {
+    const raw = sessionStorage.getItem(SNAPSHOT_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(SNAPSHOT_KEY);
+    // JSON dropped the methods; setState merges the data fields (incl. tabs) back over the live store.
+    useConverterStore.setState(JSON.parse(raw) as Partial<ConverterState>);
+  } catch {
+    // ignore a corrupt snapshot
+  }
+})();
