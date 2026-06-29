@@ -5,6 +5,7 @@ import { TopBar } from '@/components/layout/TopBar';
 import { ToolRail } from '@/components/layout/ToolRail';
 import { Footer } from '@/components/layout/Footer';
 import { ConverterWorkspace } from '@/features/converter/ConverterWorkspace';
+import { SignInNudge } from '@/components/SignInNudge';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -29,6 +30,7 @@ export default function App() {
         <Footer />
       </div>
       <Toaster theme={isDark ? 'dark' : 'light'} position="bottom-right" richColors />
+      <SignInNudge />
     </TooltipProvider>
   );
 }
