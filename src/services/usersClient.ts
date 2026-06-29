@@ -1,4 +1,4 @@
-import type { AuthUser } from '@/stores/useAuthStore';
+import type { AuthUser, UserPreferences } from '@/stores/useAuthStore';
 
 /**
  * Same-origin client for the identity service (`/api/auth/*`). In prod Caddy proxies these to the
@@ -51,4 +51,15 @@ export async function redeem(token: string, code: string): Promise<{ user: AuthU
   });
   if (!res.ok) throw new Error(await readError(res, 'Could not redeem code'));
   return (await res.json()) as { user: AuthUser; token: string };
+}
+
+/** PUT /api/auth/me/preferences — replace the user's preferences; returns the updated user. */
+export async function updatePreferences(token: string, preferences: UserPreferences): Promise<AuthUser> {
+  const res = await fetch(`${BASE}/api/auth/me/preferences`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(preferences),
+  });
+  if (!res.ok) throw new Error(await readError(res, 'Could not save preferences'));
+  return (await res.json()) as AuthUser;
 }

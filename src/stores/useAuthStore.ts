@@ -12,6 +12,9 @@ export interface AuthOrganization {
   type: string;
 }
 
+/** Free-form, product-owned user preferences (stored server-side as a JSON object). */
+export type UserPreferences = Record<string, unknown>;
+
 export interface AuthUser {
   id: number;
   email: string;
@@ -19,6 +22,7 @@ export interface AuthUser {
   pictureUrl: string | null;
   role: string;
   plan: Plan;
+  preferences?: UserPreferences;
   organization?: AuthOrganization;
 }
 
@@ -59,6 +63,8 @@ interface AuthState {
   login: (provider?: string) => void;
   logout: () => void;
   redeem: (code: string) => Promise<void>;
+  /** Persist the user's preferences (merged over the current ones) server-side, then update state. */
+  savePreferences: (patch: UserPreferences) => Promise<void>;
   /** One-time hydration: consume the callback fragment, then resolve the session via /me. */
   init: () => Promise<void>;
 }
@@ -86,6 +92,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     persistToken(fresh);
     set({ user, token: fresh });
     toast.success('Invite code redeemed — beta access unlocked');
+  },
+
+  savePreferences: async (patch: UserPreferences) => {
+    const { token, user } = get();
+    if (!token || !user) throw new Error('You must be signed in to save preferences');
+    const next = { ...user.preferences, ...patch };
+    const updated = await usersClient.updatePreferences(token, next);
+    set({ user: updated });
   },
 
   init: async () => {
@@ -138,5 +152,6 @@ export function useAuth() {
   const login = useAuthStore((s) => s.login);
   const logout = useAuthStore((s) => s.logout);
   const redeem = useAuthStore((s) => s.redeem);
-  return { user, ready, login, logout, redeem, isAuthenticated: user != null };
+  const savePreferences = useAuthStore((s) => s.savePreferences);
+  return { user, ready, login, logout, redeem, savePreferences, isAuthenticated: user != null };
 }

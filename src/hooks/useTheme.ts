@@ -50,5 +50,6 @@ const useThemeStore = create<ThemeState>((set, get) => ({
 export function useTheme() {
   const theme = useThemeStore((s) => s.theme);
   const toggle = useThemeStore((s) => s.toggle);
-  return { theme, toggle, isDark: theme === 'dark' };
+  const setTheme = useThemeStore((s) => s.setTheme);
+  return { theme, toggle, setTheme, isDark: theme === 'dark' };
 }
