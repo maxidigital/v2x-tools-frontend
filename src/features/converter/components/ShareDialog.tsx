@@ -39,8 +39,8 @@ export function ShareDialog({ open, onOpenChange, tabs }: ShareDialogProps) {
         recipientEmail: email,
         htmlContent: buildHtml(tabs),
         csvContent: buildCsv(tabs),
-        subject: `V2X.tools conversion (${tabs.length} result${tabs.length > 1 ? 's' : ''})`,
-        message: 'Shared from V2X.tools',
+        subject: `asn1click conversion (${tabs.length} result${tabs.length > 1 ? 's' : ''})`,
+        message: 'Shared from asn1click',
       });
       toast.success('Email sent');
       onOpenChange(false);

@@ -35,7 +35,7 @@ export function buildHtml(tabs: ResultTab[]): string {
 
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
-<title>V2X.tools export</title>
+<title>asn1click export</title>
 <style>
   body{font-family:Inter,system-ui,sans-serif;margin:2rem;color:#0f1117;background:#fff}
   h1{font-size:1.25rem} h2{font-size:1rem;margin-top:1.5rem}
@@ -43,7 +43,7 @@ export function buildHtml(tabs: ResultTab[]): string {
   pre{font-family:"JetBrains Mono",monospace;font-size:.8rem;white-space:pre-wrap;
       word-break:break-word;background:#f1f5f9;padding:.75rem;border-radius:.5rem}
 </style></head>
-<body><h1>V2X.tools — conversion export</h1>${sections}</body></html>`;
+<body><h1>asn1click — conversion export</h1>${sections}</body></html>`;
 }
 
 /** Build a CSV report (one row per tab). */

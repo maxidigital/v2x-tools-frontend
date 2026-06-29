@@ -106,7 +106,7 @@ export async function shareEmail(input: ShareEmailInput): Promise<void> {
       htmlContent: input.htmlContent,
       csvContent: input.csvContent,
       isHTMLShare: 'true',
-      name: 'V2X.tools',
+      name: 'asn1click',
       email: 'no-reply@v2x.tools',
       subject: input.subject,
       message: input.message,
