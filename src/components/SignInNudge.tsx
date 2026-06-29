@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useNudgeStore } from '@/stores/useNudgeStore';
-import { leaveApp } from '@/lib/leaveApp';
 
 // Same central asn1click login the TopBar uses; bounces back here with #token (?redirect=<origin>).
 const CENTRAL_LOGIN_URL = import.meta.env.VITE_LOGIN_URL ?? 'https://v2xnow.de/asn1click/login';
@@ -43,9 +42,9 @@ export function SignInNudge() {
         <div className="mt-1 flex flex-col gap-2">
           <Button
             onClick={() =>
-              leaveApp(`${CENTRAL_LOGIN_URL}?redirect=${encodeURIComponent(window.location.origin)}`, {
-                preserve: true,
-              })
+              window.location.assign(
+                `${CENTRAL_LOGIN_URL}?redirect=${encodeURIComponent(window.location.origin)}`
+              )
             }
           >
             <LogIn className="h-4 w-4" />
