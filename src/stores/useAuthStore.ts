@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { toast } from 'sonner';
 import * as usersClient from '@/services/usersClient';
+import { setTheme } from '@/hooks/useTheme';
 
 const TOKEN_KEY = 'v2x-auth';
 
@@ -63,8 +64,6 @@ interface AuthState {
   login: (provider?: string) => void;
   logout: () => void;
   redeem: (code: string) => Promise<void>;
-  /** Persist the user's preferences (merged over the current ones) server-side, then update state. */
-  savePreferences: (patch: UserPreferences) => Promise<void>;
   /** One-time hydration: consume the callback fragment, then resolve the session via /me. */
   init: () => Promise<void>;
 }
@@ -94,14 +93,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     toast.success('Invite code redeemed — beta access unlocked');
   },
 
-  savePreferences: async (patch: UserPreferences) => {
-    const { token, user } = get();
-    if (!token || !user) throw new Error('You must be signed in to save preferences');
-    const next = { ...user.preferences, ...patch };
-    const updated = await usersClient.updatePreferences(token, next);
-    set({ user: updated });
-  },
-
   init: async () => {
     const incomingError = takeHashParam('error');
     if (incomingError) toast.error(`Login failed: ${incomingError}`);
@@ -123,6 +114,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       try {
         const user = await usersClient.me(token);
         set({ user });
+        // Fresh (re)login (we just consumed a #token): the account theme — set in the account app's
+        // Settings — is the authority, so adopt it. Plain reloads (stored token, no #token) skip this,
+        // leaving any local toggle in place until the next login.
+        if (incomingToken) {
+          const pref = user.preferences?.theme;
+          if (pref === 'dark' || pref === 'light') setTheme(pref);
+        }
       } catch {
         // expired / invalid → drop it, fall back to anonymous
         persistToken(null);
@@ -152,6 +150,5 @@ export function useAuth() {
   const login = useAuthStore((s) => s.login);
   const logout = useAuthStore((s) => s.logout);
   const redeem = useAuthStore((s) => s.redeem);
-  const savePreferences = useAuthStore((s) => s.savePreferences);
-  return { user, ready, login, logout, redeem, savePreferences, isAuthenticated: user != null };
+  return { user, ready, login, logout, redeem, isAuthenticated: user != null };
 }

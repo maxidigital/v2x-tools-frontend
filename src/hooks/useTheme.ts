@@ -50,6 +50,14 @@ const useThemeStore = create<ThemeState>((set, get) => ({
 export function useTheme() {
   const theme = useThemeStore((s) => s.theme);
   const toggle = useThemeStore((s) => s.toggle);
-  const setTheme = useThemeStore((s) => s.setTheme);
-  return { theme, toggle, setTheme, isDark: theme === 'dark' };
+  return { theme, toggle, isDark: theme === 'dark' };
+}
+
+/**
+ * Imperative theme setter for non-React callers. Used by the auth store on a **fresh login** to adopt
+ * the account theme (the authority, set in the account app's Settings). Plain reloads don't call this,
+ * so a local toggle in the converter sticks until the next login.
+ */
+export function setTheme(theme: Theme) {
+  useThemeStore.getState().setTheme(theme);
 }

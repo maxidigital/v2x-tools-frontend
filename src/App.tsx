@@ -9,22 +9,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function App() {
-  const { isDark, setTheme } = useTheme();
-  const user = useAuthStore((s) => s.user);
+  const { isDark } = useTheme();
 
   // Resolve the session once on load: consume the OAuth callback fragment (the central asn1click login
-  // bounces back here with #token), then hydrate via /me.
+  // bounces back here with #token), then hydrate via /me. On a fresh login, init() also adopts the
+  // account theme (the authority); plain reloads keep the local toggle.
   useEffect(() => {
     void useAuthStore.getState().init();
   }, []);
-
-  // Theme is an account preference: once the user resolves, adopt their saved theme so it stays in sync
-  // across devices and with the account app. The no-flash script applied the local (localStorage) choice
-  // first; this only corrects it to the account value when signed in.
-  useEffect(() => {
-    const pref = user?.preferences?.theme;
-    if (pref === 'dark' || pref === 'light') setTheme(pref);
-  }, [user, setTheme]);
 
   return (
     <TooltipProvider delayDuration={300}>
