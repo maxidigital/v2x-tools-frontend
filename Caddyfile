@@ -32,14 +32,18 @@
 	}
 
 	# Engine (v2x-tools-engine) is otherwise internal-only. Expose ONLY the read-only
-	# `GET /engine/loaded` list for the dev console — load/convert/generate/evict stay internal
-	# (the hub reaches those over private networking). Method+path matched so nothing else leaks.
+	# `GET /engine/loaded` list for the dev console — load/convert/generate/evict stay internal.
+	# Method+path matched so nothing else leaks. NOTE: the engine binds IPv4 only (no
+	# server.address=::), so it is NOT reachable over Railway's IPv6-only private network —
+	# we must proxy to its PUBLIC URL (server-side, so the engine's lack of CORS is irrelevant).
 	@engine_loaded {
 		method GET
 		path /engine/loaded
 	}
 	handle @engine_loaded {
-		reverse_proxy http://v2x-tools-engine.railway.internal:8090
+		reverse_proxy https://v2x-tools-engine-production.up.railway.app {
+			header_up Host v2x-tools-engine-production.up.railway.app
+		}
 	}
 
 	# Everything else is the static site (Vite dist). Real files win first, then
