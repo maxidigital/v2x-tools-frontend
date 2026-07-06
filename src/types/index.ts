@@ -29,14 +29,14 @@ export interface MessageType {
 }
 
 export const MESSAGE_TYPES: MessageType[] = [
-  { ref: 'cam_v2', label: 'CAM v2' },
-  { ref: 'denm_v2_23', label: 'DENM v2' },
-  { ref: 'cpm_v2_23', label: 'CPM v2' },
-  { ref: 'mapem_v2', label: 'MAPEM v2' },
-  { ref: 'spatem_v2', label: 'SPATEM v2' },
-  { ref: 'srem_v2', label: 'SREM v2' },
-  { ref: 'ssem_v2', label: 'SSEM v2' },
-  { ref: 'ivim_v2', label: 'IVIM v2' },
+  { ref: '_cam_v2', label: 'CAM v2' },
+  { ref: '_denm_v2_23', label: 'DENM v2' },
+  { ref: '_cpm_v2_23', label: 'CPM v2' },
+  { ref: '_mapem_v2', label: 'MAPEM v2' },
+  { ref: '_spatem_v2', label: 'SPATEM v2' },
+  { ref: '_srem_v2', label: 'SREM v2' },
+  { ref: '_ssem_v2', label: 'SSEM v2' },
+  { ref: '_ivim_v2', label: 'IVIM v2' },
 ];
 
 export interface ConvertRequest {
