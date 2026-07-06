@@ -7,357 +7,371 @@
 <title>dev console</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'JetBrains Mono', 'Fira Code', monospace; background: #0f1117; color: #e2e8f0; padding: 32px; }
-  h1 { font-size: 1rem; color: #475569; margin-bottom: 24px; }
-
-  /* Tabs */
-  .tabs { display: flex; gap: 4px; margin-bottom: 32px; border-bottom: 1px solid #2d3748; padding-bottom: 0; }
-  .tab-btn {
-    background: none; border: none; border-bottom: 2px solid transparent;
-    color: #475569; padding: 8px 20px; font-family: inherit; font-size: 0.8rem;
-    text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer;
-    margin-bottom: -1px;
+  html, body { height: 100%; }
+  body {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: #0f1117; color: #e2e8f0;
+    display: flex; min-height: 100vh;
   }
-  .tab-btn:hover { color: #94a3b8; }
-  .tab-btn.active { color: #60a5fa; border-bottom-color: #2563eb; }
 
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* Service badge */
-  .badge {
-    display: inline-block; font-size: 0.65rem; padding: 2px 8px; border-radius: 4px;
-    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 24px;
-    font-family: inherit;
+  /* ── Left service rail ─────────────────────────────────────────────── */
+  .rail {
+    width: 200px; flex: 0 0 200px; background: #0b0d13;
+    border-right: 1px solid #1e2433; padding: 24px 0;
+    display: flex; flex-direction: column; gap: 2px;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
   }
-  .badge.repo    { background: #1a3a2a; border: 1px solid #16a34a; color: #4ade80; }
-  .badge.backend { background: #1e2a4a; border: 1px solid #2563eb; color: #60a5fa; }
+  .rail h1 { font-size: 0.8rem; color: #475569; padding: 0 20px 20px; letter-spacing: 0.05em; }
+  .svc-btn {
+    background: none; border: none; border-left: 2px solid transparent;
+    color: #64748b; padding: 10px 20px; font-family: inherit; font-size: 0.8rem;
+    text-align: left; cursor: pointer; display: flex; align-items: center; gap: 8px;
+    text-transform: lowercase; letter-spacing: 0.03em;
+  }
+  .svc-btn:hover { color: #cbd5e1; background: #12151f; }
+  .svc-btn.active { color: #e2e8f0; background: #12151f; }
+  .svc-btn .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 8px; }
+  .svc-btn.active { border-left-color: currentColor; }
 
-  /* Sections */
-  .section { margin-bottom: 32px; }
-  .section-title { font-size: 0.75rem; color: #475569; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
-  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
-  .label { font-size: 0.75rem; color: #475569; }
+  /* ── Main panel ─────────────────────────────────────────────────────── */
+  .main { flex: 1; padding: 32px 40px; overflow-y: auto; max-width: 1100px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
 
-  input[type=number] { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 100px; }
-  input[type=text]   { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; width: 280px; }
-  select { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 8px 12px; font-family: inherit; font-size: 0.875rem; }
-  input[type=checkbox] { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
+  .svc-head { margin-bottom: 8px; }
+  .svc-head .name { font-size: 1.2rem; font-weight: 600; }
+  .svc-head .desc { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+  .base-row { display: flex; align-items: center; gap: 8px; margin: 16px 0 28px; flex-wrap: wrap; }
+  .base-row .label { font-size: 0.7rem; color: #475569; text-transform: uppercase; letter-spacing: 0.08em; }
+  .base-row input { width: 420px; }
+  .same-origin { font-size: 0.7rem; color: #475569; }
 
-  button { background: #1e3a5f; border: 1px solid #2563eb; border-radius: 6px; color: #60a5fa; padding: 8px 16px; font-family: inherit; font-size: 0.875rem; cursor: pointer; }
-  button:hover { background: #1e4a8f; }
-  button.danger { background: #3b1a1a; border-color: #dc2626; color: #f87171; }
-  button.danger:hover { background: #5a1a1a; }
-  button.ghost { background: none; border-color: #2d3748; color: #475569; }
+  /* ── Endpoint card ─────────────────────────────────────────────────── */
+  .ep {
+    background: #12151f; border: 1px solid #1e2433; border-radius: 10px;
+    padding: 16px 18px; margin-bottom: 14px;
+  }
+  .ep.islist { border-color: #1f3a2a; }
+  .ep-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .m { font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 5px; letter-spacing: 0.05em; }
+  .m.GET    { background: #14331f; color: #4ade80; }
+  .m.POST   { background: #142033; color: #60a5fa; }
+  .m.DELETE { background: #331414; color: #f87171; }
+  .m.PATCH, .m.PUT { background: #33280f; color: #fbbf24; }
+  .path { font-size: 0.85rem; color: #e2e8f0; }
+  .listtag { font-size: 0.6rem; color: #4ade80; border: 1px solid #1f5133; border-radius: 4px; padding: 1px 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .ep-head .spacer { flex: 1; }
+  .ep-desc { font-size: 0.72rem; color: #64748b; margin: 8px 0 0; }
+
+  .params { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 12px; align-items: flex-end; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field .flabel { font-size: 0.65rem; color: #475569; }
+  .field .flabel .in { color: #334155; text-transform: uppercase; letter-spacing: 0.06em; margin-left: 4px; }
+  .field.body { flex: 1 1 100%; }
+
+  input, select, textarea {
+    background: #0f1117; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0;
+    padding: 7px 10px; font-family: inherit; font-size: 0.8rem;
+  }
+  input { width: 150px; }
+  input.wide { width: 320px; }
+  input.narrow { width: 80px; }
+  textarea { width: 100%; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #2563eb; }
+
+  button.send { background: #1e3a5f; border: 1px solid #2563eb; border-radius: 6px; color: #93c5fd; padding: 6px 16px; font-family: inherit; font-size: 0.78rem; cursor: pointer; }
+  button.send:hover { background: #1e4a8f; }
+  button.send.del { background: #3b1a1a; border-color: #dc2626; color: #f87171; }
+  button.send.del:hover { background: #5a1a1a; }
+  button.ghost { background: none; border: 1px solid #2d3748; border-radius: 6px; color: #475569; padding: 6px 12px; font-family: inherit; font-size: 0.78rem; cursor: pointer; }
   button.ghost:hover { background: #1e2433; color: #94a3b8; }
 
-  .output { background: #1e2433; border: 1px solid #2d3748; border-radius: 8px; padding: 16px; font-size: 0.8rem; color: #94a3b8; min-height: 48px; white-space: pre-wrap; word-break: break-all; margin-top: 8px; }
-  .ok  { color: #34d399; }
-  .err { color: #f87171; }
-
-  .divider { border: none; border-top: 1px solid #1e2433; margin: 24px 0; }
-  textarea { background: #1e2433; border: 1px solid #2d3748; border-radius: 6px; color: #e2e8f0; padding: 10px 12px; font-family: inherit; font-size: 0.8rem; width: 100%; resize: vertical; }
-  .hint { font-size: 0.7rem; color: #475569; margin-bottom: 8px; }
+  .output {
+    background: #0b0d13; border: 1px solid #1e2433; border-radius: 8px;
+    padding: 12px 14px; font-size: 0.75rem; color: #94a3b8; margin-top: 12px;
+    white-space: pre-wrap; word-break: break-all; max-height: 420px; overflow: auto;
+    display: none;
+  }
+  .output.show { display: block; }
+  .output.ok  { color: #34d399; }
+  .output.err { color: #f87171; }
+  .meta { font-size: 0.65rem; color: #475569; margin-bottom: 6px; }
 </style>
 </head>
 <body>
 
-<h1>// dev console</h1>
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('modules')">modules</button>
-  <button class="tab-btn"        onclick="switchTab('registry')">aliases &amp; messages</button>
-  <button class="tab-btn"        onclick="switchTab('codec')">convert / generate</button>
-</div>
-
-<!-- ══════════════════════════════ MODULES TAB (repo) ════════════════════════ -->
-<div id="tab-modules" class="tab-panel active">
-  <span class="badge repo">v2x-tools-repo · ASN.1 module authority</span>
-
-  <div class="section">
-    <div class="section-title">Upload module</div>
-    <div class="hint">The repo identifies a module by its OID (the name lives in the OID). No alias/messageId here — that lives in the hub.</div>
-    <textarea id="mod-content" rows="12" placeholder="Paste ASN.1 content here (one or more modules)..."></textarea>
-    <div class="row" style="margin-top:8px">
-      <span class="label">userId</span>
-      <input id="mod-userId" type="number" value="0">
-      <button onclick="modValidate()">Validate</button>
-      <button onclick="modUpload()">Upload</button>
-      <button class="ghost" onclick="clearOut('mod-out')">clear</button>
-    </div>
-    <div class="output" id="mod-out">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">Find module</div>
-    <div class="row">
-      <span class="label">by OID</span>
-      <input id="mod-oid" type="text" value="" style="width:480px" placeholder="CAM_PDU_Descriptions {itu-t(0) ...}">
-      <button onclick="modFindOid()">GET by OID</button>
-      <button onclick="hubTypes()">GET types (hub)</button>
-    </div>
-    <div class="row">
-      <span class="label">by numeric id</span>
-      <input id="mod-id" type="number" value="" style="width:90px">
-      <button onclick="modFindId()">GET by id</button>
-      <button class="ghost" onclick="clearOut('mod-find-out')">clear</button>
-    </div>
-    <div class="output" id="mod-find-out">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">Delete module</div>
-    <div class="hint">Uses the OID / numeric id fields above.</div>
-    <div class="row">
-      <button class="danger" onclick="modDelOid()">DELETE by OID</button>
-      <button class="danger" onclick="modDelId()">DELETE by id</button>
-      <button class="ghost" onclick="clearOut('mod-del-out')">clear</button>
-    </div>
-    <div class="output" id="mod-del-out">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">List modules</div>
-    <div class="row">
-      <button onclick="modList()">repo: all</button>
-      <button onclick="modPublic()">repo: public</button>
-      <button onclick="modByUser()">repo: by userId</button>
-      <button onclick="hubModules()">hub: by name</button>
-      <button onclick="hubModules('uploaded')">hub: by upload date</button>
-      <button class="ghost" onclick="clearOut('mod-list-out')">clear</button>
-    </div>
-    <div class="output" id="mod-list-out">—</div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════ ALIASES & MESSAGES TAB (hub) ═════════════════ -->
-<div id="tab-registry" class="tab-panel">
-  <span class="badge backend">v2x-tools-backend (hub) · alias + saved-message registry</span>
-
-  <div class="section">
-    <div class="section-title">Module aliases</div>
-    <div class="hint">An alias is a readable name for a module OID (e.g. _cam_v2 → CAM_PDU_Descriptions). userId 0 = public/default.</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="a-userId" type="number" value="0">
-      <button onclick="aliasList()">GET aliases</button>
-      <button class="ghost" onclick="clearOut('a-out')">clear</button>
-    </div>
-    <div class="row">
-      <span class="label">alias</span>
-      <input id="a-alias" type="text" value="" style="width:160px" placeholder="_cam_v2">
-      <span class="label">module OID</span>
-      <input id="a-oid" type="text" value="" style="width:420px" placeholder="CAM_PDU_Descriptions {itu-t(0) ...}">
-      <button onclick="aliasCreate()">POST create</button>
-      <button class="danger" onclick="aliasDelete()">DELETE</button>
-    </div>
-    <div class="output" id="a-out">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">Saved messages</div>
-    <div class="hint">A saved message = a named ref bound to (moduleAlias : rootType) plus generation fixups (e.g. header values).</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="msg-userId" type="number" value="0">
-      <button onclick="msgList()">GET messages</button>
-      <button class="ghost" onclick="clearOut('msg-out')">clear</button>
-    </div>
-    <div class="row">
-      <span class="label">name</span>
-      <input id="msg-name" type="text" value="" style="width:140px" placeholder="_cam_v2">
-      <span class="label">moduleAlias</span>
-      <input id="msg-alias" type="text" value="" style="width:140px" placeholder="_cam_v2">
-      <span class="label">rootType</span>
-      <input id="msg-root" type="text" value="" style="width:140px" placeholder="CAM">
-    </div>
-    <div class="row">
-      <span class="label">description</span>
-      <input id="msg-desc" type="text" value="" style="width:420px" placeholder="ETSI CAM — default">
-    </div>
-    <div class="row" style="align-items:flex-start">
-      <span class="label" style="margin-top:8px">fixups</span>
-      <textarea id="msg-fixups" rows="3" style="width:520px" placeholder='[{"path":"header:protocolVersion","value":2},{"path":"header:messageID","value":2}]'></textarea>
-    </div>
-    <div class="row">
-      <button onclick="msgCreate()">POST create</button>
-      <button class="danger" onclick="msgDelete()">DELETE (by name)</button>
-    </div>
-    <div class="output" id="msg-out">—</div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════ CONVERT / GENERATE TAB (hub) ═════════════════ -->
-<div id="tab-codec" class="tab-panel">
-  <span class="badge backend">v2x-tools-backend (hub) · codec</span>
-
-  <div class="section">
-    <div class="section-title">Generate</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="g-userId" type="number" value="0">
-      <span class="label">X-Ref</span>
-      <input id="g-ref" type="text" value="_cam_v2" style="width:200px" placeholder="_cam_v2  or  _cam_v2:CAM">
-      <span class="label">format</span>
-      <select id="g-format">
-        <option value="UPER">UPER</option>
-        <option value="WER">WER</option>
-        <option value="JER">JER</option>
-        <option value="XER">XER</option>
-      </select>
-      <span class="label">size</span>
-      <select id="g-size">
-        <option value="SMALLEST">SMALLEST</option>
-        <option value="SMALL" selected>SMALL</option>
-        <option value="MEDIUM">MEDIUM</option>
-        <option value="BIG">BIG</option>
-        <option value="BIGGEST">BIGGEST</option>
-      </select>
-      <input type="checkbox" id="g-minimal">
-      <span class="label">minimal</span>
-      <button onclick="hubGenerate()">POST generate</button>
-      <button class="ghost" onclick="clearOut('g-out')">clear</button>
-    </div>
-    <div class="output" id="g-out">—</div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section">
-    <div class="section-title">Convert</div>
-    <div class="hint">Leave X-Ref blank to auto-detect the message from the payload's ITS header (protocolVersion + messageId).</div>
-    <div class="row">
-      <span class="label">userId</span>
-      <input id="c-userId" type="number" value="0">
-      <span class="label">X-Ref (optional)</span>
-      <input id="c-ref" type="text" value="" style="width:180px" placeholder="(auto-detect)">
-      <span class="label">from</span>
-      <select id="c-from">
-        <option value="UPER">UPER</option>
-        <option value="WER">WER</option>
-        <option value="JER">JER</option>
-        <option value="XER">XER</option>
-      </select>
-      <span class="label">to</span>
-      <select id="c-to">
-        <option value="JER" selected>JER</option>
-        <option value="XER">XER</option>
-        <option value="UPER">UPER</option>
-        <option value="WER">WER</option>
-      </select>
-      <button onclick="hubConvert()">POST convert</button>
-      <button class="ghost" onclick="clearOut('c-out')">clear</button>
-    </div>
-    <textarea id="c-payload" rows="6" placeholder="payload (uper:hex / wer:hex / JSON / XML)"></textarea>
-    <div class="output" id="c-out" style="margin-top:8px">—</div>
-  </div>
-</div>
+<nav class="rail" id="rail"><h1>// dev console</h1></nav>
+<main class="main" id="main"></main>
 
 <script>
-  const REPO = 'https://v2x-tools-repo-production.up.railway.app';
-  const API  = '';  // same-origin — Caddy proxies /api/* to the backend
+/* ══════════════════════════════════════════════════════════════════════════
+   Declarative endpoint catalog. One entry per SERVICE; endpoints render as
+   testable cards. List/GET endpoints are surfaced first (list:true → badge).
 
-  function switchTab(name) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    event.target.classList.add('active');
-  }
+   param `in`: 'query' | 'header' | 'path' | 'body'
+   Same-origin services (base '') go through the frontend's Caddy proxy — this
+   page only works fully when served from v2x.tools (or wherever Caddy runs).
+   ══════════════════════════════════════════════════════════════════════════ */
+const REPO_URL = 'https://v2x-tools-repo-production.up.railway.app';
 
-  function clearOut(id) {
-    const el = document.getElementById(id);
-    el.textContent = '—';
-    el.className = 'output';
-  }
+const SERVICES = [
+  /* ── ENGINE ──────────────────────────────────────────────────────────── */
+  {
+    id: 'engine', name: 'engine', color: '#f59e0b', base: '',
+    desc: 'codecs · content-addressed · HTTP-only. Only the read-only list is exposed publicly (Caddy); load/convert/generate live in the hub tab.',
+    endpoints: [
+      { method:'GET', path:'/engine/loaded', list:true,
+        desc:'List loaded engines — engineId → metadata for every codec currently held in memory.' },
+    ],
+  },
 
-  function v(id) { return document.getElementById(id).value; }
+  /* ── REPO ────────────────────────────────────────────────────────────── */
+  {
+    id: 'repo', name: 'repo', color: '#22c55e', base: REPO_URL,
+    desc: 'ASN.1 module authority. Digests raw ASN.1 → digested tree. Postgres-backed.',
+    endpoints: [
+      { method:'GET', path:'/api/modules', list:true, desc:'List all modules.' },
+      { method:'GET', path:'/api/modules/public', list:true, desc:'List public modules (userId 0).' },
+      { method:'GET', path:'/api/modules/by-user', list:true, desc:'List modules owned by a user.',
+        params:[{name:'userId', in:'query', def:'0', cls:'narrow'}] },
+      { method:'GET', path:'/api/index/search', list:true, desc:'Search the type index across modules.',
+        params:[{name:'q', in:'query'},{name:'asn1Type', in:'query'},{name:'moduleId', in:'query'}] },
+      { method:'GET', path:'/api/index/elements', list:true, desc:'All indexed elements of one module.',
+        params:[{name:'moduleId', in:'query', cls:'wide'}] },
+      { method:'GET', path:'/api/modules/by-oid', desc:'Find a module by its ASN.1 OID.',
+        params:[{name:'oid', in:'query', cls:'wide', ph:'CAM_PDU_Descriptions {itu-t(0) ...}'}] },
+      { method:'GET', path:'/api/modules/{id}', desc:'Find a module by numeric id.',
+        params:[{name:'id', in:'path', cls:'narrow'}] },
+      { method:'GET', path:'/api/modules/tree', desc:'Digested tree (what the engine loads).',
+        params:[{name:'moduleId', in:'query', cls:'wide'},{name:'type', in:'query'},{name:'format', in:'query', def:'json'}] },
+      { method:'GET', path:'/api/modules/elements', desc:'Types/elements of a module (a.k.a. /types).',
+        params:[{name:'moduleId', in:'query', cls:'wide'}] },
+      { method:'GET', path:'/api/modules/structure', desc:'Digested AST structure (server-side parse, no source).',
+        params:[{name:'moduleId', in:'query', cls:'wide'}] },
+      { method:'POST', path:'/api/modules/validate', desc:'Validate ASN.1 without saving (4 layers).',
+        params:[{name:'body', in:'body', ct:'text/plain', rows:8, ph:'Paste ASN.1 content...'}] },
+      { method:'POST', path:'/api/modules/upload', desc:'Upload one or more modules.',
+        params:[{name:'userId', in:'query', def:'0', cls:'narrow'},{name:'body', in:'body', ct:'text/plain', rows:8, ph:'Paste ASN.1 content...'}] },
+      { method:'DELETE', path:'/api/modules/by-oid', desc:'Delete a module by OID.',
+        params:[{name:'oid', in:'query', cls:'wide'}] },
+      { method:'DELETE', path:'/api/modules/{id}', desc:'Delete a module by numeric id.',
+        params:[{name:'id', in:'path', cls:'narrow'}] },
+    ],
+  },
 
-  async function call(method, url, body, outId, extraHeaders = {}, contentType = 'application/json') {
-    const out = document.getElementById(outId);
-    out.textContent = 'loading...';
-    out.className = 'output';
-    try {
-      const opts = { method, headers: { ...extraHeaders } };
-      if (body !== null && body !== undefined && body !== '') {
-        opts.body = body;
-        opts.headers['Content-Type'] = contentType;
-      }
-      const res = await fetch(url, opts);
-      const text = await res.text();
-      try { out.textContent = JSON.stringify(JSON.parse(text), null, 2); }
-      catch { out.textContent = text || '(empty)'; }
-      out.classList.add(res.ok ? 'ok' : 'err');
-    } catch (e) {
-      out.textContent = e.message;
-      out.classList.add('err');
+  /* ── HUB ─────────────────────────────────────────────────────────────── */
+  {
+    id: 'hub', name: 'hub', color: '#3b82f6', base: '',
+    desc: 'Public façade the frontend uses. Resolves X-Ref → engineId, orchestrates repo + engine. Owns aliases + saved messages.',
+    endpoints: [
+      { method:'GET', path:'/api/modules', list:true, desc:'Modules joined with the alias table.',
+        params:[{name:'X-User-Id', in:'header', def:'0', cls:'narrow'},{name:'sort', in:'query', def:'name', ph:'name | uploaded'}] },
+      { method:'GET', path:'/api/aliases', list:true, desc:'Module aliases for a user (0 = public).',
+        params:[{name:'X-User-Id', in:'header', def:'0', cls:'narrow'}] },
+      { method:'GET', path:'/api/messages', list:true, desc:'Saved messages (named refs) for a user.',
+        params:[{name:'X-User-Id', in:'header', def:'0', cls:'narrow'}] },
+      { method:'GET', path:'/api/index/elements', list:true, desc:'Indexed elements of a module (via repo).',
+        params:[{name:'moduleId', in:'query', cls:'wide'}] },
+      { method:'GET', path:'/api/modules/types', desc:'Types of a module (by OID header).',
+        params:[{name:'X-Module-Oid', in:'header', cls:'wide'}] },
+      { method:'GET', path:'/api/modules/structure', desc:'Digested AST structure (by OID header).',
+        params:[{name:'X-Module-Oid', in:'header', cls:'wide'}] },
+      { method:'POST', path:'/api/resolve', desc:'Resolve an X-Ref → (moduleId, type, fixups, engineId).',
+        params:[{name:'X-User-Id', in:'header', def:'0', cls:'narrow'},{name:'X-Ref', in:'header', def:'_cam_v2'}] },
+      { method:'POST', path:'/api/generate', desc:'Generate a sample message for a ref.',
+        params:[{name:'X-Ref', in:'header', def:'_cam_v2'},{name:'X-User-Id', in:'header', def:'0', cls:'narrow'},
+                {name:'body', in:'body', ct:'application/json', rows:3, ph:'{"format":"UPER","size":"SMALL","minimal":false}'}] },
+      { method:'POST', path:'/api/convert', desc:'Convert a payload. Leave X-Ref blank to auto-detect from the ITS header.',
+        params:[{name:'X-Ref', in:'header', ph:'(blank → auto-detect)'},{name:'X-From', in:'header', def:'UPER'},
+                {name:'X-To', in:'header', def:'JER'},{name:'X-User-Id', in:'header', def:'0', cls:'narrow'},
+                {name:'body', in:'body', ct:'text/plain', rows:5, ph:'payload (uper:hex / wer:hex / JSON / XML)'}] },
+      { method:'POST', path:'/api/aliases', desc:'Create an alias → module OID.',
+        params:[{name:'X-User-Id', in:'header', def:'0', cls:'narrow'},{name:'X-Alias', in:'header', ph:'_cam_v2'},
+                {name:'X-Module-Oid', in:'header', cls:'wide'}] },
+      { method:'DELETE', path:'/api/aliases', desc:'Delete an alias.',
+        params:[{name:'X-User-Id', in:'header', def:'0', cls:'narrow'},{name:'X-Alias', in:'header', ph:'_cam_v2'}] },
+      { method:'POST', path:'/api/messages', desc:'Create a saved message (ref bound to alias:rootType + fixups).',
+        params:[{name:'X-User-Id', in:'header', def:'0', cls:'narrow'},
+                {name:'body', in:'body', ct:'application/json', rows:5,
+                 ph:'{"name":"_cam_v2","moduleAlias":"_cam_v2","rootType":"CAM","description":"","fixups":[]}'}] },
+      { method:'DELETE', path:'/api/messages', desc:'Delete a saved message by name.',
+        params:[{name:'X-User-Id', in:'header', def:'0', cls:'narrow'},{name:'X-Message-Name', in:'header', ph:'_cam_v2'}] },
+      { method:'POST', path:'/api/cache/clear', desc:'Clear the ref→engineId cache for a user.',
+        params:[{name:'userId', in:'query', def:'0', cls:'narrow'}] },
+      { method:'POST', path:'/api/cache/clear-all', desc:'Clear the whole resolution cache.' },
+    ],
+  },
+
+  /* ── USERS ───────────────────────────────────────────────────────────── */
+  {
+    id: 'users', name: 'users', color: '#a855f7', base: '', auth: 'bearer',
+    desc: 'Identity / SSO. Google OAuth + RS256 JWT (JWKS). Admin endpoints need a Bearer token below.',
+    endpoints: [
+      { method:'GET', path:'/api/auth/admin/users', list:true, auth:true, desc:'List all users (admin).' },
+      { method:'GET', path:'/api/auth/admin/organizations', list:true, auth:true, desc:'List organizations (admin).' },
+      { method:'GET', path:'/api/auth/admin/invites', list:true, auth:true, desc:'List invite codes (admin).' },
+      { method:'GET', path:'/api/auth/me', auth:true, desc:'The current user for the Bearer token.' },
+      { method:'GET', path:'/api/auth/.well-known/jwks.json', list:true, desc:'Public JWKS (verify JWTs).' },
+      { method:'GET', path:'/api/auth/{provider}/login', link:true, desc:'Open the OAuth login dance (top-level redirect).',
+        params:[{name:'provider', in:'path', def:'google', cls:'narrow'}] },
+    ],
+  },
+
+  /* ── BACKEND (legacy) ────────────────────────────────────────────────── */
+  {
+    id: 'backend', name: 'backend', color: '#64748b', base: '',
+    desc: 'Legacy, no DB. Only non-V2X cruft: contact form, stats, monitoring. No list endpoints.',
+    endpoints: [
+      { method:'POST', path:'/api/contact', desc:'Contact form → Telegram.',
+        params:[{name:'body', in:'body', ct:'application/json', rows:4, ph:'{"name":"","email":"","message":""}'}] },
+      { method:'POST', path:'/api/monitoring/test', desc:'Fire a test monitoring/Telegram ping.' },
+    ],
+  },
+];
+
+/* ── Render ────────────────────────────────────────────────────────────── */
+const rail = document.getElementById('rail');
+const main = document.getElementById('main');
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+SERVICES.forEach((s, si) => {
+  // sort: list endpoints first, keep declared order otherwise
+  s.endpoints = s.endpoints.map((e, i) => ({ ...e, _i: i }))
+    .sort((a, b) => (b.list?1:0) - (a.list?1:0) || a._i - b._i);
+
+  const btn = document.createElement('button');
+  btn.className = 'svc-btn' + (si === 0 ? ' active' : '');
+  btn.innerHTML = `<span class="dot" style="background:${s.color}"></span>${esc(s.name)}`;
+  btn.onclick = () => selectService(si);
+  rail.appendChild(btn);
+
+  const panel = document.createElement('section');
+  panel.className = 'panel' + (si === 0 ? ' active' : '');
+  panel.id = 'panel-' + s.id;
+
+  const sameOrigin = s.base === '';
+  panel.innerHTML = `
+    <div class="svc-head">
+      <div class="name" style="color:${s.color}">${esc(s.name)}</div>
+      <div class="desc">${esc(s.desc)}</div>
+    </div>
+    <div class="base-row">
+      <span class="label">base</span>
+      ${sameOrigin
+        ? `<input id="base-${si}" type="text" value="" placeholder="(same-origin)"><span class="same-origin">same-origin → Caddy proxies to ${esc(s.id)}</span>`
+        : `<input id="base-${si}" type="text" value="${esc(s.base)}">`}
+      ${s.auth === 'bearer' ? `<span class="label" style="margin-left:16px">bearer</span><input id="token-${si}" class="wide" type="text" placeholder="paste JWT (auto-sent as Authorization)">` : ''}
+    </div>
+    <div id="eps-${si}"></div>`;
+  main.appendChild(panel);
+
+  const epsBox = panel.querySelector('#eps-' + si);
+  s.endpoints.forEach((ep, ei) => epsBox.appendChild(renderEndpoint(s, si, ep, ei)));
+});
+
+function renderEndpoint(s, si, ep, ei) {
+  const card = document.createElement('div');
+  card.className = 'ep' + (ep.list ? ' islist' : '');
+  const params = ep.params || [];
+  const fields = params.map((p, pi) => {
+    const id = `in-${si}-${ei}-${pi}`;
+    const cls = p.in === 'body' ? '' : (p.cls || '');
+    const val = p.def != null ? esc(p.def) : '';
+    const ph = p.ph ? esc(p.ph) : '';
+    if (p.in === 'body') {
+      return `<div class="field body">
+        <span class="flabel">body <span class="in">${esc(p.ct || 'application/json')}</span></span>
+        <textarea id="${id}" rows="${p.rows || 4}" placeholder="${ph}"></textarea>
+      </div>`;
     }
-  }
+    return `<div class="field">
+      <span class="flabel">${esc(p.name)} <span class="in">${p.in}</span></span>
+      <input id="${id}" class="${cls}" type="text" value="${val}" placeholder="${ph}">
+    </div>`;
+  }).join('');
 
-  // ── modules (repo) ──────────────────────────────────────────────────────────
-  function modValidate() {
-    call('POST', `${REPO}/api/modules/validate`, v('mod-content'), 'mod-out', {}, 'text/plain');
-  }
-  function modUpload() {
-    const uid = encodeURIComponent(v('mod-userId'));
-    call('POST', `${REPO}/api/modules/upload?userId=${uid}`, v('mod-content'), 'mod-out', {}, 'text/plain');
-  }
-  function modList()    { call('GET', `${REPO}/api/modules`, null, 'mod-list-out'); }
-  function modPublic()  { call('GET', `${REPO}/api/modules/public`, null, 'mod-list-out'); }
-  function modByUser()  { call('GET', `${REPO}/api/modules/by-user?userId=${encodeURIComponent(v('mod-userId'))}`, null, 'mod-list-out'); }
-  function modFindOid() { call('GET', `${REPO}/api/modules/by-oid?oid=${encodeURIComponent(v('mod-oid'))}`, null, 'mod-find-out'); }
-  function modFindId()  { call('GET', `${REPO}/api/modules/${encodeURIComponent(v('mod-id'))}`, null, 'mod-find-out'); }
-  function modDelOid()  { call('DELETE', `${REPO}/api/modules/by-oid?oid=${encodeURIComponent(v('mod-oid'))}`, null, 'mod-del-out'); }
-  function modDelId()   { call('DELETE', `${REPO}/api/modules/${encodeURIComponent(v('mod-id'))}`, null, 'mod-del-out'); }
+  const action = ep.link
+    ? `<button class="send" onclick="openLink(${si},${ei})">open ↗</button>`
+    : `<button class="send${ep.method === 'DELETE' ? ' del' : ''}" onclick="send(${si},${ei})">send</button>`;
 
-  // ── modules browse (hub: joins repo list with the alias table) ────────────────
-  function hubModules(sort) { call('GET', `${API}/api/modules?sort=${sort||'name'}`, null, 'mod-list-out', { 'X-User-Id': v('mod-userId') }); }
-  function hubTypes()   { call('GET', `${API}/api/modules/types`, null, 'mod-find-out', { 'X-Module-Oid': v('mod-oid') }); }
+  card.innerHTML = `
+    <div class="ep-head">
+      <span class="m ${ep.method}">${ep.method}</span>
+      <span class="path">${esc(ep.path)}</span>
+      ${ep.list ? '<span class="listtag">list</span>' : ''}
+      <span class="spacer"></span>
+      ${action}
+      <button class="ghost" onclick="clr(${si},${ei})">clear</button>
+    </div>
+    ${ep.desc ? `<div class="ep-desc">${esc(ep.desc)}</div>` : ''}
+    ${params.length ? `<div class="params">${fields}</div>` : ''}
+    <div class="output" id="out-${si}-${ei}"></div>`;
+  return card;
+}
 
-  // ── aliases (hub) ─────────────────────────────────────────────────────────────
-  function aliasList()   { call('GET', `${API}/api/aliases`, null, 'a-out', { 'X-User-Id': v('a-userId') }); }
-  function aliasCreate() { call('POST', `${API}/api/aliases`, null, 'a-out', { 'X-User-Id': v('a-userId'), 'X-Alias': v('a-alias'), 'X-Module-Oid': v('a-oid') }); }
-  function aliasDelete() { call('DELETE', `${API}/api/aliases`, null, 'a-out', { 'X-User-Id': v('a-userId'), 'X-Alias': v('a-alias') }); }
+/* ── Behaviour ─────────────────────────────────────────────────────────── */
+function selectService(si) {
+  document.querySelectorAll('.svc-btn').forEach((b, i) => b.classList.toggle('active', i === si));
+  document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === si));
+}
 
-  // ── saved messages (hub) ──────────────────────────────────────────────────────
-  function msgList() { call('GET', `${API}/api/messages`, null, 'msg-out', { 'X-User-Id': v('msg-userId') }); }
-  function msgCreate() {
-    let fixups = [];
-    const ft = v('msg-fixups').trim();
-    if (ft) {
-      try { fixups = JSON.parse(ft); }
-      catch (e) {
-        const out = document.getElementById('msg-out');
-        out.textContent = 'invalid fixups JSON: ' + e.message; out.className = 'output err';
-        return;
-      }
-    }
-    const body = JSON.stringify({
-      name: v('msg-name'), moduleAlias: v('msg-alias'), rootType: v('msg-root'),
-      description: v('msg-desc'), fixups
-    });
-    call('POST', `${API}/api/messages`, body, 'msg-out', { 'X-User-Id': v('msg-userId') }, 'application/json');
-  }
-  function msgDelete() { call('DELETE', `${API}/api/messages`, null, 'msg-out', { 'X-User-Id': v('msg-userId'), 'X-Message-Name': v('msg-name') }); }
+function baseFor(si) { return document.getElementById('base-' + si).value.trim(); }
+function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
-  // ── codec (hub) ───────────────────────────────────────────────────────────────
-  function hubGenerate() {
-    const body = JSON.stringify({ format: v('g-format'), size: v('g-size'), minimal: document.getElementById('g-minimal').checked });
-    call('POST', `${API}/api/generate`, body, 'g-out', { 'X-Ref': v('g-ref'), 'X-User-Id': v('g-userId') }, 'application/json');
+function buildRequest(si, ei) {
+  const s = SERVICES[si], ep = s.endpoints[ei];
+  let path = ep.path;
+  const query = [], headers = {};
+  let body = null, ct = null;
+  (ep.params || []).forEach((p, pi) => {
+    const v = val(`in-${si}-${ei}-${pi}`);
+    if (p.in === 'path') path = path.replace(`{${p.name}}`, encodeURIComponent(v));
+    else if (p.in === 'query') { if (v !== '') query.push(`${p.name}=${encodeURIComponent(v)}`); }
+    else if (p.in === 'header') { if (v !== '') headers[p.name] = v; }
+    else if (p.in === 'body') { if (v !== '') { body = v; ct = p.ct || 'application/json'; } }
+  });
+  if (ep.auth && s.auth === 'bearer') {
+    const tok = val('token-' + si).trim();
+    if (tok) headers['Authorization'] = tok.startsWith('Bearer ') ? tok : 'Bearer ' + tok;
   }
-  function hubConvert() {
-    const headers = { 'X-From': v('c-from'), 'X-To': v('c-to'), 'X-User-Id': v('c-userId') };
-    const ref = v('c-ref').trim();
-    if (ref) headers['X-Ref'] = ref;   // blank → auto-detect
-    call('POST', `${API}/api/convert`, v('c-payload'), 'c-out', headers, 'text/plain');
+  const url = baseFor(si) + path + (query.length ? '?' + query.join('&') : '');
+  return { method: ep.method, url, body, ct, headers };
+}
+
+async function send(si, ei) {
+  const { method, url, body, ct, headers } = buildRequest(si, ei);
+  const out = document.getElementById(`out-${si}-${ei}`);
+  out.className = 'output show';
+  out.textContent = `→ ${method} ${url}\nloading...`;
+  const t0 = performance.now();
+  try {
+    const opts = { method, headers: { ...headers } };
+    if (body != null) { opts.body = body; opts.headers['Content-Type'] = ct; }
+    const res = await fetch(url, opts);
+    const text = await res.text();
+    const ms = Math.round(performance.now() - t0);
+    let pretty = text || '(empty)';
+    try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch {}
+    out.className = 'output show ' + (res.ok ? 'ok' : 'err');
+    out.innerHTML = `<div class="meta">${method} ${esc(url)} → ${res.status} · ${ms}ms</div>`;
+    out.append(document.createTextNode(pretty));
+  } catch (e) {
+    out.className = 'output show err';
+    out.innerHTML = `<div class="meta">${method} ${esc(url)} → failed</div>`;
+    out.append(document.createTextNode(e.message + '\n(cross-origin? this service may only be reachable same-origin via Caddy)'));
   }
+}
+
+function openLink(si, ei) {
+  const { url } = buildRequest(si, ei);
+  window.open(url, '_blank');
+}
+
+function clr(si, ei) {
+  const out = document.getElementById(`out-${si}-${ei}`);
+  out.className = 'output';
+  out.textContent = '';
+}
 </script>
 </body>
 </html>

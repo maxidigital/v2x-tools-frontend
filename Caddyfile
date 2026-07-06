@@ -31,6 +31,17 @@
 		reverse_proxy http://v2x-tools-hub.railway.internal:8080
 	}
 
+	# Engine (v2x-tools-engine) is otherwise internal-only. Expose ONLY the read-only
+	# `GET /engine/loaded` list for the dev console — load/convert/generate/evict stay internal
+	# (the hub reaches those over private networking). Method+path matched so nothing else leaks.
+	@engine_loaded {
+		method GET
+		path /engine/loaded
+	}
+	handle @engine_loaded {
+		reverse_proxy http://v2x-tools-engine.railway.internal:8090
+	}
+
 	# Everything else is the static site (Vite dist). Real files win first, then
 	# directory index (so /doc/ → /doc/index.html), then SPA fallback to index.html.
 	handle {
