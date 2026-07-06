@@ -79,8 +79,8 @@
     <ul>
         <li><strong>Auto-detect</strong> — omit <code>X-Ref</code>. The API reads the ETSI ITS header
             (<code>protocolVersion</code> + <code>messageId</code>) from the payload and picks the matching message. The simplest option for decoding.</li>
-        <li><strong>Message ref</strong> — <code>X-Ref: cam_v2</code>. A named, pre-configured message (see <a href="#discover">Discover</a>).</li>
-        <li><strong>Type ref</strong> — <code>X-Ref: cam_v2:CAM</code> (<code>alias:Type</code>). A raw ASN.1 type from a module, no header defaults.</li>
+        <li><strong>Message ref</strong> — <code>X-Ref: _cam_v2</code>. A named, pre-configured message (see <a href="#discover">Discover</a>).</li>
+        <li><strong>Type ref</strong> — <code>X-Ref: _cam_v2:CAM</code> (<code>alias:Type</code>). A raw ASN.1 type from a module, no header defaults.</li>
     </ul>
 
     <h2 id="convert">Convert</h2>
@@ -107,7 +107,7 @@
 
     <h4>Encode JER → UPER (explicit ref)</h4>
     <pre><code>curl -X POST "https://v2x.tools/api/convert" \
-  -H "X-Ref: cam_v2" -H "X-From: JER" -H "X-To: UPER" \
+  -H "X-Ref: _cam_v2" -H "X-From: JER" -H "X-To: UPER" \
   -H "Content-Type: text/plain" \
   --data '{"header":{"protocolVersion":2,"messageID":2,"stationID":1},"cam":{...}}'
 
@@ -128,7 +128,7 @@
 
     <table>
         <tr><th>Header</th><th>Required</th><th>Description</th></tr>
-        <tr><td><code>X-Ref</code></td><td class="req">required</td><td>Which message to generate (e.g. <code>cam_v2</code>, or a type ref <code>cam_v2:CAM</code>).</td></tr>
+        <tr><td><code>X-Ref</code></td><td class="req">required</td><td>Which message to generate (e.g. <code>_cam_v2</code>, or a type ref <code>_cam_v2:CAM</code>).</td></tr>
     </table>
     <p>JSON body (all optional):</p>
     <table>
@@ -138,7 +138,7 @@
         <tr><td><code>minimal</code></td><td><code>true</code> = only mandatory fields with default values (ignores <code>size</code>).</td></tr>
     </table>
     <pre><code>curl -X POST "https://v2x.tools/api/generate" \
-  -H "X-Ref: cam_v2" -H "Content-Type: application/json" \
+  -H "X-Ref: _cam_v2" -H "Content-Type: application/json" \
   --data '{"format":"UPER","size":"SMALL"}'
 
 # → uper:0202...</code></pre>
@@ -150,7 +150,7 @@
     <p>Lists the pre-configured messages. Each <code>name</code> is a valid <code>X-Ref</code>.</p>
     <pre><code>curl "https://v2x.tools/api/messages"
 
-# → [{"name":"cam_v2","moduleAlias":"cam_v2","rootType":"CAM","description":"...","fixups":[...]}, ...]</code></pre>
+# → [{"name":"_cam_v2","moduleAlias":"_cam_v2","rootType":"CAM","description":"...","fixups":[...]}, ...]</code></pre>
 
     <h3><span class="method get">GET</span> <span class="path">/api/modules</span></h3>
     <p>Lists the ASN.1 modules as <code>{moduleId, oid}</code> (combine a module's alias from

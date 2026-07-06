@@ -142,7 +142,7 @@
 
   <div class="section">
     <div class="section-title">Module aliases</div>
-    <div class="hint">An alias is a readable name for a module OID (e.g. cam_v2 → CAM_PDU_Descriptions). userId 0 = public/default.</div>
+    <div class="hint">An alias is a readable name for a module OID (e.g. _cam_v2 → CAM_PDU_Descriptions). userId 0 = public/default.</div>
     <div class="row">
       <span class="label">userId</span>
       <input id="a-userId" type="number" value="0">
@@ -151,7 +151,7 @@
     </div>
     <div class="row">
       <span class="label">alias</span>
-      <input id="a-alias" type="text" value="" style="width:160px" placeholder="cam_v2">
+      <input id="a-alias" type="text" value="" style="width:160px" placeholder="_cam_v2">
       <span class="label">module OID</span>
       <input id="a-oid" type="text" value="" style="width:420px" placeholder="CAM_PDU_Descriptions {itu-t(0) ...}">
       <button onclick="aliasCreate()">POST create</button>
@@ -173,9 +173,9 @@
     </div>
     <div class="row">
       <span class="label">name</span>
-      <input id="msg-name" type="text" value="" style="width:140px" placeholder="cam_v2">
+      <input id="msg-name" type="text" value="" style="width:140px" placeholder="_cam_v2">
       <span class="label">moduleAlias</span>
-      <input id="msg-alias" type="text" value="" style="width:140px" placeholder="cam_v2">
+      <input id="msg-alias" type="text" value="" style="width:140px" placeholder="_cam_v2">
       <span class="label">rootType</span>
       <input id="msg-root" type="text" value="" style="width:140px" placeholder="CAM">
     </div>
@@ -205,7 +205,7 @@
       <span class="label">userId</span>
       <input id="g-userId" type="number" value="0">
       <span class="label">X-Ref</span>
-      <input id="g-ref" type="text" value="cam_v2" style="width:200px" placeholder="cam_v2  or  cam_v2:CAM">
+      <input id="g-ref" type="text" value="_cam_v2" style="width:200px" placeholder="_cam_v2  or  _cam_v2:CAM">
       <span class="label">format</span>
       <select id="g-format">
         <option value="UPER">UPER</option>
