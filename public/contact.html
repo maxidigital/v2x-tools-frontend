@@ -244,30 +244,29 @@
             const message = document.getElementById('message').value.trim();
             const token   = document.querySelector('[name="cf-turnstile-response"]')?.value;
 
+            if (!token) {
+                errorMessage.textContent = 'Please complete the security check.';
+                errorMessage.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Send Message';
+                return;
+            }
+
             try {
-                const res = await fetch('https://email-service.up.railway.app/send', {
+                // Same origin: Caddy routes /api/contact to the hub, which sends it to the developer's Telegram.
+                const res = await fetch('/api/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        app: 'v2x-tools',
-                        from: 'noreply@v2x.tools',
-                        fromName: 'asn1click — Contact',
-                        to: 'maxidigital@gmail.com',
-                        subject: `[v2x.tools] Contact from ${name} (${email})`,
-                        html: `
-                            <p><strong>Name:</strong> ${name}</p>
-                            <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-                            <p><strong>Message:</strong><br>${message.replace(/\n/g, '<br>')}
-                        `,
-                        turnstileToken: token,
-                    }),
+                    body: JSON.stringify({ name, email, message, turnstileToken: token }),
                 });
                 if (res.ok) {
                     document.getElementById('contactForm').reset();
+                    if (window.turnstile) turnstile.reset();
                     successMessage.style.display = 'block';
                 } else {
-                    const body = await res.text().catch(() => '');
-                    errorMessage.textContent = body || 'There was a problem sending your message. Please try again later.';
+                    if (window.turnstile) turnstile.reset();
+                    const err = await res.json().catch(() => ({}));
+                    errorMessage.textContent = err.error || 'There was a problem sending your message. Please try again later.';
                     errorMessage.style.display = 'block';
                 }
             } catch {
