@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { toast } from 'sonner';
-import { Copy, Download, Maximize2, Minus, Plus, Share2 } from 'lucide-react';
+import { Copy, Download, Maximize2, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,7 +11,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useConverterStore } from '@/stores/useConverterStore';
 import { useFontSize } from '@/hooks/useFontSize';
 import { buildHtml, buildCsv, downloadFile } from '@/lib/export';
-import { ShareDialog } from './ShareDialog';
 import type { ResultTab } from '@/types';
 
 interface OutputToolbarProps {
@@ -22,7 +20,6 @@ interface OutputToolbarProps {
 
 export function OutputToolbar({ activeTab, fontSize }: OutputToolbarProps) {
   const tabs = useConverterStore((s) => s.tabs);
-  const [shareTabs, setShareTabs] = useState<ResultTab[] | null>(null);
 
   const copyOutput = async () => {
     await navigator.clipboard.writeText(activeTab.content);
@@ -70,20 +67,6 @@ export function OutputToolbar({ activeTab, fontSize }: OutputToolbarProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <Share2 className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setShareTabs([activeTab])}>
-            Share current tab
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setShareTabs(tabs)}>Share all tabs</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
             <Download className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -115,11 +98,6 @@ export function OutputToolbar({ activeTab, fontSize }: OutputToolbarProps) {
         <TooltipContent>Expand</TooltipContent>
       </Tooltip>
 
-      <ShareDialog
-        open={shareTabs !== null}
-        onOpenChange={(o) => !o && setShareTabs(null)}
-        tabs={shareTabs ?? []}
-      />
     </div>
   );
 }

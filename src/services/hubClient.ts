@@ -88,37 +88,3 @@ export async function generate({ ref, format, size, minimal }: GenerateRequest):
   return text;
 }
 
-export interface ShareEmailInput {
-  recipientEmail: string;
-  htmlContent: string;
-  csvContent: string;
-  subject: string;
-  message: string;
-}
-
-/** POST /api/contact — email-share path (legacy contract). */
-export async function shareEmail(input: ShareEmailInput): Promise<void> {
-  const res = await fetch(`${BASE}/api/contact`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      recipientEmail: input.recipientEmail,
-      htmlContent: input.htmlContent,
-      csvContent: input.csvContent,
-      isHTMLShare: 'true',
-      name: 'asn1click',
-      email: 'no-reply@v2x.tools',
-      subject: input.subject,
-      message: input.message,
-    }),
-  });
-  const text = await res.text();
-  if (!res.ok) throw new HubError(parseError(text, res.status, 'Could not send email'), res.status);
-  let data: { status?: string } = {};
-  try {
-    data = JSON.parse(text);
-  } catch {
-    // not JSON
-  }
-  if (data?.status !== 'success') throw new HubError('Could not send email');
-}
