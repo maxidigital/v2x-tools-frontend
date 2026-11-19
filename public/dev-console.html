@@ -112,7 +112,7 @@
    Same-origin services (base '') go through the frontend's Caddy proxy — this
    page only works fully when served from v2x.tools (or wherever Caddy runs).
    ══════════════════════════════════════════════════════════════════════════ */
-const REPO_URL = 'https://v2x-tools-repo-production.up.railway.app';
+// The repo is internal-only (X-Internal-Token): browse modules through the hub tab.
 
 const SERVICES = [
   /* ── ENGINE ──────────────────────────────────────────────────────────── */
@@ -125,39 +125,6 @@ const SERVICES = [
     ],
   },
 
-  /* ── REPO ────────────────────────────────────────────────────────────── */
-  {
-    id: 'repo', name: 'repo', color: '#22c55e', base: REPO_URL,
-    desc: 'ASN.1 module authority. Digests raw ASN.1 → digested tree. Postgres-backed.',
-    endpoints: [
-      { method:'GET', path:'/api/modules', list:true, desc:'List all modules.' },
-      { method:'GET', path:'/api/modules/public', list:true, desc:'List public modules (userId 0).' },
-      { method:'GET', path:'/api/modules/by-user', list:true, desc:'List modules owned by a user.',
-        params:[{name:'userId', in:'query', def:'0', cls:'narrow'}] },
-      { method:'GET', path:'/api/index/search', list:true, desc:'Search the type index across modules.',
-        params:[{name:'q', in:'query'},{name:'asn1Type', in:'query'},{name:'moduleId', in:'query'}] },
-      { method:'GET', path:'/api/index/elements', list:true, desc:'All indexed elements of one module.',
-        params:[{name:'moduleId', in:'query', cls:'wide'}] },
-      { method:'GET', path:'/api/modules/by-oid', desc:'Find a module by its ASN.1 OID.',
-        params:[{name:'oid', in:'query', cls:'wide', ph:'CAM_PDU_Descriptions {itu-t(0) ...}'}] },
-      { method:'GET', path:'/api/modules/{id}', desc:'Find a module by numeric id.',
-        params:[{name:'id', in:'path', cls:'narrow'}] },
-      { method:'GET', path:'/api/modules/tree', desc:'Digested tree (what the engine loads).',
-        params:[{name:'moduleId', in:'query', cls:'wide'},{name:'type', in:'query'},{name:'format', in:'query', def:'json'}] },
-      { method:'GET', path:'/api/modules/elements', desc:'Types/elements of a module (a.k.a. /types).',
-        params:[{name:'moduleId', in:'query', cls:'wide'}] },
-      { method:'GET', path:'/api/modules/structure', desc:'Digested AST structure (server-side parse, no source).',
-        params:[{name:'moduleId', in:'query', cls:'wide'}] },
-      { method:'POST', path:'/api/modules/validate', desc:'Validate ASN.1 without saving (4 layers).',
-        params:[{name:'body', in:'body', ct:'text/plain', rows:8, ph:'Paste ASN.1 content...'}] },
-      { method:'POST', path:'/api/modules/upload', desc:'Upload one or more modules.',
-        params:[{name:'userId', in:'query', def:'0', cls:'narrow'},{name:'body', in:'body', ct:'text/plain', rows:8, ph:'Paste ASN.1 content...'}] },
-      { method:'DELETE', path:'/api/modules/by-oid', desc:'Delete a module by OID.',
-        params:[{name:'oid', in:'query', cls:'wide'}] },
-      { method:'DELETE', path:'/api/modules/{id}', desc:'Delete a module by numeric id.',
-        params:[{name:'id', in:'path', cls:'narrow'}] },
-    ],
-  },
 
   /* ── HUB ─────────────────────────────────────────────────────────────── */
   {
