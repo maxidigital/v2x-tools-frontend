@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { toast } from 'sonner';
 import * as usersClient from '@/services/usersClient';
+import { analytics } from '@/services/analytics';
 import { setTheme } from '@/hooks/useTheme';
 import { allowNavigation } from '@/hooks/useReloadGuard';
 
@@ -98,7 +99,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   init: async () => {
     const incomingError = takeHashParam('error');
-    if (incomingError) toast.error(`Login failed: ${incomingError}`);
+    if (incomingError) {
+      toast.error(`Login failed: ${incomingError}`);
+      analytics.loginFailed(incomingError);
+    }
 
     // Outcomes of a silent-SSO / logout bounce (consume + clean the URL).
     if (takeHashParam('loggedout')) {
@@ -121,6 +125,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         // Settings — is the authority, so adopt it. Plain reloads (stored token, no #token) skip this,
         // leaving any local toggle in place until the next login.
         if (incomingToken) {
+          analytics.loginSuccess();
           const pref = user.preferences?.theme;
           if (pref === 'dark' || pref === 'light') setTheme(pref);
         }

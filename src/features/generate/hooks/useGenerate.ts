@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { generate, HubError } from '@/services/hubClient';
+import { analytics } from '@/services/analytics';
 import { useConverterStore } from '@/stores/useConverterStore';
 import type { Format, GenerateSize } from '@/types';
 
@@ -26,8 +27,11 @@ export function useGenerate() {
       setInputFormat(opts.format);
       setRef(opts.ref);
       toast.success('Sample payload generated');
+      analytics.generateSuccess(opts.ref, opts.format);
     } catch (err) {
-      toast.error(err instanceof HubError ? err.message : 'Generation failed');
+      const message = err instanceof HubError ? err.message : 'Generation failed';
+      toast.error(message);
+      analytics.generateFailed(opts.ref, message);
     } finally {
       setLoading(false);
     }

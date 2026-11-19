@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { analytics } from '@/services/analytics';
 import { useConverterStore } from '@/stores/useConverterStore';
 import { useFontSize } from '@/hooks/useFontSize';
 import { buildHtml, buildCsv, downloadFile } from '@/lib/export';
@@ -24,9 +25,11 @@ export function OutputToolbar({ activeTab, fontSize }: OutputToolbarProps) {
   const copyOutput = async () => {
     await navigator.clipboard.writeText(activeTab.content);
     toast.success('Output copied');
+    analytics.outputCopy(activeTab.format);
   };
 
   const download = (scope: 'current' | 'all', kind: 'html' | 'csv') => {
+    analytics.outputDownload(kind, scope);
     const data = scope === 'current' ? [activeTab] : tabs;
     const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
     if (kind === 'html') {

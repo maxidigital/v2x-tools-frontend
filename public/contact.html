@@ -229,6 +229,13 @@
             document.documentElement.classList.add('dark');
         }
 
+        // Umami events (never the message text). No-op if the script is blocked.
+        function track(event, data) { try { window.umami && window.umami.track(event, data); } catch (_) {} }
+        let started = false;
+        document.getElementById('contactForm').addEventListener('input', function() {
+            if (!started) { started = true; track('contact_start'); }
+        });
+
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = document.getElementById('submitButton');
@@ -244,7 +251,9 @@
             const message = document.getElementById('message').value.trim();
             const token   = document.querySelector('[name="cf-turnstile-response"]')?.value;
 
+            track('contact_submit', { chars: message.length, hasEmail: !!email });
             if (!token) {
+                track('contact_failed', { reason: 'no-turnstile-token' });
                 errorMessage.textContent = 'Please complete the security check.';
                 errorMessage.style.display = 'block';
                 btn.disabled = false;
@@ -263,13 +272,16 @@
                     document.getElementById('contactForm').reset();
                     if (window.turnstile) turnstile.reset();
                     successMessage.style.display = 'block';
+                    track('contact_sent');
                 } else {
                     if (window.turnstile) turnstile.reset();
                     const err = await res.json().catch(() => ({}));
+                    track('contact_failed', { reason: 'http-' + res.status, error: err.error || '' });
                     errorMessage.textContent = err.error || 'There was a problem sending your message. Please try again later.';
                     errorMessage.style.display = 'block';
                 }
             } catch {
+                track('contact_failed', { reason: 'network' });
                 errorMessage.textContent = 'Connection error. Please try again or email maxidigital@gmail.com directly.';
                 errorMessage.style.display = 'block';
             } finally {

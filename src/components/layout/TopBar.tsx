@@ -81,11 +81,12 @@ export function TopBar() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
+            onClick={() => {
+              analytics.loginClick();
               leaveApp(`${CENTRAL_LOGIN_URL}?redirect=${encodeURIComponent(window.location.origin)}`, {
                 preserve: true,
-              })
-            }
+              });
+            }}
             aria-label="Sign in"
           >
             <LogIn className="h-4 w-4" />

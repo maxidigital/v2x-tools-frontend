@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { convert, HubError } from '@/services/hubClient';
-import { analytics } from '@/services/analytics';
+import { analytics, type ConversionMeta } from '@/services/analytics';
+import { hexByteLength } from '@/lib/formatDetect';
 import { useConverterStore } from '@/stores/useConverterStore';
 
 /** Runs a conversion: validates, applies the same-format short-circuit, then
@@ -24,6 +25,13 @@ export function useConvert() {
       return;
     }
 
+    const meta: ConversionMeta = {
+      from: inputFormat,
+      to: outputFormat,
+      auto: !ref.trim(),
+      bytes: hexByteLength(payload),
+      compat,
+    };
     setLoading(true);
     try {
       const result = await convert({
@@ -34,11 +42,11 @@ export function useConvert() {
         compat,
       });
       addTab({ format: outputFormat, content: result.text, originalInput: payload, info: result.info });
-      analytics.conversionSuccess(inputFormat, outputFormat);
+      analytics.conversionSuccess({ ...meta, message: result.info.resolvedMessage });
     } catch (err) {
       const message = err instanceof HubError ? err.message : 'Conversion failed';
-      toast.error(message);
-      analytics.conversionFailed(inputFormat, outputFormat);
+      toast.error(message, { duration: 10_000 });
+      analytics.conversionFailed(meta);
       analytics.conversionError(message);
     } finally {
       setLoading(false);
