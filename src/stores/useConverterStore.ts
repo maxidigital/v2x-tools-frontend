@@ -1,5 +1,15 @@
 import { create } from 'zustand';
-import type { Format, ResultTab } from '@/types';
+import type { Compat, Format, ResultTab } from '@/types';
+
+const COMPAT_KEY = 'v2x-compat';
+
+function readCompat(): Compat {
+  try {
+    return localStorage.getItem(COMPAT_KEY) === 'asn1c' ? 'asn1c' : 'standard';
+  } catch {
+    return 'standard';
+  }
+}
 
 interface ConverterState {
   // input
@@ -8,6 +18,8 @@ interface ConverterState {
   outputFormat: Format;
   /** Optional message/type ref (empty = hub auto-detect). */
   ref: string;
+  /** Encoding rules (remembered in this browser). */
+  compat: Compat;
 
   // output
   tabs: ResultTab[];
@@ -18,6 +30,7 @@ interface ConverterState {
   setInputFormat: (f: Format) => void;
   setOutputFormat: (f: Format) => void;
   setRef: (r: string) => void;
+  setCompat: (c: Compat) => void;
 
   addTab: (tab: Omit<ResultTab, 'id' | 'number' | 'timestamp'>) => void;
   closeTab: (id: string) => void;
@@ -34,6 +47,7 @@ export const useConverterStore = create<ConverterState>((set) => ({
   inputFormat: 'UPER',
   outputFormat: 'JER',
   ref: '',
+  compat: readCompat(),
 
   tabs: [],
   activeTabId: null,
@@ -43,6 +57,14 @@ export const useConverterStore = create<ConverterState>((set) => ({
   setInputFormat: (inputFormat) => set({ inputFormat }),
   setOutputFormat: (outputFormat) => set({ outputFormat }),
   setRef: (ref) => set({ ref }),
+  setCompat: (compat) => {
+    try {
+      localStorage.setItem(COMPAT_KEY, compat);
+    } catch {
+      // unavailable — the choice just lasts this session
+    }
+    set({ compat });
+  },
 
   addTab: (tab) =>
     set((s) => {

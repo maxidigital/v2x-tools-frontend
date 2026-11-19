@@ -8,6 +8,7 @@ import { detectFormat } from '@/lib/formatDetect';
 import { FormatSelect } from './FormatSelect';
 import { DetectBadge } from './DetectBadge';
 import { ConvertBar } from './ConvertBar';
+import { VersionsDialog } from './VersionsDialog';
 
 export function InputPanel() {
   const { payload, inputFormat, setPayload, setInputFormat } = useConverterStore();
@@ -35,6 +36,7 @@ export function InputPanel() {
           <FormatSelect value={inputFormat} onChange={setInputFormat} />
         </div>
         <div className="flex items-center gap-1">
+          <VersionsDialog />
           <Button variant="ghost" size="sm" onClick={() => setPayload('')} disabled={!payload}>
             <Eraser className="h-4 w-4" /> Clear
           </Button>

@@ -10,7 +10,7 @@ export function useConvert() {
   const [isLoading, setLoading] = useState(false);
 
   const run = async () => {
-    const { payload, inputFormat, outputFormat, ref, addTab } = useConverterStore.getState();
+    const { payload, inputFormat, outputFormat, ref, compat, addTab } = useConverterStore.getState();
     const trimmed = payload.trim();
 
     if (!trimmed) {
@@ -31,8 +31,9 @@ export function useConvert() {
         from: inputFormat,
         to: outputFormat,
         ref: ref.trim() || undefined,
+        compat,
       });
-      addTab({ format: outputFormat, content: result, originalInput: payload });
+      addTab({ format: outputFormat, content: result.text, originalInput: payload, info: result.info });
       analytics.conversionSuccess(inputFormat, outputFormat);
     } catch (err) {
       const message = err instanceof HubError ? err.message : 'Conversion failed';

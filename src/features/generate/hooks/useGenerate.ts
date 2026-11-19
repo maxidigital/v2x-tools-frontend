@@ -21,7 +21,7 @@ export function useGenerate() {
   const run = async (opts: GenerateOptions) => {
     setLoading(true);
     try {
-      const payload = await generate(opts);
+      const payload = await generate({ ...opts, compat: useConverterStore.getState().compat });
       setPayload(payload);
       setInputFormat(opts.format);
       setRef(opts.ref);
