@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { TopBar } from '@/components/layout/TopBar';
 import { ToolRail } from '@/components/layout/ToolRail';
 import { Footer } from '@/components/layout/Footer';
+import { WelcomeDialog } from '@/components/WelcomeDialog';
 import { ConverterWorkspace } from '@/features/converter/ConverterWorkspace';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -28,6 +29,7 @@ export default function App() {
         </div>
         <Footer />
       </div>
+      <WelcomeDialog />
       <Toaster theme={isDark ? 'dark' : 'light'} position="bottom-right" richColors />
     </TooltipProvider>
   );

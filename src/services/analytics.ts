@@ -43,5 +43,9 @@ export const analytics = {
   loginClick: () => track('login_click'),
   loginSuccess: () => track('login_success'),
   loginFailed: (message: string) => track('login_failed', { message }),
+  waitlistShown: () => track('waitlist_shown'),
+  waitlistJoined: () => track('waitlist_joined'),
+  waitlistFailed: (message: string) => track('waitlist_failed', { message }),
+  waitlistDismissed: () => track('waitlist_dismissed'),
   apiDocsClick: () => track('api_docs_click'),
 };

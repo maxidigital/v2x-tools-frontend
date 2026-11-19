@@ -138,3 +138,13 @@ export async function generate({ ref, format, size, minimal, compat }: GenerateR
   return text;
 }
 
+
+/** POST /api/waitlist — welcome screen: "tell me when the site is fully working". */
+export async function joinWaitlist(email: string): Promise<void> {
+  const res = await fetch(`${BASE}/api/waitlist`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) throw new HubError(parseError(await res.text(), res.status, 'Could not save your email'), res.status);
+}
