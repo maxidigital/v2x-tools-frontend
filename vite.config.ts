@@ -13,6 +13,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      // Ask mode's chat backend (prototype: lives on asn1click.com until it moves to the hub).
+      '/api/chat': { target: 'https://asn1click.com', changeOrigin: true, secure: true },
       '/api': { target: apiTarget, changeOrigin: true, secure: false },
     },
   },

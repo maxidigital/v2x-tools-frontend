@@ -32,6 +32,12 @@ const APP_URL = import.meta.env.VITE_APP_URL ?? 'https://app.asn1click.com';
 const LANDING_URL = import.meta.env.VITE_LANDING_URL ?? 'https://asn1click.com';
 const API_URL = import.meta.env.VITE_API_URL ?? 'https://api.asn1click.com';
 
+/** Go to the central login and come back here (work in the converter is preserved). */
+export function signIn() {
+  analytics.loginClick();
+  leaveApp(`${CENTRAL_LOGIN_URL}?redirect=${encodeURIComponent(window.location.origin)}`, { preserve: true });
+}
+
 const ACCOUNT_LINKS = [
   { href: `${APP_URL}/account`, label: 'Overview', icon: LayoutGrid },
   { href: `${APP_URL}/account/profile`, label: 'Profile', icon: User },
@@ -121,12 +127,7 @@ export function TopBar() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              analytics.loginClick();
-              leaveApp(`${CENTRAL_LOGIN_URL}?redirect=${encodeURIComponent(window.location.origin)}`, {
-                preserve: true,
-              });
-            }}
+            onClick={signIn}
             aria-label="Sign in"
           >
             <LogIn className="h-4 w-4" />

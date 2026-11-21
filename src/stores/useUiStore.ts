@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type InputMode = 'paste' | 'generate';
+export type InputMode = 'paste' | 'generate' | 'ask';
 
 interface UiState {
   inputMode: InputMode;

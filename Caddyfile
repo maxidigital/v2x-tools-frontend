@@ -37,6 +37,15 @@
 		}
 	}
 
+	# AI chat (Ask mode). PROTOTYPE: served by asn1click-front (v2x-connect-now, /api/chat, holds the OpenAI key)
+	# until the endpoint moves to the hub. Streamed NDJSON → flush immediately. Must come before /api/*.
+	handle /api/chat {
+		reverse_proxy https://asn1click.com {
+			header_up Host asn1click.com
+			flush_interval -1
+		}
+	}
+
 	handle /api/* {
 		reverse_proxy http://v2x-tools-hub.railway.internal:8080 {
 			# The upstream sleeps when idle (Railway App Sleeping): the first request gets "connection refused"

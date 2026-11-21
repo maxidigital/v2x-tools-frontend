@@ -4,6 +4,7 @@ import { convert, HubError } from '@/services/hubClient';
 import { analytics, type ConversionMeta } from '@/services/analytics';
 import { hexByteLength } from '@/lib/formatDetect';
 import { useConverterStore } from '@/stores/useConverterStore';
+import { askAi } from '@/features/chat/useChatStore';
 
 /** Runs a conversion: validates, applies the same-format short-circuit, then
  *  calls the hub and pushes the result into a new output tab. */
@@ -45,7 +46,16 @@ export function useConvert() {
       analytics.conversionSuccess({ ...meta, message: result.info.resolvedMessage });
     } catch (err) {
       const message = err instanceof HubError ? err.message : 'Conversion failed';
-      toast.error(message, { duration: 10_000 });
+      toast.error(message, {
+        duration: 15_000,
+        action: {
+          label: 'Ask AI why',
+          onClick: () =>
+            askAi(`Converting my input from ${inputFormat} to ${outputFormat} fails with: "${message}". Why, and how do I fix it?`, {
+              send: true,
+            }),
+        },
+      });
       analytics.conversionFailed(meta);
       analytics.conversionError(message);
     } finally {

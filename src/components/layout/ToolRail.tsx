@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { FileInput, Shuffle, TreePine } from 'lucide-react';
+import { FileInput, Shuffle, Sparkles, TreePine } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUiStore, type InputMode } from '@/stores/useUiStore';
@@ -49,6 +49,7 @@ export function ToolRail() {
 
   return (
     <aside className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-border py-3">
+      <RailButton icon={Sparkles} label="Ask AI" active={inputMode === 'ask'} onClick={set('ask')} />
       <RailButton icon={FileInput} label="Convert" active={inputMode === 'paste'} onClick={set('paste')} />
       <RailButton icon={Shuffle} label="Generate" active={inputMode === 'generate'} onClick={set('generate')} />
       <div className="my-1 h-px w-6 bg-border" />

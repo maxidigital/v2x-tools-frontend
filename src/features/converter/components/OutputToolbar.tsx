@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { Copy, Download, Maximize2, Minus, Plus } from 'lucide-react';
+import { Copy, Download, Maximize2, Minus, Plus, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,6 +10,8 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { analytics } from '@/services/analytics';
 import { useConverterStore } from '@/stores/useConverterStore';
+import { useUiStore } from '@/stores/useUiStore';
+import { askAi } from '@/features/chat/useChatStore';
 import { useFontSize } from '@/hooks/useFontSize';
 import { buildHtml, buildCsv, downloadFile } from '@/lib/export';
 import type { ResultTab } from '@/types';
@@ -21,6 +23,7 @@ interface OutputToolbarProps {
 
 export function OutputToolbar({ activeTab, fontSize }: OutputToolbarProps) {
   const tabs = useConverterStore((s) => s.tabs);
+  const inAsk = useUiStore((s) => s.inputMode === 'ask');
 
   const copyOutput = async () => {
     await navigator.clipboard.writeText(activeTab.content);
@@ -41,6 +44,11 @@ export function OutputToolbar({ activeTab, fontSize }: OutputToolbarProps) {
 
   return (
     <div className="flex items-center gap-0.5">
+      {!inAsk && (
+        <Button variant="ghost" size="sm" onClick={() => askAi('Explain this result: ')} title="Ask the AI about this result">
+          <Sparkles className="h-4 w-4" /> Ask AI
+        </Button>
+      )}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant="ghost" size="icon" onClick={fontSize.decrease} disabled={!fontSize.canDecrease}>
