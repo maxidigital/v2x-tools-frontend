@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Code2, LayoutGrid, LogIn, LogOut, Settings, Ticket, User } from 'lucide-react';
+import { Bell, Code2, LayoutGrid, LogIn, LogOut, Settings, Ticket, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,6 +14,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { RedeemDialog } from '@/components/auth/RedeemDialog';
 import { analytics } from '@/services/analytics';
 import { useAuth, type Plan } from '@/stores/useAuthStore';
+import { useUiStore } from '@/stores/useUiStore';
 import { allowNavigation } from '@/hooks/useReloadGuard';
 import { leaveApp } from '@/lib/leaveApp';
 
@@ -42,6 +44,43 @@ const PLAN_BADGE: Record<Plan, { label: string; variant: 'default' | 'primary' |
   PRO: { label: 'Pro', variant: 'primary' },
   ORG: { label: 'Org', variant: 'primary' },
 };
+
+/**
+ * Bell that (re)opens the welcome / waitlist dialog. Always there; while an anonymous visitor hasn't left
+ * their email yet it carries a red "1", like a pending notification.
+ */
+function NotifyButton() {
+  const { ready, isAuthenticated } = useAuth();
+  const joined = useUiStore((s) => s.waitlistJoined);
+  const setWelcomeOpen = useUiStore((s) => s.setWelcomeOpen);
+  const pending = ready && !isAuthenticated && !joined;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative"
+          aria-label={pending ? 'Get notified (1 pending)' : 'Get notified'}
+          onClick={() => {
+            setWelcomeOpen(true);
+            analytics.waitlistShown('header');
+          }}
+        >
+          <Bell />
+          {pending && (
+            <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white">
+              1
+            </span>
+          )}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        {joined ? "You're on the list" : 'Get notified when the site is fully ready'}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
 
 export function TopBar() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -75,6 +114,7 @@ export function TopBar() {
         <Button variant="ghost" size="sm" asChild onClick={() => analytics.apiDocsClick()}>
           <a href="/doc/" target="_blank" rel="noreferrer">Docs</a>
         </Button>
+        <NotifyButton />
         <ThemeToggle />
 
         {!isAuthenticated ? (

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { joinWaitlist, HubError } from '@/services/hubClient';
 import { analytics } from '@/services/analytics';
 import { useAuth } from '@/stores/useAuthStore';
+import { useUiStore } from '@/stores/useUiStore';
 
 /** Set once the visitor leaves their email: the screen never shows again on this browser. */
 const JOINED_KEY = 'v2x-waitlist-joined';
@@ -39,22 +40,31 @@ function write(storage: () => Storage, key: string): void {
  * Waits for the session check (the silent-SSO bounce would otherwise flash it), and skips signed-in users.
  */
 export function WelcomeDialog() {
-  const { ready, isAuthenticated } = useAuth();
+  const { ready, isAuthenticated, user } = useAuth();
   const [wanted] = useState(
     () => !read(() => localStorage, JOINED_KEY) && !read(() => sessionStorage, SEEN_KEY)
   );
-  const [open, setOpen] = useState(false);
+  const open = useUiStore((s) => s.welcomeOpen);
+  const setOpen = useUiStore((s) => s.setWelcomeOpen);
+  const setWaitlistJoined = useUiStore((s) => s.setWaitlistJoined);
+  const joinedBefore = useUiStore((s) => s.waitlistJoined);
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [joined, setJoined] = useState(false);
+  // Reopened from the bell after signing up earlier: straight to the thank-you state.
+  const [joined, setJoined] = useState(joinedBefore);
+
+  // Signed-in users opening it from the bell: start from their account email.
+  useEffect(() => {
+    if (open && user?.email) setEmail((e) => e || user.email!);
+  }, [open, user?.email]);
 
   useEffect(() => {
     if (wanted && ready && !isAuthenticated) {
       setOpen(true);
-      analytics.waitlistShown();
+      analytics.waitlistShown('entry');
     }
-  }, [wanted, ready, isAuthenticated]);
+  }, [wanted, ready, isAuthenticated, setOpen]);
 
   function close() {
     write(() => sessionStorage, SEEN_KEY);
@@ -71,6 +81,7 @@ export function WelcomeDialog() {
       await joinWaitlist(trimmed);
       write(() => localStorage, JOINED_KEY);
       setJoined(true);
+      setWaitlistJoined();
       analytics.waitlistJoined();
     } catch (e) {
       const message = e instanceof HubError ? e.message.replace(/ \(HTTP \d+\)$/, '') : 'Connection error. Please try again.';
@@ -83,7 +94,8 @@ export function WelcomeDialog() {
 
   return (
     <Dialog open={open} onOpenChange={(o) => (o ? setOpen(true) : close())}>
-      <DialogContent className="sm:max-w-md">
+      {/* A stray click outside must not throw the form away: only the buttons, X or Esc close it. */}
+      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Thanks for your interest in asn1click!</DialogTitle>
           <DialogDescription className="pt-1 leading-relaxed">
