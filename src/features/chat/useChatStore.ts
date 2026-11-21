@@ -205,3 +205,40 @@ export function askAi(question: string, { send = false }: { send?: boolean } = {
   if (send) void chat.send(question);
   else chat.setDraft(question);
 }
+
+// ── Keep the conversation across a login round-trip (same idea as the converter snapshot) ─────────────────
+// One-shot sessionStorage snapshot written right before leaving for the login page, restored once on return.
+// Also brings the user back to Ask mode. Not persistent history (that comes with saved chats).
+const SNAPSHOT_KEY = 'v2x-chat-snapshot';
+
+export function snapshotChat() {
+  try {
+    const { messages, attachContext, draft, outputHidden } = useChatStore.getState();
+    if (!messages.length && !draft) return;
+    const mode = useUiStore.getState().inputMode;
+    sessionStorage.setItem(SNAPSHOT_KEY, JSON.stringify({ messages, attachContext, draft, outputHidden, mode }));
+  } catch {
+    // quota / unavailable: the conversation is just lost, as before
+  }
+}
+
+(function restoreChatSnapshot() {
+  try {
+    const raw = sessionStorage.getItem(SNAPSHOT_KEY);
+    if (!raw) return;
+    sessionStorage.removeItem(SNAPSHOT_KEY);
+    const s = JSON.parse(raw) as Partial<ChatState> & { mode?: string };
+    useChatStore.setState({
+      messages: (s.messages ?? []).map((m) => ({ ...m, tools: m.tools?.map((t) => ({ ...t, done: true })) })),
+      attachContext: s.attachContext ?? true,
+      draft: s.draft ?? '',
+      outputHidden: s.outputHidden ?? false,
+      // a fresh quota applies once logged in; the next answer reports it
+      remaining: null,
+      anonymous: false,
+    });
+    if (s.mode === 'ask') useUiStore.getState().setInputMode('ask');
+  } catch {
+    // ignore a corrupt snapshot
+  }
+})();

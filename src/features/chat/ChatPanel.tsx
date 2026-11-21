@@ -6,7 +6,7 @@ import { signIn } from '@/components/layout/TopBar';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useConverterStore } from '@/stores/useConverterStore';
 import { useUiStore } from '@/stores/useUiStore';
-import { ChatMarkdown } from './ChatMarkdown';
+import { ChatMarkdown, splitSuggestions } from './ChatMarkdown';
 import { useChatStore, type ChatMessage } from './useChatStore';
 import { workspaceSummary } from './workspaceContext';
 
@@ -43,6 +43,16 @@ function ToolChip({ name, done, error, tabId }: { name: string; done: boolean; e
   );
 }
 
+/** Put a follow-up into the input box (not sent: the user can edit it first). */
+function pickSuggestion(text: string) {
+  useChatStore.getState().setDraft(text);
+  requestAnimationFrame(() => {
+    const el = document.getElementById('chat-input') as HTMLTextAreaElement | null;
+    el?.focus();
+    el?.setSelectionRange(text.length, text.length);
+  });
+}
+
 function Message({ m, last, streaming }: { m: ChatMessage; last: boolean; streaming: boolean }) {
   if (m.role === 'user')
     return (
@@ -61,7 +71,7 @@ function Message({ m, last, streaming }: { m: ChatMessage; last: boolean; stream
         </div>
       )}
       {m.content ? (
-        <ChatMarkdown text={m.content} />
+        <AnswerBody text={m.content} />
       ) : (
         last && streaming && !m.error && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
       )}
@@ -72,6 +82,30 @@ function Message({ m, last, streaming }: { m: ChatMessage; last: boolean; stream
         </Button>
       )}
     </div>
+  );
+}
+
+function AnswerBody({ text }: { text: string }) {
+  const { body, suggestions } = splitSuggestions(text);
+  return (
+    <>
+      <ChatMarkdown text={body} />
+      {suggestions.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {suggestions.map((sg) => (
+            <button
+              key={sg}
+              type="button"
+              onClick={() => pickSuggestion(sg)}
+              title="Put it in the message box"
+              className="rounded-full border border-primary/40 bg-primary/5 px-3 py-1 text-left text-xs text-primary hover:bg-primary/10"
+            >
+              {sg}
+            </button>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -124,6 +158,7 @@ function Composer({ big }: { big?: boolean }) {
       )}
       <div className="flex items-end gap-2 rounded-2xl border border-border bg-background p-2 focus-within:border-primary">
         <textarea
+          id="chat-input"
           ref={ref}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}

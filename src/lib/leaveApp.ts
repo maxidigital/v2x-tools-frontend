@@ -1,5 +1,6 @@
 import { allowNavigation } from '@/hooks/useReloadGuard';
 import { snapshotConverter } from '@/stores/useConverterStore';
+import { snapshotChat } from '@/features/chat/useChatStore';
 
 /**
  * Navigate away on purpose (login / logout / external tool). Skips the unsaved-work "Leave site?" warning,
@@ -8,7 +9,10 @@ import { snapshotConverter } from '@/stores/useConverterStore';
  * v2x.tools.
  */
 export function leaveApp(url: string, opts: { preserve?: boolean } = {}) {
-  if (opts.preserve) snapshotConverter();
+  if (opts.preserve) {
+    snapshotConverter();
+    snapshotChat();
+  }
   allowNavigation();
   window.location.assign(url);
 }
