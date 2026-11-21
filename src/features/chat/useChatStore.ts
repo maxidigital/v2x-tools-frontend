@@ -24,6 +24,8 @@ export interface ChatMessage {
   context?: string;
   tools?: ToolCall[];
   error?: string;
+  /** The anonymous free messages ran out: show a sign-in button. */
+  needsLogin?: boolean;
 }
 
 interface ChatState {
@@ -31,6 +33,8 @@ interface ChatState {
   streaming: boolean;
   /** Messages left today (null = unlimited / unknown). */
   remaining: number | null;
+  /** The last answer was served as an anonymous visitor (free trial messages). */
+  anonymous: boolean;
   /** Send what's open in the workspace along with the next message. */
   attachContext: boolean;
   /** Text waiting in the input box (set by "Ask AI" entry points). */
@@ -62,6 +66,7 @@ export const useChatStore = create<ChatState>((set, get) => {
     messages: [],
     streaming: false,
     remaining: null,
+    anonymous: false,
     attachContext: true,
     draft: '',
     outputHidden: false,
@@ -109,13 +114,16 @@ export const useChatStore = create<ChatState>((set, get) => {
         });
         if (!res.ok || !res.body) {
           let msg = `The chat did not answer (HTTP ${res.status})`;
+          let needsLogin = false;
           try {
             const j = await res.json();
             if (j?.error) msg = j.error;
+            needsLogin = j?.code === 'login_required';
           } catch {
             // keep the generic message
           }
-          patchLast((m) => ({ ...m, error: msg }));
+          if (needsLogin) set({ remaining: 0, anonymous: true });
+          patchLast((m) => ({ ...m, error: msg, needsLogin }));
           return;
         }
 
@@ -178,7 +186,7 @@ export const useChatStore = create<ChatState>((set, get) => {
             patchLast((m) => ({ ...m, error: String(ev.message ?? 'Error') }));
             break;
           case 'done':
-            set({ remaining: typeof ev.remaining === 'number' ? ev.remaining : null });
+            set({ remaining: typeof ev.remaining === 'number' ? ev.remaining : null, anonymous: ev.anonymous === true });
             break;
         }
       }
@@ -194,6 +202,6 @@ export function askAi(question: string, { send = false }: { send?: boolean } = {
   useUiStore.getState().setInputMode('ask');
   const chat = useChatStore.getState();
   chat.setAttachContext(true);
-  if (send && useAuthStore.getState().user) void chat.send(question);
+  if (send) void chat.send(question);
   else chat.setDraft(question);
 }

@@ -42,6 +42,8 @@
 	handle /api/chat {
 		reverse_proxy https://asn1click.com {
 			header_up Host asn1click.com
+			# the visitor's IP (Railway's edge sets X-Real-IP) for the anonymous per-IP quota
+			header_up X-Ask-Client-IP {http.request.header.X-Real-IP}
 			flush_interval -1
 		}
 	}

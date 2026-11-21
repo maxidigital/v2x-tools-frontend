@@ -66,13 +66,17 @@ function Message({ m, last, streaming }: { m: ChatMessage; last: boolean; stream
         last && streaming && !m.error && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
       )}
       {m.error && <p className="text-sm text-destructive">{m.error}</p>}
+      {m.needsLogin && (
+        <Button size="sm" onClick={signIn}>
+          <LogIn /> Sign in to keep chatting
+        </Button>
+      )}
     </div>
   );
 }
 
 function Composer({ big }: { big?: boolean }) {
   const { draft, setDraft, send, stop, streaming, attachContext, setAttachContext } = useChatStore();
-  const user = useAuthStore((s) => s.user);
   // re-render when the workspace changes, so the context chip stays current
   const payload = useConverterStore((s) => s.payload);
   const activeTabId = useConverterStore((s) => s.activeTabId);
@@ -86,7 +90,7 @@ function Composer({ big }: { big?: boolean }) {
   }, [draft === '']);
 
   const submit = () => {
-    if (!draft.trim() || streaming || !user) return;
+    if (!draft.trim() || streaming) return;
     void send(draft);
   };
   const onKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -125,15 +129,10 @@ function Composer({ big }: { big?: boolean }) {
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={onKey}
           rows={big ? 3 : 1}
-          disabled={!user}
-          placeholder={user ? 'Paste a payload or ask anything about ASN.1 and V2X…' : 'Sign in to chat'}
+          placeholder="Paste a payload or ask anything about ASN.1 and V2X…"
           className="max-h-48 min-h-[2.25rem] flex-1 resize-none bg-transparent px-2 py-1.5 text-sm outline-none placeholder:text-muted-foreground"
         />
-        {!user ? (
-          <Button size="sm" onClick={signIn}>
-            <LogIn /> Sign in
-          </Button>
-        ) : streaming ? (
+        {streaming ? (
           <Button size="icon" variant="secondary" onClick={stop} aria-label="Stop">
             <Square />
           </Button>
@@ -148,7 +147,7 @@ function Composer({ big }: { big?: boolean }) {
 }
 
 function Hero() {
-  const { send, setDraft } = useChatStore();
+  const send = useChatStore((s) => s.send);
   const user = useAuthStore((s) => s.user);
   const setInputMode = useUiStore((s) => s.setInputMode);
   return (
@@ -168,7 +167,7 @@ function Hero() {
           <button
             key={s}
             type="button"
-            onClick={() => (user ? void send(s) : setDraft(s))}
+            onClick={() => void send(s)}
             className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:border-primary hover:text-foreground"
           >
             {s}
@@ -185,6 +184,15 @@ function Hero() {
           <Shuffle className="h-3 w-3" /> Generate
         </button>
       </p>
+      {!user && (
+        <p className="text-xs text-muted-foreground">
+          Try it without an account ·{' '}
+          <button className="text-primary hover:underline" onClick={signIn}>
+            Sign in
+          </button>{' '}
+          for more messages per day
+        </p>
+      )}
       <p className="max-w-xl text-center text-[11px] text-muted-foreground">
         What you send goes to an external AI provider. Don't send confidential or production data: use Convert for that.
       </p>
@@ -193,7 +201,8 @@ function Hero() {
 }
 
 export function ChatPanel() {
-  const { messages, streaming, remaining, reset, outputHidden, setOutputHidden } = useChatStore();
+  const { messages, streaming, remaining, anonymous, reset, outputHidden, setOutputHidden } = useChatStore();
+  const user = useAuthStore((s) => s.user);
   const hasTabs = useConverterStore((s) => s.tabs.length > 0);
   const end = useRef<HTMLDivElement>(null);
 
@@ -233,7 +242,15 @@ export function ChatPanel() {
           <Composer />
           <p className="text-center text-[11px] text-muted-foreground">
             Goes to an external AI provider: no confidential data.
-            {remaining != null && ` · ${remaining} messages left today`}
+            {remaining != null && ` · ${remaining} ${anonymous ? 'free ' : ''}messages left today`}
+            {!user && (
+              <>
+                {' · '}
+                <button className="text-primary hover:underline" onClick={signIn}>
+                  Sign in for more
+                </button>
+              </>
+            )}
           </p>
         </div>
       </div>
