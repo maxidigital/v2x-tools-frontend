@@ -19,6 +19,58 @@ function str(v: unknown): string {
   return typeof v === 'string' ? v : '';
 }
 
+/**
+ * Indents compact JSON (the MCP returns it on one line to save tokens). Works on the text, without JSON.parse,
+ * so big ASN.1 INTEGERs keep every digit. Anything that isn't a JSON object/array is returned unchanged.
+ */
+export function prettyJson(text: string): string {
+  const t = text.trim();
+  if (!(t.startsWith('{') || t.startsWith('[')) || t.includes('\n  ')) return text;
+  let out = '';
+  let depth = 0;
+  let inStr = false;
+  const nl = () => '\n' + '  '.repeat(depth);
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (inStr) {
+      out += c;
+      if (c === '\\') out += t[++i] ?? '';
+      else if (c === '"') inStr = false;
+      continue;
+    }
+    if (c === '"') {
+      inStr = true;
+      out += c;
+    } else if (c === '{' || c === '[') {
+      const close = c === '{' ? '}' : ']';
+      let j = i + 1;
+      while (/\s/.test(t[j] ?? '')) j++;
+      if (t[j] === close) {
+        out += c + close; // empty {} / []
+        i = j;
+      } else {
+        depth++;
+        out += c + nl();
+      }
+    } else if (c === '}' || c === ']') {
+      depth--;
+      out += nl() + c;
+    } else if (c === ',') {
+      out += ',' + nl();
+    } else if (c === ':') {
+      out += ': ';
+    } else if (!/\s/.test(c)) {
+      out += c;
+    }
+  }
+  return out;
+}
+
+/** JER bodies come back indented; other formats unchanged. */
+function shape(format: Format, body: string): string {
+  return format === 'JER' ? prettyJson(body) : body;
+}
+
 /** The MCP's decode prefixes "Decoded as CAM v2 (_cam_v2:CAM), auto-detected …" + blank line when it auto-detected. */
 const NOTE = /^Decoded as (.+?)(?: \(([^)]+)\))?, auto-detected[^\n]*\n\n/;
 
@@ -33,6 +85,11 @@ function splitNote(output: string): { body: string; info?: ResolvedInfo } {
 
 /** The result tab a codec tool call opens in the right panel, or null for tools that don't produce a payload. */
 export function tabFromToolResult(r: ToolResult): NewTab | null {
+  const tab = rawTab(r);
+  return tab ? { ...tab, content: shape(tab.format, tab.content) } : null;
+}
+
+function rawTab(r: ToolResult): NewTab | null {
   if (!r.output) return null;
   const a = r.args ?? {};
   const ref = str(a.ref).trim();
