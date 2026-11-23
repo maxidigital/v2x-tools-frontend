@@ -37,14 +37,16 @@
 		}
 	}
 
-	# AI chat (Ask mode). PROTOTYPE: served by asn1click-front (v2x-connect-now, /api/chat, holds the OpenAI key)
-	# until the endpoint moves to the hub. Streamed NDJSON → flush immediately. Must come before /api/*.
+	# AI chat (Ask mode): served by v2x-tools-mcp (POST /api/chat, holds the OpenAI key). Streamed NDJSON →
+	# flush immediately. Must come before /api/*.
 	handle /api/chat {
-		reverse_proxy https://asn1click.com {
-			header_up Host asn1click.com
+		reverse_proxy http://v2x-tools-mcp.railway.internal:8080 {
 			# the visitor's IP (Railway's edge sets X-Real-IP) for the anonymous per-IP quota
 			header_up X-Ask-Client-IP {http.request.header.X-Real-IP}
 			flush_interval -1
+			# sleeps when idle like the others: retry dial errors while it boots (never reached it: safe for POST)
+			lb_try_duration 30s
+			lb_try_interval 500ms
 		}
 	}
 
