@@ -1,4 +1,5 @@
 import type { Format } from '@/types';
+import { stripComments } from './comments';
 
 /**
  * Sniff the wire format of a pasted payload.
@@ -10,7 +11,7 @@ import type { Format } from '@/types';
  * Returns null when nothing matches.
  */
 export function detectFormat(raw: string): Format | null {
-  const input = raw.trim();
+  const input = stripComments(raw).trim();
   if (input.length === 0) return null;
 
   // JSON (JER)
@@ -41,7 +42,7 @@ export function detectFormat(raw: string): Format | null {
 
 /** Byte length of a hex payload (legacy `updateBytesLen`); null when not hex. */
 export function hexByteLength(raw: string): number | null {
-  const clean = raw.trim().replace(/^(uper:|wer:)/i, '');
+  const clean = stripComments(raw).trim().replace(/^(uper:|wer:)/i, '');
   if (clean.length === 0 || !/^[0-9A-Fa-f]+$/.test(clean)) return null;
   return Math.floor(clean.length / 2);
 }

@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { convert, HubError } from '@/services/hubClient';
 import { analytics, type ConversionMeta } from '@/services/analytics';
 import { hexByteLength } from '@/lib/formatDetect';
+import { convertOp, stripComments, withOrigin } from '@/lib/comments';
 import { useConverterStore } from '@/stores/useConverterStore';
 import { askAi } from '@/features/chat/useChatStore';
 
@@ -12,7 +13,9 @@ export function useConvert() {
   const [isLoading, setLoading] = useState(false);
 
   const run = async () => {
-    const { payload, inputFormat, outputFormat, ref, compat, addTab } = useConverterStore.getState();
+    const { payload: typed, inputFormat, outputFormat, ref, compat, addTab } = useConverterStore.getState();
+    // `#` lines are the user's comments: they stay on the tab's Input, the hub gets the payload alone
+    const payload = stripComments(typed);
     const trimmed = payload.trim();
 
     if (!trimmed) {
@@ -22,7 +25,7 @@ export function useConvert() {
 
     // Same-format: no backend round-trip, just echo into a tab (legacy behavior).
     if (inputFormat === outputFormat) {
-      addTab({ format: outputFormat, content: payload, originalInput: payload });
+      addTab({ format: outputFormat, content: payload, originalInput: typed });
       return;
     }
 
@@ -42,7 +45,8 @@ export function useConvert() {
         ref: ref.trim() || undefined,
         compat,
       });
-      addTab({ format: outputFormat, content: result.text, originalInput: payload, info: result.info });
+      const origin = { op: convertOp(inputFormat, outputFormat), ref: ref.trim() || undefined, from: inputFormat, to: outputFormat, compat };
+      addTab({ format: outputFormat, content: result.text, originalInput: withOrigin(origin, typed), info: result.info });
       analytics.conversionSuccess({ ...meta, message: result.info.resolvedMessage });
     } catch (err) {
       const message = err instanceof HubError ? err.message : 'Conversion failed';

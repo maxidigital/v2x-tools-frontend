@@ -1,4 +1,5 @@
 import { FORMATS, type Format, type ResolvedInfo, type ResultTab } from '@/types';
+import { withOrigin, type Op } from '@/lib/comments';
 
 /** A finished MCP tool call, as the chat backend streams it ({"type":"tool_result",...}). */
 export interface ToolResult {
@@ -93,23 +94,31 @@ function rawTab(r: ToolResult): NewTab | null {
   if (!r.output) return null;
   const a = r.args ?? {};
   const ref = str(a.ref).trim();
+  const comment = str(a.comment).trim() || undefined;
+  const compat = a.compat === 'asn1c' ? ('asn1c' as const) : undefined;
+  const input = (op: Op, from: Format | undefined, to: Format, payload = str(a.payload)) =>
+    withOrigin({ op, ref: ref || undefined, from, to, minimal: a.minimal === true, compat }, payload, comment);
   const refInfo: ResolvedInfo | undefined = ref ? { resolvedRef: ref, autoDetected: false } : undefined;
   switch (r.name) {
     case 'decode': {
       const { body, info } = splitNote(r.output);
-      return { format: fmt(a.to, 'JER'), content: body, originalInput: str(a.payload), info: info ?? refInfo };
+      const to = fmt(a.to, 'JER');
+      return { format: to, content: body, originalInput: input('decode', fmt(a.from, 'UPER'), to), info: info ?? refInfo };
     }
     case 'convert': {
       const { body, info } = splitNote(r.output);
-      return { format: fmt(a.to, 'JER'), content: body, originalInput: str(a.payload), info: info ?? refInfo };
+      const to = fmt(a.to, 'JER');
+      return { format: to, content: body, originalInput: input('convert', fmt(a.from, 'UPER'), to), info: info ?? refInfo };
     }
-    case 'encode':
-      return { format: fmt(a.to, 'UPER'), content: r.output, originalInput: str(a.payload), info: refInfo };
+    case 'encode': {
+      const to = fmt(a.to, 'UPER');
+      return { format: to, content: r.output, originalInput: input('encode', fmt(a.from, 'JER'), to), info: refInfo };
+    }
     case 'generate':
       return {
         format: fmt(a.format, 'JER'),
         content: r.output,
-        originalInput: `generate ${ref}${a.minimal === true ? ' (minimal)' : ''}`,
+        originalInput: input('generate', undefined, fmt(a.format, 'JER'), ''),
         info: refInfo,
       };
     default:
