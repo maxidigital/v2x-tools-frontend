@@ -9,6 +9,7 @@ import { useUiStore } from '@/stores/useUiStore';
 import { ChatMarkdown, splitSuggestions } from './ChatMarkdown';
 import { useChatStore, type ChatMessage } from './useChatStore';
 import { workspaceSummary } from './workspaceContext';
+import { collapseResults } from './collapseResults';
 
 const SUGGESTIONS = [
   'Generate a minimal CAM',
@@ -17,12 +18,13 @@ const SUGGESTIONS = [
   'Which message versions does auto-detect use?',
 ];
 
+function openResult(tabId: string) {
+  useChatStore.getState().setOutputHidden(false);
+  useConverterStore.getState().setActiveTab(tabId);
+}
+
 function ToolChip({ name, done, error, tabId }: { name: string; done: boolean; error?: string; tabId?: string }) {
-  const open = () => {
-    if (!tabId) return;
-    useChatStore.getState().setOutputHidden(false);
-    useConverterStore.getState().setActiveTab(tabId);
-  };
+  const open = () => tabId && openResult(tabId);
   return (
     <button
       type="button"
@@ -87,9 +89,11 @@ function Message({ m, last, streaming }: { m: ChatMessage; last: boolean; stream
 
 function AnswerBody({ text }: { text: string }) {
   const { body, suggestions } = splitSuggestions(text);
+  // results already open in the side panel are not shown twice
+  const tabs = useConverterStore((s) => s.tabs);
   return (
     <>
-      <ChatMarkdown text={body} />
+      <ChatMarkdown text={collapseResults(body, tabs)} onOpenResult={openResult} />
       {suggestions.length > 0 && (
         <div className="flex flex-wrap gap-1.5 pt-1">
           {suggestions.map((sg) => (
