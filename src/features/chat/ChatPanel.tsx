@@ -2,6 +2,8 @@ import { useEffect, useRef, type KeyboardEvent } from 'react';
 import { ArrowUp, Check, FileInput, Loader2, LogIn, PanelRight, Plus, Shuffle, Sparkles, Square, Wrench, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { Format } from '@/types';
 import { signIn } from '@/components/layout/TopBar';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useConverterStore } from '@/stores/useConverterStore';
@@ -113,8 +115,36 @@ function AnswerBody({ text }: { text: string }) {
   );
 }
 
+/** Messages the AI generates or edits are shown in this format; it only changes when the user asks for another one. */
+const DISPLAY_FORMATS: { value: Format; label: string }[] = [
+  { value: 'JER', label: 'JSON (JER)' },
+  { value: 'XER', label: 'XML (XER)' },
+  { value: 'UPER', label: 'UPER (hex)' },
+];
+
+function FormatSelect({ value, onChange }: { value: Format; onChange: (f: Format) => void }) {
+  return (
+    <div className="ml-auto flex items-center gap-1.5" title="Messages the AI generates or edits are shown in this format">
+      <span className="text-muted-foreground">Format</span>
+      <Select value={value} onValueChange={(v) => onChange(v as Format)}>
+        <SelectTrigger className="h-7 w-[118px] text-xs" aria-label="Display format">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {DISPLAY_FORMATS.map((o) => (
+            <SelectItem key={o.value} value={o.value} className="text-xs">
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 function Composer({ big }: { big?: boolean }) {
-  const { draft, setDraft, send, stop, streaming, attachContext, setAttachContext } = useChatStore();
+  const { draft, setDraft, send, stop, streaming, attachContext, setAttachContext, displayFormat, setDisplayFormat } =
+    useChatStore();
   // re-render when the workspace changes, so the context chip stays current
   const payload = useConverterStore((s) => s.payload);
   const activeTabId = useConverterStore((s) => s.activeTabId);
@@ -140,9 +170,9 @@ function Composer({ big }: { big?: boolean }) {
 
   return (
     <div className="w-full space-y-1.5">
-      {summary && (
-        <div className="flex items-center gap-2 text-xs">
-          {attachContext ? (
+      <div className="flex min-h-7 flex-wrap items-center gap-2 text-xs">
+        {summary &&
+          (attachContext ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/5 px-2 py-0.5 text-primary">
               Workspace: {summary}
               <button type="button" onClick={() => setAttachContext(false)} aria-label="Don't send the workspace">
@@ -157,9 +187,9 @@ function Composer({ big }: { big?: boolean }) {
             >
               + Attach workspace ({summary})
             </button>
-          )}
-        </div>
-      )}
+          ))}
+        <FormatSelect value={displayFormat} onChange={setDisplayFormat} />
+      </div>
       <div className="flex items-end gap-2 rounded-2xl border border-border bg-background p-2 focus-within:border-primary">
         <textarea
           id="chat-input"

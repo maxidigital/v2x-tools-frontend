@@ -77,6 +77,9 @@ const NOTE = /^Decoded as (.+?)(?: \(([^)]+)\))?, auto-detected[^\n]*\n\n/;
 /** generate/encode with a bare type (ref "MAPEM"): "Generated as _mapem_v2, the default version of MAPEM\n\n". */
 const DEFAULT_NOTE = /^(?:Generated|Encoded) as (\S+), the default version of [^\n]*\n\n/;
 
+/** validate: "Valid as _mapem_v2 (123 bytes in UPER)\n\n" + the same message. */
+const VALID_NOTE = /^Valid as (\S+) \((\d+) bytes in UPER\)\n\n/;
+
 function splitDefaultNote(output: string): { body: string; info?: ResolvedInfo } {
   const m = DEFAULT_NOTE.exec(output);
   return m ? { body: output.slice(m[0].length), info: { resolvedRef: m[1], autoDetected: false } } : { body: output };
@@ -103,7 +106,7 @@ function rawTab(r: ToolResult): NewTab | null {
   const ref = str(a.ref).trim();
   const comment = str(a.comment).trim() || undefined;
   const compat = a.compat === 'asn1c' ? ('asn1c' as const) : undefined;
-  const input = (op: Op, from: Format | undefined, to: Format, payload = str(a.payload)) =>
+  const input = (op: Op, from: Format | undefined, to: Format | undefined, payload = str(a.payload)) =>
     withOrigin({ op, ref: ref || undefined, from, to, minimal: a.minimal === true, compat }, payload, comment);
   const refInfo: ResolvedInfo | undefined = ref ? { resolvedRef: ref, autoDetected: false } : undefined;
   switch (r.name) {
@@ -121,6 +124,17 @@ function rawTab(r: ToolResult): NewTab | null {
       const { body, info } = splitDefaultNote(r.output);
       const to = fmt(a.to, 'UPER');
       return { format: to, content: body, originalInput: input('encode', fmt(a.from, 'JER'), to), info: info ?? refInfo };
+    }
+    case 'validate': {
+      const m = VALID_NOTE.exec(r.output);
+      if (!m) return null;
+      const from = fmt(a.from, 'JER');
+      return {
+        format: from,
+        content: r.output.slice(m[0].length),
+        originalInput: input('validate', from, undefined, ''),
+        info: { resolvedRef: m[1], autoDetected: false },
+      };
     }
     case 'generate': {
       const { body, info } = splitDefaultNote(r.output);

@@ -12,3 +12,16 @@ test('generate with a bare type: the default-version note becomes the tab info, 
   expect(tab?.info?.resolvedRef).toBe('_mapem_v2');
   expect(tab?.originalInput).toBe('# Minimal MAP\n# generate ref=MAPEM format=JER minimal');
 });
+
+test('validate keeps the message in its format, with the check on the Input', () => {
+  const tab = tabFromToolResult({
+    name: 'validate',
+    args: { ref: 'MAPEM', payload: '{"map":{}}', comment: 'Check the Barcelona MAP' },
+    output: 'Valid as _mapem_v2 (42 bytes in UPER)\n\n{"map":{}}',
+    error: null,
+  });
+  expect(tab?.format).toBe('JER');
+  expect(tab?.content.replace(/\s/g, '')).toBe('{"map":{}}');
+  expect(tab?.info?.resolvedRef).toBe('_mapem_v2');
+  expect(tab?.originalInput).toBe('# Check the Barcelona MAP\n# validate ref=MAPEM from=JER');
+});

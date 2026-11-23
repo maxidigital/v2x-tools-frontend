@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { FORMATS, type Format } from '@/types';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useConverterStore } from '@/stores/useConverterStore';
 import { useUiStore } from '@/stores/useUiStore';
@@ -41,13 +42,28 @@ interface ChatState {
   draft: string;
   /** The user hid the results panel in Ask mode. */
   outputHidden: boolean;
+  /** Format every message the AI generates or edits is shown in (selector in the composer; remembered per browser). */
+  displayFormat: Format;
 
   setDraft: (d: string) => void;
   setAttachContext: (v: boolean) => void;
   setOutputHidden: (v: boolean) => void;
+  setDisplayFormat: (f: Format) => void;
   send: (text: string) => Promise<void>;
   stop: () => void;
   reset: () => void;
+}
+
+const FORMAT_KEY = 'v2x-chat-format';
+
+function savedFormat(): Format {
+  try {
+    const f = localStorage.getItem(FORMAT_KEY);
+    if (f && (FORMATS as string[]).includes(f)) return f as Format;
+  } catch {
+    // storage blocked: default
+  }
+  return 'JER';
 }
 
 let controller: AbortController | null = null;
@@ -70,10 +86,19 @@ export const useChatStore = create<ChatState>((set, get) => {
     attachContext: true,
     draft: '',
     outputHidden: false,
+    displayFormat: savedFormat(),
 
     setDraft: (draft) => set({ draft }),
     setAttachContext: (attachContext) => set({ attachContext }),
     setOutputHidden: (outputHidden) => set({ outputHidden }),
+    setDisplayFormat: (displayFormat) => {
+      set({ displayFormat });
+      try {
+        localStorage.setItem(FORMAT_KEY, displayFormat);
+      } catch {
+        // not remembered: fine
+      }
+    },
 
     reset: () => {
       controller?.abort();
@@ -106,6 +131,7 @@ export const useChatStore = create<ChatState>((set, get) => {
           headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
           body: JSON.stringify({
             client: 'webtools',
+            displayFormat: get().displayFormat,
             messages: history
               .filter((m) => m.role === 'user' || m.content)
               .map((m) => ({ role: m.role, content: m.role === 'user' ? (m.sent ?? m.content) : m.content })),

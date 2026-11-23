@@ -23,7 +23,7 @@ export function stripComments(text: string): string {
   return text.includes('#') ? splitComments(text).body : text;
 }
 
-export type Op = 'decode' | 'encode' | 'convert' | 'generate';
+export type Op = 'decode' | 'encode' | 'convert' | 'generate' | 'validate';
 
 export interface Origin {
   op: Op;
