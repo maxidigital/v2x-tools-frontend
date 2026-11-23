@@ -74,6 +74,13 @@ function shape(format: Format, body: string): string {
 
 /** The MCP's decode prefixes "Decoded as CAM v2 (_cam_v2:CAM), auto-detected …" + blank line when it auto-detected. */
 const NOTE = /^Decoded as (.+?)(?: \(([^)]+)\))?, auto-detected[^\n]*\n\n/;
+/** generate/encode with a bare type (ref "MAPEM"): "Generated as _mapem_v2, the default version of MAPEM\n\n". */
+const DEFAULT_NOTE = /^(?:Generated|Encoded) as (\S+), the default version of [^\n]*\n\n/;
+
+function splitDefaultNote(output: string): { body: string; info?: ResolvedInfo } {
+  const m = DEFAULT_NOTE.exec(output);
+  return m ? { body: output.slice(m[0].length), info: { resolvedRef: m[1], autoDetected: false } } : { body: output };
+}
 
 function splitNote(output: string): { body: string; info?: ResolvedInfo } {
   const m = NOTE.exec(output);
@@ -111,16 +118,19 @@ function rawTab(r: ToolResult): NewTab | null {
       return { format: to, content: body, originalInput: input('convert', fmt(a.from, 'UPER'), to), info: info ?? refInfo };
     }
     case 'encode': {
+      const { body, info } = splitDefaultNote(r.output);
       const to = fmt(a.to, 'UPER');
-      return { format: to, content: r.output, originalInput: input('encode', fmt(a.from, 'JER'), to), info: refInfo };
+      return { format: to, content: body, originalInput: input('encode', fmt(a.from, 'JER'), to), info: info ?? refInfo };
     }
-    case 'generate':
+    case 'generate': {
+      const { body, info } = splitDefaultNote(r.output);
       return {
         format: fmt(a.format, 'JER'),
-        content: r.output,
+        content: body,
         originalInput: input('generate', undefined, fmt(a.format, 'JER'), ''),
-        info: refInfo,
+        info: info ?? refInfo,
       };
+    }
     default:
       return null;
   }
