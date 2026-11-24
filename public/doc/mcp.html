@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI assistants (MCP) — asn1click docs</title>
+    <meta name="description" content="Connect Claude, Cursor or any MCP client to asn1click and work with ETSI V2X messages.">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/doc/doc.css">
+</head>
+<body>
+<div class="container">
+    <div class="wordmark">asn1click <span>docs</span></div>
+    <div class="subtitle">Use asn1click from Claude, Cursor or any MCP client</div>
+    <nav class="nav"><a href="/doc/">Overview</a> <a href="/doc/web-tools.html">Web tools</a> <a href="/doc/messages.html">Building messages</a> <a href="/doc/mcp.html" class="active">AI assistants (MCP)</a> <a href="/doc/api.html">API reference</a></nav>
+
+    <p>asn1click is an MCP server: AI assistants that speak the Model Context Protocol (Claude, Cursor, and others)
+       can decode, encode, generate and explain V2X messages with it.</p>
+
+    <h2 id="connect">Connect</h2>
+    <p>Server URL (Streamable HTTP, no sign-in needed):</p>
+    <pre><code>https://mcp.v2x.tools/mcp</code></pre>
+    <ul>
+        <li><strong>Claude (web or desktop)</strong>: add it as a custom connector with that URL.</li>
+        <li><strong>Claude Code</strong>:
+            <pre><code>claude mcp add --transport http asn1click https://mcp.v2x.tools/mcp</code></pre></li>
+        <li><strong>Cursor</strong>, in <code>~/.cursor/mcp.json</code>:
+            <pre><code>{ "mcpServers": { "asn1click": { "url": "https://mcp.v2x.tools/mcp" } } }</code></pre></li>
+        <li>Any other client: add a remote MCP server with the URL above.</li>
+    </ul>
+
+    <h2 id="ask">What to ask</h2>
+    <ul>
+        <li><em>"Decode this payload: uper:0202…"</em>: it is auto-detected and the answer says which version was used.</li>
+        <li><em>"Generate a DENM for roadworks 300 m ahead and give me the UPER"</em>.</li>
+        <li><em>"Why does this payload fail to decode?"</em>: the bit-level breakdown shows the field and the bit where it breaks.</li>
+        <li><em>"What changed in CPM between versions 1 and 2?"</em> or <em>"Explain the fields of a MAPEM lane"</em>.</li>
+    </ul>
+
+    <h2 id="tools">Tools</h2>
+    <table>
+        <tr><th>Tool</th><th>What it does</th></tr>
+        <tr><td><code>decode</code></td><td>UPER/WER hex to JSON or XML; auto-detects ETSI messages from their header.</td></tr>
+        <tr><td><code>encode</code></td><td>JSON/XML to UPER/WER.</td></tr>
+        <tr><td><code>convert</code></td><td>Between any two encodings.</td></tr>
+        <tr><td><code>generate</code></td><td>A sample message: <code>MINIMAL</code>, <code>RANDOM</code> or <code>FULL</code>,
+            plus <code>set</code> lines (<a href="/doc/messages.html">Building messages</a>).</td></tr>
+        <tr><td><code>validate</code></td><td>Checks a JSON/XML message against its type without changing its format.</td></tr>
+        <tr><td><code>diagnose</code></td><td>Bit-by-bit breakdown of a UPER payload; for a broken one, where it breaks.</td></tr>
+        <tr><td><code>list_messages</code>, <code>list_message_versions</code>, <code>list_modules</code></td><td>What exists,
+            and which version auto-detect uses.</td></tr>
+        <tr><td><code>search_elements</code>, <code>get_element</code></td><td>Find and read ASN.1 type definitions.</td></tr>
+        <tr><td><code>send_feedback</code></td><td>Send a bug report, an idea or an opinion to the developer (the assistant
+            shows you the text first).</td></tr>
+    </table>
+    <p>Tools that take a message accept just its type (<code>CAM</code>, <code>MAPEM</code> or <code>MAP</code>,
+       <code>SPAT</code>, <code>CPM</code>…) and use its default version, or a specific one (<code>_cam_v2</code>).</p>
+
+    <h2 id="privacy">Privacy</h2>
+    <p>The server does not store what you send. Your AI assistant, however, sees the payloads, and so does its
+       provider: for confidential data use the <a href="/">Web tools</a> or the <a href="/doc/api.html">API</a>.</p>
+
+    <footer>
+        asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · ETSI C-ITS message tooling.
+    </footer>
+</div>
+</body>
+</html>

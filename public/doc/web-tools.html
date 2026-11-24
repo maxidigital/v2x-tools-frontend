@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web tools — asn1click docs</title>
+    <meta name="description" content="How to convert, check versions and generate ETSI V2X messages in the asn1click web tools.">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/doc/doc.css">
+</head>
+<body>
+<div class="container">
+    <div class="wordmark">asn1click <span>docs</span></div>
+    <div class="subtitle">Convert, check versions and generate in the browser</div>
+    <nav class="nav"><a href="/doc/">Overview</a> <a href="/doc/web-tools.html" class="active">Web tools</a> <a href="/doc/messages.html">Building messages</a> <a href="/doc/mcp.html">AI assistants (MCP)</a> <a href="/doc/api.html">API reference</a></nav>
+
+    <p>The <a href="/">Web tools</a> run in the browser; no account is needed. The rail on the left switches between
+       <strong>Convert</strong> and <strong>Generate</strong>.</p>
+
+    <h2 id="convert">Convert</h2>
+    <ol>
+        <li><strong>Paste</strong> a payload in the Input editor: UPER or WER as hex, or a message as JSON (JER) or XML
+            (XER). The input format is detected as you paste (shown under the editor); you can also set it by hand.</li>
+        <li><strong>Choose the output</strong> format in the bar under the editor (<em>to</em> UPER, WER, JER or XER).</li>
+        <li>Press <strong>Convert</strong>. Each conversion opens a <strong>result tab</strong> on the right: the input
+            on top, the output below.</li>
+    </ol>
+    <p>The tab header says which definition decoded the payload, for example
+       <em>auto-detected as _denm_v2_3 (_denm_v2_3:DENM)</em>. This matters when several versions share the same
+       header, like DENM 2.2 and 2.3.1.</p>
+    <h3>Working with results</h3>
+    <ul>
+        <li><strong>Copy output</strong>, change the font size, or <strong>Expand</strong> the output.</li>
+        <li>Export every open result as one file: <strong>All · HTML</strong> or <strong>All · CSV</strong>.</li>
+        <li>Right-click a tab to close it, the others, or all.</li>
+    </ul>
+
+    <h2 id="versions">Message versions</h2>
+    <p>The <strong>Versions</strong> button (Input header) opens <em>Message versions</em>: it lists, for each message type, the versions
+       available and the one auto-detect uses. The public default is the newest version. Signed-in users can pick their
+       own default per message type; it applies to their conversions only.</p>
+
+    <h2 id="rules">Encoding rules</h2>
+    <p>The selector next to <em>to</em> chooses the rules:</p>
+    <ul>
+        <li><strong>X.691 standard</strong> (default): as the standard says, like Objective Systems and asn1tools.</li>
+        <li><strong>asn1c / Vanetza</strong>: byte-identical with asn1c-based stacks. asn1c departs from X.691 in a few
+            constraints: it removes the SIZE extensibility after a <code>WITH COMPONENT</code> constraint, merges
+            extension additions into the root, and writes the id of an X.681 open type (CAM 2.3.1 extension
+            containers) without its extension bit.</li>
+    </ul>
+    <p>If a payload from another stack does not decode, or decodes differently, try the other rules.</p>
+
+    <h2 id="generate">Generate</h2>
+    <ol>
+        <li>Pick the <strong>message type</strong> and the <strong>output format</strong>.</li>
+        <li>Pick the <strong>content</strong>:
+            <ul>
+                <li><strong>Minimal</strong>: only the mandatory fields, with minimal values.</li>
+                <li><strong>Random</strong>: a typical message: random optional fields, short lists and strings.</li>
+                <li><strong>Full</strong>: every optional field present once, one item per list, so each field of the
+                    schema appears. Useful to check that a decoder understands the whole message.</li>
+            </ul>
+        </li>
+        <li>Press <strong>Generate</strong>: the payload lands in the Convert editor, ready to convert.</li>
+    </ol>
+    <p>To set particular values (a station id, a position, a speed), use the API or an AI assistant: see
+       <a href="/doc/messages.html">Building messages</a>.</p>
+
+    <h2 id="privacy">Privacy</h2>
+    <p>Payloads are processed in memory and are neither stored nor logged. Anonymous usage analytics record events
+       such as "conversion failed" with its error message, which may quote a single field value.</p>
+
+    <footer>
+        asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · ETSI C-ITS message tooling.
+    </footer>
+</div>
+</body>
+</html>
