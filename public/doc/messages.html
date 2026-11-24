@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building messages — asn1click docs</title>
+    <meta name="description" content="Generate ETSI V2X messages with your own values: content modes, path=value fields, units and named values.">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/doc/doc.css">
+</head>
+<body>
+<div class="container">
+    <div class="wordmark">asn1click <span>docs</span></div>
+    <div class="subtitle">Generate a message with exactly the values you need</div>
+    <nav class="nav"><a href="/doc/">Overview</a> <a href="/doc/web-tools.html">Web tools</a> <a href="/doc/messages.html" class="active">Building messages</a> <a href="/doc/mcp.html">AI assistants (MCP)</a> <a href="/doc/api.html">API reference</a></nav>
+
+    <p>To get a message with the values you need, generate it and set the fields in the same call. Everything the
+       fields require (optional containers, list items, the CHOICE alternative) is created for you, and the result is
+       always a valid message: a value outside its range is an error, not a broken payload.</p>
+
+    <h2 id="content">1. Pick the content</h2>
+    <table>
+        <tr><th>Content</th><th>What you get</th><th>Typical use</th></tr>
+        <tr><td><code>MINIMAL</code></td><td>Only the mandatory fields, with minimal values.</td><td>The base for setting
+            your own values (default).</td></tr>
+        <tr><td><code>RANDOM</code></td><td>A typical message: random optional fields, short lists and strings.</td>
+            <td>Test data with variety.</td></tr>
+        <tr><td><code>FULL</code></td><td>Every optional field present once, one item per list.</td><td>Coverage: every
+            field of the schema appears.</td></tr>
+    </table>
+
+    <h2 id="set">2. Set the fields</h2>
+    <p>Each field is one <code>path=value</code> line (in the API, an <code>{"path", "value"}</code> object).</p>
+    <h3>Paths</h3>
+    <ul>
+        <li>Field names exactly as the JSON (JER) shows them, separated by <code>.</code>:
+            <code>header.stationId</code>. Names are case-sensitive and can differ between versions (CAM v2:
+            <code>stationID</code>; CAM 2.3.1: <code>stationId</code>). A wrong name is answered with the valid ones at
+            that level.</li>
+        <li>A list item is <code>[n]</code>, counted from 0. Missing items are created:
+            <code>map.intersections[0].laneSet[2].laneID=3</code> creates three lanes.</li>
+        <li>Naming a CHOICE alternative selects it: <code>…laneAttributes.laneType.bikeLane=…</code>.</li>
+    </ul>
+    <h3>Values</h3>
+    <table>
+        <tr><th>Type</th><th>Write</th><th>Example</th></tr>
+        <tr><td>INTEGER</td><td>a number, or one of its named numbers</td><td><code>stationType=passengerCar</code> (= 5)</td></tr>
+        <tr><td>Scaled number</td><td>the encoded integer, or the physical value with the unit of the schema</td>
+            <td><code>latitude=41.3875 degree</code>, <code>speedValue=13.89 m/s</code></td></tr>
+        <tr><td>ENUMERATED</td><td>its identifier</td><td><code>termination=isCancellation</code></td></tr>
+        <tr><td>BOOLEAN</td><td><code>true</code> / <code>false</code></td><td></td></tr>
+        <tr><td>BIT STRING</td><td><code>0</code>/<code>1</code> characters, or the named bits</td>
+            <td><code>directionalUse={ingressPath}</code></td></tr>
+        <tr><td>OCTET STRING</td><td>hex</td><td><code>0a1b</code></td></tr>
+        <tr><td>Strings</td><td>the text</td><td><code>name=Gran Via</code></td></tr>
+    </table>
+    <div class="note">Units are converted only where the schema declares one (<code>@unit</code> in the ETSI
+        dictionaries: latitude and longitude in degrees, speeds in m/s, lengths in metres…). km/h are not accepted:
+        50 km/h = 13.89 m/s. Where there is no unit, give the encoded integer as described in the type
+        (e.g. <code>HeadingValue</code> in CDD 4.3, in 0.1 degree).</div>
+
+    <h2 id="examples">Examples</h2>
+    <h4>A car at 50 km/h with station id 1234 (CAM 2.3.1)</h4>
+    <pre><code>curl -X POST "https://v2x.tools/api/generate" \
+  -H "X-Ref: _cam_v2_3" -H "Content-Type: application/json" \
+  --data '{"format":"UPER","content":"MINIMAL","overrides":[
+    {"path":"header.stationId","value":"1234"},
+    {"path":"cam.camParameters.basicContainer.stationType","value":"passengerCar"},
+    {"path":"cam.camParameters.basicContainer.referencePosition.latitude","value":"41.3870 degree"},
+    {"path":"cam.camParameters.basicContainer.referencePosition.longitude","value":"2.1701 degree"},
+    {"path":"cam.camParameters.highFrequencyContainer.basicVehicleContainerHighFrequency.speed.speedValue","value":"13.89 m/s"}]}'</code></pre>
+
+    <h4>An intersection with a bike lane (MAPEM)</h4>
+    <pre><code>curl -X POST "https://v2x.tools/api/generate" \
+  -H "X-Ref: _mapem_v2" -H "Content-Type: application/json" \
+  --data '{"format":"JER","content":"MINIMAL","overrides":[
+    {"path":"map.intersections[0].name","value":"Gran Via x Passeig de Gracia"},
+    {"path":"map.intersections[0].id.id","value":"1001"},
+    {"path":"map.intersections[0].refPoint.lat","value":"41.3918 degree"},
+    {"path":"map.intersections[0].refPoint.long","value":"2.1650 degree"},
+    {"path":"map.intersections[0].laneSet[1].laneID","value":"2"},
+    {"path":"map.intersections[0].laneSet[1].laneAttributes.directionalUse","value":"{ingressPath}"},
+    {"path":"map.intersections[0].laneSet[1].laneAttributes.laneType.bikeLane","value":"1000000000000000"}]}'</code></pre>
+
+    <p>With an AI assistant the same is one request in plain language; the assistant calls <code>generate</code>
+       with <code>set</code> lines like the ones above (see <a href="/doc/mcp.html">AI assistants</a>).</p>
+
+    <h2 id="json">The JSON and XML you get</h2>
+    <ul>
+        <li>ENUMERATED values by identifier: <code>"altitudeConfidence": "alt-000-20"</code> (XER: <code>&lt;alt-000-20/&gt;</code>).</li>
+        <li>Named numbers of an INTEGER stay numbers (<code>"stationType": 5</code>), as X.697 requires.</li>
+        <li>BIT STRING in hex: <code>"52"</code> for a fixed size, <code>{"value": "52", "length": 7}</code> otherwise.</li>
+        <li>BOOLEAN in XER: <code>&lt;true/&gt;</code>; the XER root is the type name (<code>&lt;CAM&gt;</code>).</li>
+    </ul>
+
+    <footer>
+        asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · ETSI C-ITS message tooling.
+    </footer>
+</div>
+</body>
+</html>

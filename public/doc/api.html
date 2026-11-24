@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API reference — asn1click docs</title>
+    <meta name="description" content="HTTP API for decoding, encoding, converting, generating and diagnosing ETSI V2X (UPER/WER/XER/JER) messages.">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/doc/doc.css">
+</head>
+<body>
+<div class="container">
+    <div class="wordmark">asn1click <span>docs</span></div>
+    <div class="subtitle">HTTP API: convert, generate, diagnose, discover</div>
+    <nav class="nav"><a href="/doc/">Overview</a> <a href="/doc/web-tools.html">Web tools</a> <a href="/doc/messages.html">Building messages</a> <a href="/doc/mcp.html">AI assistants (MCP)</a> <a href="/doc/api.html" class="active">API reference</a></nav>
+
+    <p>Base URL: <code>https://v2x.tools</code>. Plain HTTP, no authentication for the public message set. A bearer
+       token from your asn1click account adds your own defaults and modules.</p>
+
+    <h2 id="concepts">Concepts</h2>
+    <h3>Encodings</h3>
+    <ul>
+        <li><code>UPER</code> / <code>WER</code>: binary, sent and received as hex text (optional <code>uper:</code> /
+            <code>wer:</code> prefix).</li>
+        <li><code>JER</code> / <code>XER</code>: JSON (X.697) and XML (X.693). Every encoding checks the constraints.</li>
+    </ul>
+    <h3>Identifying the message (<code>X-Ref</code>)</h3>
+    <ul>
+        <li><strong>Auto-detect</strong>: omit <code>X-Ref</code>. The ETSI ITS header (<code>protocolVersion</code> +
+            <code>messageID</code>) picks the message: the public default (newest version), or your own default when
+            signed in.</li>
+        <li><strong>Message</strong>: <code>X-Ref: _cam_v2_3</code>, a pre-configured message (header values set when
+            generating). See <a href="#discover">Discover</a>.</li>
+        <li><strong>Type</strong>: <code>X-Ref: _cam_v2_3:CAM</code> (<code>moduleId:Type</code>), a raw ASN.1 type, no
+            header defaults.</li>
+    </ul>
+    <h3>Encoding rules (<code>X-Compat</code>)</h3>
+    <p>Optional on convert, generate and diagnose: <code>standard</code> (default, X.691) or <code>asn1c</code>, which
+       encodes like asn1c-based stacks such as Vanetza.</p>
+    <h3>Which definition was used</h3>
+    <p>Responses carry <code>X-Resolved-Ref</code> (e.g. <code>_cam_v2_3:CAM</code>), <code>X-Resolved-Message</code>
+       (<code>_cam_v2_3</code>), <code>X-Auto-Detected</code> (<code>true</code>/<code>false</code>) and
+       <code>X-Compat</code>.</p>
+
+    <h2 id="convert">Convert</h2>
+    <h3><span class="method post">POST</span> <span class="path">/api/convert</span></h3>
+    <p>Decode, encode or re-encode a payload. The body is the payload.</p>
+    <table>
+        <tr><th>Header</th><th>Required</th><th>Description</th></tr>
+        <tr><td><code>X-From</code></td><td class="req">required</td><td>Input: <code>UPER</code>, <code>WER</code>, <code>JER</code> or <code>XER</code>.</td></tr>
+        <tr><td><code>X-To</code></td><td class="req">required</td><td>Output: same values.</td></tr>
+        <tr><td><code>X-Ref</code></td><td>optional</td><td>Which definition; omit to auto-detect.</td></tr>
+        <tr><td><code>X-Compat</code></td><td>optional</td><td><code>standard</code> or <code>asn1c</code>.</td></tr>
+    </table>
+    <h4>Decode UPER to JSON (auto-detect)</h4>
+    <pre><code>curl -X POST "https://v2x.tools/api/convert" \
+  -H "X-From: UPER" -H "X-To: JER" \
+  --data "uper:0202000004d200000059ca02160d929e71000000000030d40000000002b6800000028003ff01fff800"
+
+# → {"header":{"protocolVersion":2,"messageId":2,"stationId":1234},"cam":{...}}</code></pre>
+    <h4>Encode JSON to UPER (explicit message)</h4>
+    <pre><code>curl -X POST "https://v2x.tools/api/convert" \
+  -H "X-Ref: _cam_v2_3" -H "X-From: JER" -H "X-To: UPER" \
+  --data @cam.json</code></pre>
+
+    <h2 id="generate">Generate</h2>
+    <h3><span class="method post">POST</span> <span class="path">/api/generate</span></h3>
+    <p>A sample message. <code>X-Ref</code> (required) names the message; JSON body, all optional:</p>
+    <table>
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr><td><code>format</code></td><td><code>UPER</code> (default), <code>WER</code>, <code>JER</code> or <code>XER</code>.</td></tr>
+        <tr><td><code>content</code></td><td><code>MINIMAL</code> (default), <code>RANDOM</code> or <code>FULL</code>.</td></tr>
+        <tr><td><code>overrides</code></td><td><code>[{"path": "…", "value": "…"}]</code>: fields to set. Syntax in
+            <a href="/doc/messages.html">Building messages</a>.</td></tr>
+    </table>
+    <div class="note">Since 2026-11-24 <code>content</code> replaces <code>size</code> and <code>minimal</code>; without it
+        the sample is <code>MINIMAL</code> (it used to be a small random one).</div>
+    <pre><code>curl -X POST "https://v2x.tools/api/generate" \
+  -H "X-Ref: _cam_v2_3" -H "Content-Type: application/json" \
+  --data '{"format":"UPER","content":"RANDOM"}'</code></pre>
+
+    <h2 id="diagnose">Diagnose</h2>
+    <h3><span class="method post">POST</span> <span class="path">/api/diagnose</span></h3>
+    <p>Bit-by-bit breakdown of a UPER payload (<code>X-From: UPER</code>; <code>X-Ref</code> optional). For every
+       field: its bits, raw value, decoded value and type, plus the structural bits (extension markers, presence bits,
+       CHOICE indexes, lengths). A broken payload still answers <code>200</code> with what was decoded up to the failure,
+       the field being read and the bit where it broke (<code>error</code>, <code>failurePath</code>,
+       <code>failureBit</code>). Values outside their declared range are flagged in <code>constraintViolations</code>.</p>
+    <pre><code>curl -X POST "https://v2x.tools/api/diagnose" -H "X-From: UPER" --data "uper:0202…"
+
+# → {"payloadBits":344,"decodedBits":344,"paddingBits":0,"constraintViolations":0,
+#    "entries":[{"start":8,"end":16,"path":"CAM.header.messageId","kind":"VALUE","bits":"00000010",
+#                "value":"2","type":"MessageId (0..255)"}, ...], "decoded":{...}}</code></pre>
+
+    <h2 id="discover">Discover</h2>
+    <h3><span class="method get">GET</span> <span class="path">/api/messages</span></h3>
+    <p>The pre-configured messages; each <code>name</code> is a valid <code>X-Ref</code>.</p>
+    <pre><code>curl "https://v2x.tools/api/messages"
+
+# → [{"name":"_cam_v2","moduleAlias":"_cam_v2","rootElement":"CAM","description":"CAM v2",
+#     "options":{"fixups":[{"path":"header.protocolVersion","value":2},{"path":"header.messageID","value":2}]}}, ...]</code></pre>
+    <h3><span class="method get">GET</span> <span class="path">/api/messages/versions</span></h3>
+    <p>Per header identity (<code>protocolVersion:messageID</code>, e.g. <code>2:1</code> = DENM): the available
+       versions, the public default and the one used for you (<code>effective</code>).</p>
+    <h3><span class="method get">GET</span> <span class="path">/api/modules</span></h3>
+    <p>The ASN.1 modules: <code>moduleId</code> (use it in <code>moduleId:Type</code> refs), <code>oid</code>,
+       a one-line description and the number of types. Optional <code>sort=name</code> (default) or
+       <code>sort=uploaded</code>.</p>
+    <pre><code>curl "https://v2x.tools/api/modules"
+
+# → [{"moduleId":"_cam_v2_3","oid":"CAM-PDU-Descriptions {itu-t(0) identified-organization(4) ...}",
+#     "short":"Cooperative Awareness Message (CAM) ...","elementCount":...}, ...]</code></pre>
+    <h3><span class="method get">GET</span> <span class="path">/api/index/elements?moduleId=…</span></h3>
+    <p>The types of a module with their kind, fields, constraints, named values and ASN.1 comments.</p>
+
+    <h2 id="errors">Errors &amp; status codes</h2>
+    <ul>
+        <li><code>200</code>: success; the body is the converted or generated payload (or the requested data).</li>
+        <li><code>400</code>: the payload could not be decoded or encoded, or a value breaks its constraints; body
+            <code>{"error": "…"}</code> naming the field.</li>
+        <li><code>404</code>: unknown ref, or auto-detect found no message for the payload's header.</li>
+    </ul>
+
+    <footer>
+        asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · ETSI C-ITS message tooling.
+    </footer>
+</div>
+</body>
+</html>
