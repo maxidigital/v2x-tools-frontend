@@ -5,7 +5,7 @@ import type { Compat, Format } from '@/types';
  * with `#`), so they are stripped before format detection and before sending. A result tab's Input starts with
  * them: what it was for (the AI's comment, if any) and the operation that produced it, e.g.
  *   # Minimal CAM without the low-frequency container
- *   # generate ref=_cam_v2 format=JER minimal
+ *   # generate ref=_cam_v2 format=JER content=MINIMAL
  */
 const COMMENT = /^[ \t]*#/;
 
@@ -30,7 +30,8 @@ export interface Origin {
   ref?: string;
   from?: Format;
   to?: Format;
-  minimal?: boolean;
+  /** generate: MINIMAL | RANDOM | FULL */
+  content?: string;
   compat?: Compat;
 }
 
@@ -48,7 +49,7 @@ export function originLine(o: Origin): string {
   if (o.ref) parts.push(`ref=${o.ref}`);
   if (o.op === 'generate') {
     if (o.to) parts.push(`format=${o.to}`);
-    if (o.minimal) parts.push('minimal');
+    parts.push(`content=${o.content ?? 'MINIMAL'}`);   // the MCP's default
   } else {
     if (o.from) parts.push(`from=${o.from}`);
     if (o.to) parts.push(`to=${o.to}`);

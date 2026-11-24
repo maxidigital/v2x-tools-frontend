@@ -12,8 +12,8 @@ test('comment lines are not part of the payload', () => {
 test('a tab input: comment, operation, payload', () => {
   const o = { op: convertOp('UPER', 'JER'), ref: '_cam_v2', from: 'UPER' as const, to: 'JER' as const };
   expect(withOrigin(o, '0201', 'Decode the RSU CAM')).toBe('# Decode the RSU CAM\n# decode ref=_cam_v2 from=UPER to=JER\n0201');
-  expect(withOrigin({ op: 'generate', ref: '_cam_v2', to: 'JER', minimal: true, compat: 'asn1c' }, '')).toBe(
-    '# generate ref=_cam_v2 format=JER minimal compat=asn1c'
+  expect(withOrigin({ op: 'generate', ref: '_cam_v2', to: 'JER', content: 'FULL', compat: 'asn1c' }, '')).toBe(
+    '# generate ref=_cam_v2 format=JER content=FULL compat=asn1c'
   );
   expect(convertOp('JER', 'XER')).toBe('convert');
 });
