@@ -11,15 +11,13 @@ export const FORMAT_LABELS: Record<Format, string> = {
   JER: 'JER (JSON)',
 };
 
-/** Generate sample sizes (hub `size` enum). */
-export type GenerateSize = 'SMALLEST' | 'SMALL' | 'MEDIUM' | 'BIG' | 'BIGGEST';
+/** What a generated sample contains (hub `content`). */
+export type GenerateContent = 'MINIMAL' | 'RANDOM' | 'FULL';
 
-export const GENERATE_SIZES: { value: GenerateSize; label: string }[] = [
-  { value: 'SMALLEST', label: 'Smallest' },
-  { value: 'SMALL', label: 'Small' },
-  { value: 'MEDIUM', label: 'Medium' },
-  { value: 'BIG', label: 'Big' },
-  { value: 'BIGGEST', label: 'Biggest' },
+export const GENERATE_CONTENTS: { value: GenerateContent; label: string; hint: string }[] = [
+  { value: 'MINIMAL', label: 'Minimal', hint: 'Only the mandatory fields, with minimal values' },
+  { value: 'RANDOM', label: 'Random', hint: 'A typical message: random optional fields, short lists and strings' },
+  { value: 'FULL', label: 'Full', hint: 'Every optional field present once: each field of the schema appears' },
 ];
 
 /** Built-in ETSI ITS message refs (X-Ref) preserved from the legacy app. */
@@ -83,8 +81,7 @@ export interface ConvertRequest {
 export interface GenerateRequest {
   ref: string;
   format: Format;
-  size: GenerateSize;
-  minimal: boolean;
+  content: GenerateContent;
   compat?: Compat;
 }
 

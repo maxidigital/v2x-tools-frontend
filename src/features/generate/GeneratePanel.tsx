@@ -12,10 +12,10 @@ import { FormatSelect } from '@/features/converter/components/FormatSelect';
 import { useGenerate } from './hooks/useGenerate';
 import { useUiStore } from '@/stores/useUiStore';
 import {
-  GENERATE_SIZES,
+  GENERATE_CONTENTS,
   MESSAGE_TYPES,
   type Format,
-  type GenerateSize,
+  type GenerateContent,
 } from '@/types';
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
@@ -30,13 +30,12 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 export function GeneratePanel() {
   const [ref, setRef] = useState(MESSAGE_TYPES[0].ref);
   const [format, setFormat] = useState<Format>('UPER');
-  const [size, setSize] = useState<GenerateSize>('SMALL');
-  const [minimal, setMinimal] = useState(false);
+  const [content, setContent] = useState<GenerateContent>('RANDOM');
   const { run, isLoading } = useGenerate();
   const setInputMode = useUiStore((s) => s.setInputMode);
 
   const submit = async () => {
-    await run({ ref, format, size, minimal });
+    await run({ ref, format, content });
     setInputMode('paste'); // reveal the generated payload in the editor
   };
 
@@ -68,30 +67,23 @@ export function GeneratePanel() {
         <FormatSelect value={format} onChange={setFormat} />
       </Field>
 
-      <Field label="Size">
-        <Select value={size} onValueChange={(v) => setSize(v as GenerateSize)} disabled={minimal}>
+      <Field label="Content">
+        <Select value={content} onValueChange={(v) => setContent(v as GenerateContent)}>
           <SelectTrigger className="text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {GENERATE_SIZES.map((s) => (
-              <SelectItem key={s.value} value={s.value}>
-                {s.label}
+            {GENERATE_CONTENTS.map((c) => (
+              <SelectItem key={c.value} value={c.value} title={c.hint}>
+                {c.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+        <span className="text-xs text-muted-foreground">
+          {GENERATE_CONTENTS.find((c) => c.value === content)?.hint}
+        </span>
       </Field>
-
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={minimal}
-          onChange={(e) => setMinimal(e.target.checked)}
-          className="h-4 w-4 rounded border-input accent-primary"
-        />
-        Minimal payload (mandatory fields only)
-      </label>
 
       <Button onClick={submit} disabled={isLoading} className="mt-1">
         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shuffle className="h-4 w-4" />}
