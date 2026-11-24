@@ -3,13 +3,12 @@ import { toast } from 'sonner';
 import { generate, HubError } from '@/services/hubClient';
 import { analytics } from '@/services/analytics';
 import { useConverterStore } from '@/stores/useConverterStore';
-import type { Format, GenerateSize } from '@/types';
+import type { Format, GenerateContent } from '@/types';
 
 interface GenerateOptions {
   ref: string;
   format: Format;
-  size: GenerateSize;
-  minimal: boolean;
+  content: GenerateContent;
 }
 
 /** Generates a sample payload and loads it into the input editor. */

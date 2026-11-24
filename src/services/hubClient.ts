@@ -122,7 +122,7 @@ export async function clearMessageDefault(identity: string): Promise<void> {
 }
 
 /** POST /api/generate — returns the generated payload text. */
-export async function generate({ ref, format, size, minimal, compat }: GenerateRequest): Promise<string> {
+export async function generate({ ref, format, content, compat }: GenerateRequest): Promise<string> {
   const res = await fetch(`${BASE}/api/generate`, {
     method: 'POST',
     headers: {
@@ -131,7 +131,7 @@ export async function generate({ ref, format, size, minimal, compat }: GenerateR
       ...compatHeader(compat),
       ...authHeaders(),
     },
-    body: JSON.stringify({ format, size, minimal }),
+    body: JSON.stringify({ format, content }),
   });
   const text = await res.text();
   if (!res.ok) throw new HubError(parseError(text, res.status, 'Generation failed'), res.status);
