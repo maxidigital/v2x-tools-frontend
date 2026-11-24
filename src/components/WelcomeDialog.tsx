@@ -1,3 +1,4 @@
+import { FAQ_URL, CHANGELOG_URL } from '@/components/layout/Footer';
 import { useEffect, useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import {
@@ -103,6 +104,17 @@ export function WelcomeDialog() {
             being able to answer every message. Leave us your email and we'll let you know as soon as the
             site is fully functional.
           </DialogDescription>
+          <p className="pt-1 text-xs text-muted-foreground">
+            New here? Read the{' '}
+            <a href={FAQ_URL} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+              FAQ
+            </a>{' '}
+            or see{' '}
+            <a href={CHANGELOG_URL} target="_blank" rel="noreferrer" className="text-primary hover:underline">
+              what's new
+            </a>
+            .
+          </p>
         </DialogHeader>
 
         {joined ? (

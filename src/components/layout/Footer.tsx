@@ -1,4 +1,8 @@
 import type { ReactNode } from 'react';
+
+/** Product pages on asn1click.com (asn1click-front): the FAQ and the changelog. */
+export const FAQ_URL = 'https://asn1click.com/asn1click/faq';
+export const CHANGELOG_URL = 'https://asn1click.com/asn1click/changelog';
 import {
   Dialog,
   DialogContent,
@@ -73,6 +77,15 @@ export function Footer() {
           <li>Retain data after processing is complete</li>
         </ul>
         <p>
+          <strong>AI chat (Ask):</strong> what you type in the chat, and the workspace content you attach to it,
+          is sent to an AI provider (OpenAI) to produce the answer; it is not used to train models. Do not use the
+          chat for confidential data: Convert and Generate never leave our servers.
+        </p>
+        <p>
+          <strong>Analytics:</strong> anonymous usage events (e.g. "conversion failed" with its error message,
+          which may quote a single field value). No payloads.
+        </p>
+        <p>
           <strong>Security:</strong> Data transmission is encrypted via HTTPS. Processing occurs in
           isolated server environments. Contact: hello@v2xnow.de
         </p>
@@ -100,7 +113,13 @@ export function Footer() {
         Contact
       </a>
       <a className="transition-colors hover:text-foreground" href="/doc/" target="_blank" rel="noreferrer">
-        API Docs
+        Docs
+      </a>
+      <a className="transition-colors hover:text-foreground" href={FAQ_URL} target="_blank" rel="noreferrer">
+        FAQ
+      </a>
+      <a className="transition-colors hover:text-foreground" href={CHANGELOG_URL} target="_blank" rel="noreferrer">
+        What's new
       </a>
     </footer>
   );
