@@ -134,14 +134,30 @@
     <table>
         <tr><th>Field</th><th>Description</th></tr>
         <tr><td><code>format</code></td><td>Output encoding: <code>UPER</code> (default), <code>WER</code>, <code>JER</code>, <code>XER</code>.</td></tr>
-        <tr><td><code>size</code></td><td>How full the random sample is: <code>SMALLEST</code>, <code>SMALL</code> (default), <code>MEDIUM</code>, <code>BIG</code>, <code>BIGGEST</code>.</td></tr>
-        <tr><td><code>minimal</code></td><td><code>true</code> = only mandatory fields with default values (ignores <code>size</code>).</td></tr>
+        <tr><td><code>content</code></td><td><code>MINIMAL</code> (default) = only the mandatory fields, with minimal values ·
+            <code>RANDOM</code> = a typical message (random optional fields, short lists and strings) ·
+            <code>FULL</code> = every optional field present once, one item per list (each field of the schema appears).</td></tr>
+        <tr><td><code>overrides</code></td><td>Fields to set after generating: <code>[{"path": "…", "value": "…"}]</code>. The path uses the
+            field names as the JSON shows them, separated by <code>.</code>, with <code>[n]</code> for a list item (missing items
+            are created); whatever the path needs (optional fields, list items, the CHOICE alternative) is created with
+            minimal values. Values: numbers, or a named number / ENUMERATED identifier by name; BIT STRING as
+            <code>0</code>/<code>1</code> characters or named bits <code>{a,b}</code>; OCTET STRING as hex; strings as text.
+            A number with a <code>@unit</code> in the schema also takes the physical value with its unit
+            (<code>"41.3875 degree"</code>, <code>"13.89 m/s"</code>).</td></tr>
     </table>
-    <pre><code>curl -X POST "https://v2x.tools/api/generate" \
-  -H "X-Ref: _cam_v2" -H "Content-Type: application/json" \
-  --data '{"format":"UPER","size":"SMALL"}'
+    <div class="note">Since 2026-11-24 <code>content</code> replaces <code>size</code> and <code>minimal</code>; without it the sample is
+        <code>MINIMAL</code> (it used to be a small random one). Every generated message is valid: a value outside its range is an error.</div>
+    <pre><code># A random CAM
+curl -X POST "https://v2x.tools/api/generate" \
+  -H "X-Ref: _cam_v2_3" -H "Content-Type: application/json" \
+  --data '{"format":"UPER","content":"RANDOM"}'
 
-# → uper:0202...</code></pre>
+# A minimal CAM with a station id and a speed of 50 km/h
+curl -X POST "https://v2x.tools/api/generate" \
+  -H "X-Ref: _cam_v2_3" -H "Content-Type: application/json" \
+  --data '{"format":"JER","content":"MINIMAL","overrides":[
+    {"path":"header.stationId","value":"1234"},
+    {"path":"cam.camParameters.highFrequencyContainer.basicVehicleContainerHighFrequency.speed.speedValue","value":"13.89 m/s"}]}'</code></pre>
 
     <h2 id="discover">Discover</h2>
     <p>Read-only endpoints to discover the available messages and modules (the valid <code>X-Ref</code> values).</p>
