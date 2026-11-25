@@ -22,7 +22,7 @@ import { leaveApp } from '@/lib/leaveApp';
 // Bounces back here with #token via ?redirect=<origin>. Swap to asn1click.io/login once that's a
 // direct custom domain (override via VITE_LOGIN_URL).
 const CENTRAL_LOGIN_URL =
-  import.meta.env.VITE_LOGIN_URL ?? 'https://v2xnow.de/asn1click/login';
+  import.meta.env.VITE_LOGIN_URL ?? 'https://asn1click.com/asn1click/login';
 
 // The asn1click account app (account/dashboard) — a separate product surface under *.asn1click.com.
 // Override with VITE_APP_URL.
