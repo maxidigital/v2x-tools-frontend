@@ -34,6 +34,10 @@
         <a href="#can-i-paste-a-full-captured-packet-geonetworking-security-header-btp">Can I paste a full captured packet (GeoNetworking + security header + BTP)?</a>
         <a href="#how-is-this-different-from-wireshark-asn1c-or-the-usdot-connectedvcs-validator">How is this different from Wireshark, asn1c or the USDOT ConnectedVCS validator?</a>
         <h4><a href="#known-limitations">Known limitations</a></h4>
+        <a href="#can-i-encode-values-of-16k-or-more">Can I encode values of 16K or more?</a>
+        <a href="#which-asn-1-features-are-not-supported-in-uploaded-modules">Which ASN.1 features are not supported in uploaded modules?</a>
+        <a href="#why-can-t-i-set-a-physical-unit-on-some-fields">Why can't I set a physical unit on some fields?</a>
+        <a href="#do-the-public-modules-compile-unchanged-in-other-asn-1-tools">Do the public modules compile unchanged in other ASN.1 tools?</a>
     </div>
 
     <h2 id="data-and-privacy">Data and privacy</h2>
@@ -98,12 +102,21 @@
 
     <h2 id="known-limitations">Known limitations</h2>
 
-    <ul>
-        <li><strong>Lengths of 16K or more</strong> (X.691 fragmentation) are not supported: such values are refused with an error, never encoded wrongly. In practice this only matters for 3GPP-size messages.</li>
-        <li><strong>ASN.1 features not yet supported in uploaded modules:</strong> <code>OBJECT IDENTIFIER</code> as a field type, general parameterized types (<code>Container { {Set} }</code>), and general information object class field references with table constraints (<code>CLASS.&amp;field ({Set}{@id})</code>). The forms used by the ETSI messages are supported.</li>
-        <li><strong>Physical units in <code>set</code></strong> (<code>41.3875 degree</code>) work only where the schema declares a unit (<code>@unit</code>). Some types don't (e.g. <code>HeadingValue</code> in CDD 4.3); use the raw integer there. Syntax: <a href="/doc/messages.html#set">Generate and set</a>.</li>
-        <li><strong>The public modules contain small extensions of ours</strong> (for example named values in the ITS PDU header), so not every stored module compiles unchanged in other ASN.1 tools. Clean copies are planned.</li>
-    </ul>
+    <h3 id="can-i-encode-values-of-16k-or-more">Can I encode values of 16K or more?</h3>
+
+    <p>No. Lengths of 16K or more (X.691 fragmentation) are not supported: such values are refused with an error, never encoded wrongly. In practice this only matters for 3GPP-size messages.</p>
+
+    <h3 id="which-asn-1-features-are-not-supported-in-uploaded-modules">Which ASN.1 features are not supported in uploaded modules?</h3>
+
+    <p><code>OBJECT IDENTIFIER</code> as a field type, general parameterized types (<code>Container { {Set} }</code>), and general information object class field references with table constraints (<code>CLASS.&amp;field ({Set}{@id})</code>). The forms used by the ETSI messages are supported.</p>
+
+    <h3 id="why-can-t-i-set-a-physical-unit-on-some-fields">Why can't I set a physical unit on some fields?</h3>
+
+    <p>Physical units in <code>set</code> (<code>41.3875 degree</code>) work only where the schema declares a unit (<code>@unit</code>). Some types don't (e.g. <code>HeadingValue</code> in CDD 4.3); use the raw integer there. Syntax: <a href="/doc/messages.html#set">Generate and set</a>.</p>
+
+    <h3 id="do-the-public-modules-compile-unchanged-in-other-asn-1-tools">Do the public modules compile unchanged in other ASN.1 tools?</h3>
+
+    <p>Not all of them. They contain small extensions of ours (for example named values in the ITS PDU header), so some stored modules don't compile unchanged in other ASN.1 tools. Clean copies are planned.</p>
 
     <footer>
         asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · ETSI C-ITS message tooling.

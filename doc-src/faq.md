@@ -51,7 +51,14 @@ Not yet. Paste only the message itself (the bytes starting with the ITS PDU head
 
 ## Known limitations
 
-- **Lengths of 16K or more** (X.691 fragmentation) are not supported: such values are refused with an error, never encoded wrongly. In practice this only matters for 3GPP-size messages.
-- **ASN.1 features not yet supported in uploaded modules:** `OBJECT IDENTIFIER` as a field type, general parameterized types (`Container { {Set} }`), and general information object class field references with table constraints (`CLASS.&field ({Set}{@id})`). The forms used by the ETSI messages are supported.
-- **Physical units in `set`** (`41.3875 degree`) work only where the schema declares a unit (`@unit`). Some types don't (e.g. `HeadingValue` in CDD 4.3); use the raw integer there. Syntax: [Generate and set](https://v2x.tools/doc/messages.html#set).
-- **The public modules contain small extensions of ours** (for example named values in the ITS PDU header), so not every stored module compiles unchanged in other ASN.1 tools. Clean copies are planned.
+### Can I encode values of 16K or more?
+No. Lengths of 16K or more (X.691 fragmentation) are not supported: such values are refused with an error, never encoded wrongly. In practice this only matters for 3GPP-size messages.
+
+### Which ASN.1 features are not supported in uploaded modules?
+`OBJECT IDENTIFIER` as a field type, general parameterized types (`Container { {Set} }`), and general information object class field references with table constraints (`CLASS.&field ({Set}{@id})`). The forms used by the ETSI messages are supported.
+
+### Why can't I set a physical unit on some fields?
+Physical units in `set` (`41.3875 degree`) work only where the schema declares a unit (`@unit`). Some types don't (e.g. `HeadingValue` in CDD 4.3); use the raw integer there. Syntax: [Generate and set](https://v2x.tools/doc/messages.html#set).
+
+### Do the public modules compile unchanged in other ASN.1 tools?
+Not all of them. They contain small extensions of ours (for example named values in the ITS PDU header), so some stored modules don't compile unchanged in other ASN.1 tools. Clean copies are planned.
