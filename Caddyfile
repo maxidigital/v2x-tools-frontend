@@ -9,11 +9,16 @@
 
 	# api.asn1click.com: the public API with clean paths (api.asn1click.com/convert = hub /api/convert). The root
 	# goes to the API docs. Same service as the web tools; only the Host differs. Must come first.
+	# (the root has its own block: inside one handle, Caddy runs rewrite before a nested handle, so "/" went to the hub)
+	@apiroot {
+		host api.asn1click.com
+		path /
+	}
+	handle @apiroot {
+		redir https://tools.asn1click.com/doc/api.html 302
+	}
 	@apihost host api.asn1click.com
 	handle @apihost {
-		handle / {
-			redir https://tools.asn1click.com/doc/api.html 302
-		}
 		rewrite * /api{uri}
 		reverse_proxy http://v2x-tools-hub.railway.internal:8080 {
 			lb_try_duration 30s
