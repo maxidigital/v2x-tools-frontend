@@ -29,7 +29,7 @@ function LegalLink({ title, children }: { title: string; children: ReactNode }) 
 
 export function Footer() {
   return (
-    <footer className="flex h-9 shrink-0 flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-border px-4 text-xs text-muted-foreground">
+    <footer className="flex min-h-9 shrink-0 py-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-border px-4 text-xs text-muted-foreground">
       <span>© {new Date().getFullYear()} v2xnow.de</span>
       <LegalLink title="Impressum">
         <p>

@@ -89,7 +89,7 @@ export function VersionsDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" title="Message versions used by auto-detect">
-          <Layers className="h-4 w-4" /> Versions
+          <Layers className="h-4 w-4" /> <span className="hidden sm:inline">Versions</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[85vh] overflow-auto sm:max-w-2xl">

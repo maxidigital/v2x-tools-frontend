@@ -11,6 +11,7 @@ import { useUiStore } from '@/stores/useUiStore';
 import { ChatMarkdown, splitSuggestions } from './ChatMarkdown';
 import { useChatStore, type ChatMessage } from './useChatStore';
 import { workspaceSummary } from './workspaceContext';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { collapseResults } from './collapseResults';
 
 const SUGGESTIONS = [
@@ -22,6 +23,7 @@ const SUGGESTIONS = [
 
 function openResult(tabId: string) {
   useChatStore.getState().setOutputHidden(false);
+  useChatStore.getState().setMobileResults(true);
   useConverterStore.getState().setActiveTab(tabId);
 }
 
@@ -270,7 +272,8 @@ function Hero() {
 }
 
 export function ChatPanel() {
-  const { messages, streaming, remaining, anonymous, reset, outputHidden, setOutputHidden } = useChatStore();
+  const { messages, streaming, remaining, anonymous, reset, outputHidden, setOutputHidden, setMobileResults } = useChatStore();
+  const isWide = useMediaQuery('(min-width: 768px)');
   const user = useAuthStore((s) => s.user);
   const hasTabs = useConverterStore((s) => s.tabs.length > 0);
   const end = useRef<HTMLDivElement>(null);
@@ -289,9 +292,15 @@ export function ChatPanel() {
         </span>
         <div className="flex items-center gap-1">
           {hasTabs && (
-            <Button variant="ghost" size="sm" onClick={() => setOutputHidden(!outputHidden)}>
-              <PanelRight /> {outputHidden ? 'Show results' : 'Hide results'}
-            </Button>
+            isWide ? (
+              <Button variant="ghost" size="sm" onClick={() => setOutputHidden(!outputHidden)}>
+                <PanelRight /> {outputHidden ? 'Show results' : 'Hide results'}
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={() => setMobileResults(true)}>
+                <PanelRight /> Results
+              </Button>
+            )
           )}
           <Button variant="ghost" size="sm" onClick={reset} disabled={streaming}>
             <Plus /> New chat

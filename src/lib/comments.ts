@@ -32,6 +32,8 @@ export interface Origin {
   to?: Format;
   /** generate: MINIMAL | RANDOM | FULL */
   content?: string;
+  /** generate: the path=value lines it was given (shown so the message can be rebuilt or changed) */
+  set?: string[];
   compat?: Compat;
 }
 
@@ -60,7 +62,7 @@ export function originLine(o: Origin): string {
 
 /** A tab's Input: the comment lines (what for, then the operation), then the input payload if there is one. */
 export function withOrigin(origin: Origin, input: string, comment?: string): string {
-  const lines = [comment?.trim(), originLine(origin)]
+  const lines = [comment?.trim(), originLine(origin), ...(origin.set ?? []).map((l) => `set ${l}`)]
     .filter(Boolean)
     .map((l) => `# ${l!.replace(/\s*\n\s*/g, ' ')}`);
   const body = input.trim();

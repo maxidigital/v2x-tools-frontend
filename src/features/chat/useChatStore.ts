@@ -42,12 +42,15 @@ interface ChatState {
   draft: string;
   /** The user hid the results panel in Ask mode. */
   outputHidden: boolean;
+  /** Narrow screens show one pane at a time: the results instead of the chat (opened from a chip or "Results"). */
+  mobileResults: boolean;
   /** Format every message the AI generates or edits is shown in (selector in the composer; remembered per browser). */
   displayFormat: Format;
 
   setDraft: (d: string) => void;
   setAttachContext: (v: boolean) => void;
   setOutputHidden: (v: boolean) => void;
+  setMobileResults: (v: boolean) => void;
   setDisplayFormat: (f: Format) => void;
   send: (text: string) => Promise<void>;
   stop: () => void;
@@ -86,11 +89,13 @@ export const useChatStore = create<ChatState>((set, get) => {
     attachContext: true,
     draft: '',
     outputHidden: false,
+    mobileResults: false,
     displayFormat: savedFormat(),
 
     setDraft: (draft) => set({ draft }),
     setAttachContext: (attachContext) => set({ attachContext }),
     setOutputHidden: (outputHidden) => set({ outputHidden }),
+    setMobileResults: (mobileResults) => set({ mobileResults }),
     setDisplayFormat: (displayFormat) => {
       set({ displayFormat });
       try {

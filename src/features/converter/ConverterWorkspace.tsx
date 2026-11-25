@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { InputPanel } from './components/InputPanel';
 import { OutputPanel } from './components/OutputPanel';
 import { useUiStore } from '@/stores/useUiStore';
@@ -29,6 +30,32 @@ export function ConverterWorkspace() {
   const direction = isWide ? 'horizontal' : 'vertical';
   const hasTabs = useConverterStore((s) => s.tabs.length > 0);
   const outputHidden = useChatStore((s) => s.outputHidden);
+  const mobileResults = useChatStore((s) => s.mobileResults);
+  const setMobileResults = useChatStore((s) => s.setMobileResults);
+
+  // Narrow screens: the chat, or (from a chip / "Results") the results with a way back. Side by side they don't fit.
+  if (inputMode === 'ask' && !isWide) {
+    if (hasTabs && mobileResults)
+      return (
+        <div className="flex min-h-0 flex-1 flex-col bg-card">
+          <div className="flex h-10 shrink-0 items-center border-b border-border px-2">
+            <Button variant="ghost" size="sm" onClick={() => setMobileResults(false)}>
+              <ArrowLeft /> Back to chat
+            </Button>
+          </div>
+          <div className="flex min-h-0 flex-1 flex-col">
+            <OutputPanel />
+          </div>
+        </div>
+      );
+    return (
+      <div className="min-h-0 flex-1 bg-card">
+        <Suspense fallback={<PanelFallback />}>
+          <ChatPanel />
+        </Suspense>
+      </div>
+    );
+  }
 
   // Ask: the chat takes the whole width until a tool produces a result; then the results open beside it.
   if (inputMode === 'ask' && (!hasTabs || outputHidden)) {

@@ -107,7 +107,9 @@ function rawTab(r: ToolResult): NewTab | null {
   const comment = str(a.comment).trim() || undefined;
   const compat = a.compat === 'asn1c' ? ('asn1c' as const) : undefined;
   const input = (op: Op, from: Format | undefined, to: Format | undefined, payload = str(a.payload)) =>
-    withOrigin({ op, ref: ref || undefined, from, to, content: typeof a.content === 'string' ? a.content.toUpperCase() : undefined, compat }, payload, comment);
+    withOrigin({ op, ref: ref || undefined, from, to, content: typeof a.content === 'string' ? a.content.toUpperCase() : undefined,
+        set: Array.isArray(a.set) ? a.set.filter((l): l is string => typeof l === 'string') : undefined, compat },
+      payload, comment);
   const refInfo: ResolvedInfo | undefined = ref ? { resolvedRef: ref, autoDetected: false } : undefined;
   switch (r.name) {
     case 'decode': {

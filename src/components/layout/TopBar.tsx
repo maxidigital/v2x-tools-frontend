@@ -106,15 +106,15 @@ export function TopBar() {
           </span>
           <span className="text-base font-semibold tracking-tight">asn1click</span>
         </a>
-        <span className="text-sm font-medium text-muted-foreground">Web Tools</span>
-        <Badge variant="primary" className="ml-0.5">
+        <span className="hidden text-sm font-medium text-muted-foreground sm:inline">Web Tools</span>
+        <Badge variant="primary" className="ml-0.5 hidden sm:inline-flex">
           BETA
         </Badge>
       </div>
 
       <nav className="flex items-center gap-1">
         {/* Product switcher: sibling tools (the current one, Web Tools, is named in the brand). */}
-        <Button variant="ghost" size="sm" asChild>
+        <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
           <a href={API_URL} target="_blank" rel="noreferrer">API</a>
         </Button>
         <Button variant="ghost" size="sm" asChild onClick={() => analytics.apiDocsClick()}>

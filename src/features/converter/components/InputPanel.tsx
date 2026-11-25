@@ -38,10 +38,10 @@ export function InputPanel() {
         <div className="flex items-center gap-1">
           <VersionsDialog />
           <Button variant="ghost" size="sm" onClick={() => setPayload('')} disabled={!payload}>
-            <Eraser className="h-4 w-4" /> Clear
+            <Eraser className="h-4 w-4" /> <span className="hidden sm:inline">Clear</span>
           </Button>
           <Button variant="ghost" size="sm" onClick={copy} disabled={!payload}>
-            <Copy className="h-4 w-4" /> Copy
+            <Copy className="h-4 w-4" /> <span className="hidden sm:inline">Copy</span>
           </Button>
         </div>
       </div>

@@ -25,3 +25,15 @@ test('validate keeps the message in its format, with the check on the Input', ()
   expect(tab?.info?.resolvedRef).toBe('_mapem_v2');
   expect(tab?.originalInput).toBe('# Check the Barcelona MAP\n# validate ref=MAPEM from=JER');
 });
+
+test('generate with set: the lines are on the Input, so the message can be changed later', () => {
+  const tab = tabFromToolResult({
+    name: 'generate',
+    args: { ref: 'CAM', set: ['header.stationId=1234', 'cam.camParameters.basicContainer.stationType=passengerCar'] },
+    output: '{"header":{}}',
+    error: null,
+  });
+  expect(tab?.originalInput).toBe(
+    '# generate ref=CAM format=JER content=MINIMAL\n# set header.stationId=1234\n# set cam.camParameters.basicContainer.stationType=passengerCar'
+  );
+});
