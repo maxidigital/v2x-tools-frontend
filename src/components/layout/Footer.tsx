@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 
-/** Product pages on asn1click.com (asn1click-front): the FAQ and the changelog. */
-export const FAQ_URL = 'https://asn1click.com/asn1click/faq';
-export const CHANGELOG_URL = 'https://asn1click.com/asn1click/changelog';
+/** The FAQ and the changelog live with the docs (public/doc). */
+export const FAQ_URL = '/doc/faq.html';
+export const CHANGELOG_URL = '/doc/changelog.html';
 import {
   Dialog,
   DialogContent,
