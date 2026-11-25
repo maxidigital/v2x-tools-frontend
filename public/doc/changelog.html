@@ -33,7 +33,7 @@
         <li><strong>All formats check constraints.</strong> JER and XER used to accept out-of-range values; now they are rejected like in UPER.</li>
         <li><strong>Generate:</strong> the content option is now <code>MINIMAL</code>, <code>RANDOM</code> or <code>FULL</code> (replaces the five sizes). Realistic messages stay under 410 bytes.
             <ul>
-                <li><strong>API default changed:</strong> <code>POST /api/generate</code> without <code>content</code> now returns a <code>MINIMAL</code> message (it used to return a small random one). <code>size</code> and <code>minimal</code> are no longer used. See the <a href="/doc/api.html">API reference</a>.</li>
+                <li><strong>API default changed:</strong> <code>POST /generate</code> without <code>content</code> now returns a <code>MINIMAL</code> message (it used to return a small random one). <code>size</code> and <code>minimal</code> are no longer used. See the <a href="/doc/api.html">API reference</a>.</li>
             </ul>
         </li>
         <li><strong>Generate with <code>set</code>:</strong> fix individual fields with <code>path=value</code> lines, e.g. <code>header.stationID=1234</code>. Physical units are converted for you when the schema declares one (<code>lat=41.3875 degree</code>, <code>speedValue=13.89 m/s</code>); named numbers, enumerations and named bits accept their names (<code>stationType=passengerCar</code>, <code>{ingressPath}</code>). <a href="/doc/messages.html#set">Syntax</a>.</li>

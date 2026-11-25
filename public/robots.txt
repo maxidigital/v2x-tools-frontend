@@ -1,11 +1,11 @@
-# robots.txt for v2x.tools
+# robots.txt for tools.asn1click.com
 # Allow search engines to index the site
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://v2x.tools/sitemap.xml
+Sitemap: https://tools.asn1click.com/sitemap.xml
 
 # Block AI training bots to save bandwidth
 User-agent: GPTBot

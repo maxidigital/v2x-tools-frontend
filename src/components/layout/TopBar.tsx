@@ -30,7 +30,7 @@ const APP_URL = import.meta.env.VITE_APP_URL ?? 'https://app.asn1click.com';
 
 // Product-level destinations: the asn1click landing (brand wordmark) and the sibling API tool.
 const LANDING_URL = import.meta.env.VITE_LANDING_URL ?? 'https://asn1click.com';
-const API_URL = import.meta.env.VITE_API_URL ?? 'https://api.asn1click.com';
+const API_URL = import.meta.env.VITE_API_URL ?? 'https://asn1click.com/api';
 
 /** Go to the central login and come back here (work in the converter is preserved). */
 export function signIn() {

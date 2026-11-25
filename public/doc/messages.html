@@ -62,7 +62,7 @@
 
     <h2 id="examples">Examples</h2>
     <h4>A car at 50 km/h with station id 1234 (CAM 2.3.1)</h4>
-    <pre><code>curl -X POST "https://v2x.tools/api/generate" \
+    <pre><code>curl -X POST "https://api.asn1click.com/generate" \
   -H "X-Ref: _cam_v2_3" -H "Content-Type: application/json" \
   --data '{"format":"UPER","content":"MINIMAL","overrides":[
     {"path":"header.stationId","value":"1234"},
@@ -72,7 +72,7 @@
     {"path":"cam.camParameters.highFrequencyContainer.basicVehicleContainerHighFrequency.speed.speedValue","value":"13.89 m/s"}]}'</code></pre>
 
     <h4>An intersection with a bike lane (MAPEM)</h4>
-    <pre><code>curl -X POST "https://v2x.tools/api/generate" \
+    <pre><code>curl -X POST "https://api.asn1click.com/generate" \
   -H "X-Ref: _mapem_v2" -H "Content-Type: application/json" \
   --data '{"format":"JER","content":"MINIMAL","overrides":[
     {"path":"map.intersections[0].name","value":"Gran Via x Passeig de Gracia"},

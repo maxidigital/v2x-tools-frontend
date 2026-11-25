@@ -6,7 +6,7 @@ import { snapshotChat } from '@/features/chat/useChatStore';
  * Navigate away on purpose (login / logout / external tool). Skips the unsaved-work "Leave site?" warning,
  * and — for round-trips that return to this app (login) — optionally snapshots the converter work (open
  * tabs) so it's restored when we come back. Use `preserve: true` only for navigations that land back on
- * v2x.tools.
+ * tools.asn1click.com.
  */
 export function leaveApp(url: string, opts: { preserve?: boolean } = {}) {
   if (opts.preserve) {

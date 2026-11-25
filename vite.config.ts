@@ -13,8 +13,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // Ask mode's chat backend (prototype: lives on asn1click.com until it moves to the hub).
-      '/api/chat': { target: 'https://mcp.v2x.tools', changeOrigin: true, secure: true },
+      // Ask mode's chat backend (v2x-tools-mcp).
+      '/api/chat': { target: 'https://mcp.asn1click.com', changeOrigin: true, secure: true },
       '/api': { target: apiTarget, changeOrigin: true, secure: false },
     },
   },

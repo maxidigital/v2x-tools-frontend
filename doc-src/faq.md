@@ -2,12 +2,12 @@
 
 <!-- Source of public/doc/faq.html (regenerate with doc-src/md2doc.py). Also meant for the chat and the MCP: keep it plain Markdown. -->
 
-Short answers about what asn1click does and doesn't do. For how-to guides and the API reference, see the [documentation](https://v2x.tools/doc/); for recent changes, see [What's new](./changelog).
+Short answers about what asn1click does and doesn't do. For how-to guides and the API reference, see the [documentation](https://tools.asn1click.com/doc/); for recent changes, see [What's new](./changelog).
 
 ## Data and privacy
 
 ### Do you store the payloads I decode or encode?
-No. Payloads are processed in memory and are neither stored nor logged. Anonymous usage analytics record error messages, which may quote a single field value. Through an AI assistant ([MCP](https://v2x.tools/doc/mcp.html), chat) the AI provider sees the payloads; for confidential data use the web UI or the API.
+No. Payloads are processed in memory and are neither stored nor logged. Anonymous usage analytics record error messages, which may quote a single field value. Through an AI assistant ([MCP](https://tools.asn1click.com/doc/mcp.html), chat) the AI provider sees the payloads; for confidential data use the web UI or the API.
 
 ### Who can see the ASN.1 modules I upload?
 Only you. Uploaded modules are private to your account.
@@ -39,7 +39,7 @@ On 2026-11-24 JER and XER were changed to follow the standards: enumerations by 
 ## Interoperability
 
 ### Why can my result differ from Vanetza or other asn1c-based stacks?
-asn1c departs from X.691 in a few places: it merges extension additions into the root of some constraints (e.g. `PathPredicted`, `DeltaPositions`), drops SIZE extensibility after `WITH COMPONENT`, and drops the extension bit of some open-type ids (CAM 2.3.1 extension containers). asn1click follows X.691 by default, like Objective Systems and asn1tools. Choose **asn1c / Vanetza** in the rules selector (API: `X-Compat: asn1c`) to get byte-identical output with those stacks. See [Web tools](https://v2x.tools/doc/web-tools.html) and the [API reference](https://v2x.tools/doc/api.html).
+asn1c departs from X.691 in a few places: it merges extension additions into the root of some constraints (e.g. `PathPredicted`, `DeltaPositions`), drops SIZE extensibility after `WITH COMPONENT`, and drops the extension bit of some open-type ids (CAM 2.3.1 extension containers). asn1click follows X.691 by default, like Objective Systems and asn1tools. Choose **asn1c / Vanetza** in the rules selector (API: `X-Compat: asn1c`) to get byte-identical output with those stacks. See [Web tools](https://tools.asn1click.com/doc/web-tools.html) and the [API reference](https://tools.asn1click.com/doc/api.html).
 
 ### Can I paste a full captured packet (GeoNetworking + security header + BTP)?
 Not yet. Paste only the message itself (the bytes starting with the ITS PDU header). Unwrapping GeoNetworking, BTP and IEEE 1609.2 / TS 103 097 secured packets is on the roadmap.
@@ -58,7 +58,7 @@ No. Lengths of 16K or more (X.691 fragmentation) are not supported: such values 
 `OBJECT IDENTIFIER` as a field type, general parameterized types (`Container { {Set} }`), and general information object class field references with table constraints (`CLASS.&field ({Set}{@id})`). The forms used by the ETSI messages are supported.
 
 ### Why can't I set a physical unit on some fields?
-Physical units in `set` (`41.3875 degree`) work only where the schema declares a unit (`@unit`). Some types don't (e.g. `HeadingValue` in CDD 4.3); use the raw integer there. Syntax: [Generate and set](https://v2x.tools/doc/messages.html#set).
+Physical units in `set` (`41.3875 degree`) work only where the schema declares a unit (`@unit`). Some types don't (e.g. `HeadingValue` in CDD 4.3); use the raw integer there. Syntax: [Generate and set](https://tools.asn1click.com/doc/messages.html#set).
 
 ### Do the public modules compile unchanged in other ASN.1 tools?
 Not all of them. They contain small extensions of ours (for example named values in the ITS PDU header), so some stored modules don't compile unchanged in other ASN.1 tools. Clean copies are planned.

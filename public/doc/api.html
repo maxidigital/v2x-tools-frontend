@@ -15,7 +15,7 @@
     <div class="subtitle">HTTP API: convert, generate, diagnose, discover</div>
     <nav class="nav"><a href="/doc/">Overview</a> <a href="/doc/web-tools.html">Web tools</a> <a href="/doc/messages.html">Building messages</a> <a href="/doc/mcp.html">AI assistants (MCP)</a> <a href="/doc/api.html" class="active">API reference</a> <a href="/doc/faq.html">FAQ</a> <a href="/doc/changelog.html">What's new</a></nav>
 
-    <p>Base URL: <code>https://v2x.tools</code>. Plain HTTP, no authentication for the public message set. A bearer
+    <p>Base URL: <code>https://api.asn1click.com</code>. Plain HTTP, no authentication for the public message set. A bearer
        token from your asn1click account adds your own defaults and modules.</p>
 
     <h2 id="concepts">Concepts</h2>
@@ -44,7 +44,7 @@
        <code>X-Compat</code>.</p>
 
     <h2 id="convert">Convert</h2>
-    <h3><span class="method post">POST</span> <span class="path">/api/convert</span></h3>
+    <h3><span class="method post">POST</span> <span class="path">/convert</span></h3>
     <p>Decode, encode or re-encode a payload. The body is the payload.</p>
     <table>
         <tr><th>Header</th><th>Required</th><th>Description</th></tr>
@@ -54,18 +54,18 @@
         <tr><td><code>X-Compat</code></td><td>optional</td><td><code>standard</code> or <code>asn1c</code>.</td></tr>
     </table>
     <h4>Decode UPER to JSON (auto-detect)</h4>
-    <pre><code>curl -X POST "https://v2x.tools/api/convert" \
+    <pre><code>curl -X POST "https://api.asn1click.com/convert" \
   -H "X-From: UPER" -H "X-To: JER" \
   --data "uper:0202000004d200000059ca02160d929e71000000000030d40000000002b6800000028003ff01fff800"
 
 # → {"header":{"protocolVersion":2,"messageId":2,"stationId":1234},"cam":{...}}</code></pre>
     <h4>Encode JSON to UPER (explicit message)</h4>
-    <pre><code>curl -X POST "https://v2x.tools/api/convert" \
+    <pre><code>curl -X POST "https://api.asn1click.com/convert" \
   -H "X-Ref: _cam_v2_3" -H "X-From: JER" -H "X-To: UPER" \
   --data @cam.json</code></pre>
 
     <h2 id="generate">Generate</h2>
-    <h3><span class="method post">POST</span> <span class="path">/api/generate</span></h3>
+    <h3><span class="method post">POST</span> <span class="path">/generate</span></h3>
     <p>A sample message. <code>X-Ref</code> (required) names the message; JSON body, all optional:</p>
     <table>
         <tr><th>Field</th><th>Description</th></tr>
@@ -76,42 +76,42 @@
     </table>
     <div class="note">Since 2026-11-24 <code>content</code> replaces <code>size</code> and <code>minimal</code>; without it
         the sample is <code>MINIMAL</code> (it used to be a small random one).</div>
-    <pre><code>curl -X POST "https://v2x.tools/api/generate" \
+    <pre><code>curl -X POST "https://api.asn1click.com/generate" \
   -H "X-Ref: _cam_v2_3" -H "Content-Type: application/json" \
   --data '{"format":"UPER","content":"RANDOM"}'</code></pre>
 
     <h2 id="diagnose">Diagnose</h2>
-    <h3><span class="method post">POST</span> <span class="path">/api/diagnose</span></h3>
+    <h3><span class="method post">POST</span> <span class="path">/diagnose</span></h3>
     <p>Bit-by-bit breakdown of a UPER payload (<code>X-From: UPER</code>; <code>X-Ref</code> optional). For every
        field: its bits, raw value, decoded value and type, plus the structural bits (extension markers, presence bits,
        CHOICE indexes, lengths). A broken payload still answers <code>200</code> with what was decoded up to the failure,
        the field being read and the bit where it broke (<code>error</code>, <code>failurePath</code>,
        <code>failureBit</code>). Values outside their declared range are flagged in <code>constraintViolations</code>.</p>
-    <pre><code>curl -X POST "https://v2x.tools/api/diagnose" -H "X-From: UPER" --data "uper:0202…"
+    <pre><code>curl -X POST "https://api.asn1click.com/diagnose" -H "X-From: UPER" --data "uper:0202…"
 
 # → {"payloadBits":344,"decodedBits":344,"paddingBits":0,"constraintViolations":0,
 #    "entries":[{"start":8,"end":16,"path":"CAM.header.messageId","kind":"VALUE","bits":"00000010",
 #                "value":"2","type":"MessageId (0..255)"}, ...], "decoded":{...}}</code></pre>
 
     <h2 id="discover">Discover</h2>
-    <h3><span class="method get">GET</span> <span class="path">/api/messages</span></h3>
+    <h3><span class="method get">GET</span> <span class="path">/messages</span></h3>
     <p>The pre-configured messages; each <code>name</code> is a valid <code>X-Ref</code>.</p>
-    <pre><code>curl "https://v2x.tools/api/messages"
+    <pre><code>curl "https://api.asn1click.com/messages"
 
 # → [{"name":"_cam_v2","moduleAlias":"_cam_v2","rootElement":"CAM","description":"CAM v2",
 #     "options":{"fixups":[{"path":"header.protocolVersion","value":2},{"path":"header.messageID","value":2}]}}, ...]</code></pre>
-    <h3><span class="method get">GET</span> <span class="path">/api/messages/versions</span></h3>
+    <h3><span class="method get">GET</span> <span class="path">/messages/versions</span></h3>
     <p>Per header identity (<code>protocolVersion:messageID</code>, e.g. <code>2:1</code> = DENM): the available
        versions, the public default and the one used for you (<code>effective</code>).</p>
-    <h3><span class="method get">GET</span> <span class="path">/api/modules</span></h3>
+    <h3><span class="method get">GET</span> <span class="path">/modules</span></h3>
     <p>The ASN.1 modules: <code>moduleId</code> (use it in <code>moduleId:Type</code> refs), <code>oid</code>,
        a one-line description and the number of types. Optional <code>sort=name</code> (default) or
        <code>sort=uploaded</code>.</p>
-    <pre><code>curl "https://v2x.tools/api/modules"
+    <pre><code>curl "https://api.asn1click.com/modules"
 
 # → [{"moduleId":"_cam_v2_3","oid":"CAM-PDU-Descriptions {itu-t(0) identified-organization(4) ...}",
 #     "short":"Cooperative Awareness Message (CAM) ...","elementCount":...}, ...]</code></pre>
-    <h3><span class="method get">GET</span> <span class="path">/api/index/elements?moduleId=…</span></h3>
+    <h3><span class="method get">GET</span> <span class="path">/index/elements?moduleId=…</span></h3>
     <p>The types of a module with their kind, fields, constraints, named values and ASN.1 comments.</p>
 
     <h2 id="errors">Errors &amp; status codes</h2>

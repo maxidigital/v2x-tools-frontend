@@ -16,9 +16,9 @@
 - **Field names exactly as in the ASN.1**: `long`, `node-XY1` (previously `longint`, `node_XY1`).
 - **All formats check constraints.** JER and XER used to accept out-of-range values; now they are rejected like in UPER.
 - **Generate:** the content option is now `MINIMAL`, `RANDOM` or `FULL` (replaces the five sizes). Realistic messages stay under 410 bytes.
-  - **API default changed:** `POST /api/generate` without `content` now returns a `MINIMAL` message (it used to return a small random one). `size` and `minimal` are no longer used. See the [API reference](https://v2x.tools/doc/api.html).
-- **Generate with `set`:** fix individual fields with `path=value` lines, e.g. `header.stationID=1234`. Physical units are converted for you when the schema declares one (`lat=41.3875 degree`, `speedValue=13.89 m/s`); named numbers, enumerations and named bits accept their names (`stationType=passengerCar`, `{ingressPath}`). [Syntax](https://v2x.tools/doc/messages.html#set).
-- **[MCP](https://v2x.tools/doc/mcp.html):** new `validate` tool. `generate` and `encode` accept just the message type (`CAM`, `MAPEM`, `MAP`…) and use its default version.
+  - **API default changed:** `POST /generate` without `content` now returns a `MINIMAL` message (it used to return a small random one). `size` and `minimal` are no longer used. See the [API reference](https://tools.asn1click.com/doc/api.html).
+- **Generate with `set`:** fix individual fields with `path=value` lines, e.g. `header.stationID=1234`. Physical units are converted for you when the schema declares one (`lat=41.3875 degree`, `speedValue=13.89 m/s`); named numbers, enumerations and named bits accept their names (`stationType=passengerCar`, `{ingressPath}`). [Syntax](https://tools.asn1click.com/doc/messages.html#set).
+- **[MCP](https://tools.asn1click.com/doc/mcp.html):** new `validate` tool. `generate` and `encode` accept just the message type (`CAM`, `MAPEM`, `MAP`…) and use its default version.
 - **Fix:** some malformed module uploads could make the server hang; they now return a clear error within seconds.
 
 ## 2026-11-19
