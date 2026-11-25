@@ -83,7 +83,11 @@ export function Footer() {
         </p>
         <p>
           <strong>Analytics:</strong> anonymous usage events (e.g. "conversion failed" with its error message,
-          which may quote a single field value). No payloads.
+          which may quote a single field value), counted with Umami, which uses no cookies. No payloads.
+        </p>
+        <p>
+          <strong>Cookies and browser storage:</strong> only what the service needs: your sign-in session and your
+          preferences (e.g. the chat's output format). No tracking or advertising cookies.
         </p>
         <p>
           <strong>Security:</strong> Data transmission is encrypted via HTTPS. Processing occurs in
