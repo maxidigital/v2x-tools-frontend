@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What&#x27;s new — asn1click docs</title>
+    <meta name="description" content="asn1click changelog: new ETSI message versions, encoding fixes, JER/XER changes and new API and MCP features.">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/doc/doc.css">
+</head>
+<body>
+<div class="container">
+    <div class="wordmark">asn1click <span>docs</span></div>
+    <div class="subtitle">Changes to asn1click: web tools, API and MCP</div>
+    <nav class="nav"><a href="/doc/">Overview</a> <a href="/doc/web-tools.html">Web tools</a> <a href="/doc/messages.html">Building messages</a> <a href="/doc/mcp.html">AI assistants (MCP)</a> <a href="/doc/api.html">API reference</a> <a href="/doc/faq.html">FAQ</a> <a href="/doc/changelog.html" class="active">What's new</a></nav>
+
+    <h2 id="2026-11-24">2026-11-24</h2>
+
+    <div class="note"><strong>Breaking change for JSON and XML users.</strong> JER and XER now follow the standards (X.697 / X.693). JSON or XML produced before this date may no longer be accepted. See the list below and re-export your samples.</div>
+
+    <ul>
+        <li><strong>Standard JER and XER</strong>, verified against asn1tools:
+            <ul>
+                <li>ENUMERATED values are written by identifier (<code>"alt-000-20"</code> in JER, <code>&lt;alt-000-20/&gt;</code> in XER), not as numbers.</li>
+                <li>BOOLEAN in XER is <code>&lt;true/&gt;</code> / <code>&lt;false/&gt;</code>.</li>
+                <li>BIT STRING in JER is hex: <code>"52"</code>, or <code>{"value": "52", "length": 7}</code> when the size is not fixed. JER strings of <code>0</code>/<code>1</code> are no longer read (<code>set</code> still accepts them).</li>
+                <li>The XER root element is the type name (<code>&lt;CAM&gt;…&lt;/CAM&gt;</code>), and lists follow X.693.</li>
+                <li>INTEGER values with a name (e.g. <code>unavailable</code>) are written as numbers in JER, as X.697 requires. Some tools, asn1tools among them, write the name instead.</li>
+            </ul>
+        </li>
+        <li><strong>Field names exactly as in the ASN.1</strong>: <code>long</code>, <code>node-XY1</code> (previously <code>longint</code>, <code>node_XY1</code>).</li>
+        <li><strong>All formats check constraints.</strong> JER and XER used to accept out-of-range values; now they are rejected like in UPER.</li>
+        <li><strong>Generate:</strong> the content option is now <code>MINIMAL</code>, <code>RANDOM</code> or <code>FULL</code> (replaces the five sizes). Realistic messages stay under 410 bytes.
+            <ul>
+                <li><strong>API default changed:</strong> <code>POST /api/generate</code> without <code>content</code> now returns a <code>MINIMAL</code> message (it used to return a small random one). <code>size</code> and <code>minimal</code> are no longer used. See the <a href="/doc/api.html">API reference</a>.</li>
+            </ul>
+        </li>
+        <li><strong>Generate with <code>set</code>:</strong> fix individual fields with <code>path=value</code> lines, e.g. <code>header.stationID=1234</code>. Physical units are converted for you when the schema declares one (<code>lat=41.3875 degree</code>, <code>speedValue=13.89 m/s</code>); named numbers, enumerations and named bits accept their names (<code>stationType=passengerCar</code>, <code>{ingressPath}</code>). <a href="/doc/messages.html#set">Syntax</a>.</li>
+        <li><strong><a href="/doc/mcp.html">MCP</a>:</strong> new <code>validate</code> tool. <code>generate</code> and <code>encode</code> accept just the message type (<code>CAM</code>, <code>MAPEM</code>, <code>MAP</code>…) and use its default version.</li>
+        <li><strong>Fix:</strong> some malformed module uploads could make the server hang; they now return a clear error within seconds.</li>
+    </ul>
+
+    <h2 id="2026-11-19">2026-11-19</h2>
+
+    <ul>
+        <li><strong>CAM 2.3.1</strong> (ETSI TS 103 900) added; it is now the default for auto-detected CAMs. CAM v2 stays available by name.</li>
+        <li><strong>IVIM</strong> now uses IVI version 2 (ISO/TS 19321:2020), with the GDD and EFC modules it needs.</li>
+        <li><strong>"Auto-detected as …"</strong> label on results, and a <strong>Versions</strong> dialog showing which definition is used for each message type. Signed-in users can choose their own default per message type.</li>
+        <li><strong>Rules selector:</strong> X.691 standard (default) or asn1c/Vanetza compatibility (see the <a href="/doc/faq.html#why-can-my-result-differ-from-vanetza-or-other-asn1c-based-stacks">FAQ</a>).</li>
+    </ul>
+
+    <h2 id="2026-11-18">2026-11-18</h2>
+
+    <ul>
+        <li><strong>Encoding fixes</strong> found by checking every type against an independent implementation (asn1tools):
+            <ul>
+                <li>DEFAULT fields now carry their presence bit (X.691). Messages with DEFAULT fields, such as DENM 2.2, used to decode wrongly from that field on.</li>
+                <li>NULL, IA5String/NumericString names (MAPEM/SPATEM), extensible BIT STRINGs (CPM/DENM) and several length rules are now encoded correctly.</li>
+                <li>If you stored UPER payloads produced by v2x.tools before this date for those messages, re-encode them.</li>
+            </ul>
+        </li>
+        <li><strong>New modules:</strong> CDD 4.3 (TS 102 894-2 v2.4.1), DENM 2.3.1 (TS 103 831; now the default for auto-detected DENMs), VAM 2.3.1 (TS 103 300-3).</li>
+        <li><strong>asn1c / Vanetza compatibility mode</strong> (<code>X-Compat: asn1c</code> in the API, <code>compat</code> in the MCP).</li>
+        <li><strong>Auto-detect defaults:</strong> the public default for each message type is the newest version; responses say which one was used (<code>X-Resolved-Ref</code>, <code>X-Resolved-Message</code>, <code>X-Auto-Detected</code>).</li>
+    </ul>
+
+    <footer>
+        asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · ETSI C-ITS message tooling.
+    </footer>
+</div>
+</body>
+</html>

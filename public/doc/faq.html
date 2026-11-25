@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ — asn1click docs</title>
+    <meta name="description" content="asn1click FAQ: privacy, supported ETSI messages, SAE J2735 vs ETSI DSRC, encodings (UPER, JER, XER), asn1c/Vanetza compatibility and known limitations.">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/doc/doc.css">
+    <style>.faq-toc h4:first-child { margin-top: 0; } .faq-toc a { display: block; margin: 2px 0; } .faq-toc h4 a { color: #94a3b8; }</style>
+</head>
+<body>
+<div class="container">
+    <div class="wordmark">asn1click <span>docs</span></div>
+    <div class="subtitle">Questions and answers</div>
+    <nav class="nav"><a href="/doc/">Overview</a> <a href="/doc/web-tools.html">Web tools</a> <a href="/doc/messages.html">Building messages</a> <a href="/doc/mcp.html">AI assistants (MCP)</a> <a href="/doc/api.html">API reference</a> <a href="/doc/faq.html" class="active">FAQ</a> <a href="/doc/changelog.html">What's new</a></nav>
+
+    <p>Short answers about what asn1click does and doesn't do. For how-to guides and the API reference, see the <a href="/doc/">documentation</a>; for recent changes, see <a href="/doc/changelog.html">What's new</a>.</p>
+
+    <div class="toc faq-toc">
+        <h4><a href="#data-and-privacy">Data and privacy</a></h4>
+        <a href="#do-you-store-the-payloads-i-decode-or-encode">Do you store the payloads I decode or encode?</a>
+        <a href="#who-can-see-the-asn-1-modules-i-upload">Who can see the ASN.1 modules I upload?</a>
+        <h4><a href="#messages-and-standards">Messages and standards</a></h4>
+        <a href="#which-messages-are-supported">Which messages are supported?</a>
+        <a href="#how-does-auto-detect-pick-a-version">How does auto-detect pick a version?</a>
+        <a href="#can-i-decode-sae-j2735-messages-bsm-map-spat-tim">Can I decode SAE J2735 messages (BSM, MAP, SPaT, TIM)?</a>
+        <a href="#can-i-use-the-etsi-mapem-spatem-definitions-to-decode-j2735-map-or-spat">Can I use the ETSI MAPEM/SPATEM definitions to decode J2735 MAP or SPaT?</a>
+        <a href="#which-encodings-are-supported">Which encodings are supported?</a>
+        <a href="#my-json-or-xml-from-before-november-2026-is-rejected-why">My JSON or XML from before November 2026 is rejected. Why?</a>
+        <h4><a href="#interoperability">Interoperability</a></h4>
+        <a href="#why-can-my-result-differ-from-vanetza-or-other-asn1c-based-stacks">Why can my result differ from Vanetza or other asn1c-based stacks?</a>
+        <a href="#can-i-paste-a-full-captured-packet-geonetworking-security-header-btp">Can I paste a full captured packet (GeoNetworking + security header + BTP)?</a>
+        <a href="#how-is-this-different-from-wireshark-asn1c-or-the-usdot-connectedvcs-validator">How is this different from Wireshark, asn1c or the USDOT ConnectedVCS validator?</a>
+        <h4><a href="#known-limitations">Known limitations</a></h4>
+        <a href="#can-i-encode-values-of-16k-or-more">Can I encode values of 16K or more?</a>
+        <a href="#which-asn-1-features-are-not-supported-in-uploaded-modules">Which ASN.1 features are not supported in uploaded modules?</a>
+        <a href="#why-can-t-i-set-a-physical-unit-on-some-fields">Why can't I set a physical unit on some fields?</a>
+        <a href="#do-the-public-modules-compile-unchanged-in-other-asn-1-tools">Do the public modules compile unchanged in other ASN.1 tools?</a>
+    </div>
+
+    <h2 id="data-and-privacy">Data and privacy</h2>
+
+    <h3 id="do-you-store-the-payloads-i-decode-or-encode">Do you store the payloads I decode or encode?</h3>
+
+    <p>No. Payloads are processed in memory and are neither stored nor logged. Anonymous usage analytics record error messages, which may quote a single field value. Through an AI assistant (<a href="/doc/mcp.html">MCP</a>, chat) the AI provider sees the payloads; for confidential data use the web UI or the API.</p>
+
+    <h3 id="who-can-see-the-asn-1-modules-i-upload">Who can see the ASN.1 modules I upload?</h3>
+
+    <p>Only you. Uploaded modules are private to your account.</p>
+
+    <h2 id="messages-and-standards">Messages and standards</h2>
+
+    <h3 id="which-messages-are-supported">Which messages are supported?</h3>
+
+    <p>The ETSI C-ITS message set: CAM, DENM, CPM, VAM, MAPEM, SPATEM, IVIM, SREM, SSEM and RTCMEM, in several versions, plus the dictionaries they use (CDD/ITS-Container, ISO 19091 DSRC, ISO 19321 IVI, ISO 14906 EFC, ISO 24534 ERI). The full list is in the module browser and in the MCP (<code>list_modules</code>).</p>
+
+    <h3 id="how-does-auto-detect-pick-a-version">How does auto-detect pick a version?</h3>
+
+    <p>From the ITS PDU header (<code>protocolVersion</code> + <code>messageID</code>). The public default is the newest version we have for that message; the result shows which definition was used ("Auto-detected as …"). You can always pick a version explicitly, and signed-in users can set their own default per message type.</p>
+
+    <h3 id="can-i-decode-sae-j2735-messages-bsm-map-spat-tim">Can I decode SAE J2735 messages (BSM, MAP, SPaT, TIM)?</h3>
+
+    <p>Not yet. J2735 is on the roadmap. Its message frame relies on ASN.1 information object classes that our parser does not fully support yet (see <a href="#known-limitations">Known limitations</a>).</p>
+
+    <h3 id="can-i-use-the-etsi-mapem-spatem-definitions-to-decode-j2735-map-or-spat">Can I use the ETSI MAPEM/SPATEM definitions to decode J2735 MAP or SPaT?</h3>
+
+    <p>No, even though they look almost identical. ETSI's DSRC module (TS 103 301) takes some types from the ETSI Common Data Dictionary instead of defining them like J2735:</p>
+
+    <ul>
+        <li><strong>Longitude</strong>: ETSI <code>-1800000000..1800000001</code>, J2735 <code>-1799999999..1800000001</code>. UPER encodes a value as its distance from the lower bound, so the same bytes decode <strong>1 unit (0.1 µdeg) apart</strong>. If your J2735 MAP decodes with a longitude off by one, this is why.</li>
+        <li><strong>Iso3833VehicleType</strong> (in SREM/SSEM requestor data) has a different range, which changes its size on the wire and shifts every field after it.</li>
+        <li>Latitude and StationID are the same in both.</li>
+    </ul>
+
+    <h3 id="which-encodings-are-supported">Which encodings are supported?</h3>
+
+    <p>UPER for binary, and JER (JSON) and XER (XML) for text, following X.691, X.697 and X.693. OER/COER (used by IEEE 1609.2 / ETSI TS 103 097 security headers) and aligned PER (APER, used by 3GPP) are not supported yet.</p>
+
+    <h3 id="my-json-or-xml-from-before-november-2026-is-rejected-why">My JSON or XML from before November 2026 is rejected. Why?</h3>
+
+    <p>On 2026-11-24 JER and XER were changed to follow the standards: enumerations by name, BIT STRING in hex, field names exactly as in the ASN.1 (<code>long</code>, not <code>longint</code>). Regenerate or convert your samples. Details in <a href="/doc/changelog.html">What's new</a>.</p>
+
+    <h2 id="interoperability">Interoperability</h2>
+
+    <h3 id="why-can-my-result-differ-from-vanetza-or-other-asn1c-based-stacks">Why can my result differ from Vanetza or other asn1c-based stacks?</h3>
+
+    <p>asn1c departs from X.691 in a few places: it merges extension additions into the root of some constraints (e.g. <code>PathPredicted</code>, <code>DeltaPositions</code>), drops SIZE extensibility after <code>WITH COMPONENT</code>, and drops the extension bit of some open-type ids (CAM 2.3.1 extension containers). asn1click follows X.691 by default, like Objective Systems and asn1tools. Choose <strong>asn1c / Vanetza</strong> in the rules selector (API: <code>X-Compat: asn1c</code>) to get byte-identical output with those stacks. See <a href="/doc/web-tools.html">Web tools</a> and the <a href="/doc/api.html">API reference</a>.</p>
+
+    <h3 id="can-i-paste-a-full-captured-packet-geonetworking-security-header-btp">Can I paste a full captured packet (GeoNetworking + security header + BTP)?</h3>
+
+    <p>Not yet. Paste only the message itself (the bytes starting with the ITS PDU header). Unwrapping GeoNetworking, BTP and IEEE 1609.2 / TS 103 097 secured packets is on the roadmap.</p>
+
+    <h3 id="how-is-this-different-from-wireshark-asn1c-or-the-usdot-connectedvcs-validator">How is this different from Wireshark, asn1c or the USDOT ConnectedVCS validator?</h3>
+
+    <ul>
+        <li><strong>Wireshark</strong> decodes ETSI messages inside packet captures, with the ASN.1 versions compiled into your Wireshark build. asn1click works from a hex string, encodes and generates messages, lets you choose the version, explains why a payload is invalid, and has an API and an MCP server.</li>
+        <li><strong>asn1c</strong> compiles ASN.1 into C code; asn1click needs no build step.</li>
+        <li><strong>The ConnectedVCS Message Validator</strong> (USDOT) validates SAE J2735 3/2016 messages. asn1click does not support J2735 yet; it covers the ETSI and ISO messages above.</li>
+    </ul>
+
+    <h2 id="known-limitations">Known limitations</h2>
+
+    <h3 id="can-i-encode-values-of-16k-or-more">Can I encode values of 16K or more?</h3>
+
+    <p>No. Lengths of 16K or more (X.691 fragmentation) are not supported: such values are refused with an error, never encoded wrongly. In practice this only matters for 3GPP-size messages.</p>
+
+    <h3 id="which-asn-1-features-are-not-supported-in-uploaded-modules">Which ASN.1 features are not supported in uploaded modules?</h3>
+
+    <p><code>OBJECT IDENTIFIER</code> as a field type, general parameterized types (<code>Container { {Set} }</code>), and general information object class field references with table constraints (<code>CLASS.&amp;field ({Set}{@id})</code>). The forms used by the ETSI messages are supported.</p>
+
+    <h3 id="why-can-t-i-set-a-physical-unit-on-some-fields">Why can't I set a physical unit on some fields?</h3>
+
+    <p>Physical units in <code>set</code> (<code>41.3875 degree</code>) work only where the schema declares a unit (<code>@unit</code>). Some types don't (e.g. <code>HeadingValue</code> in CDD 4.3); use the raw integer there. Syntax: <a href="/doc/messages.html#set">Generate and set</a>.</p>
+
+    <h3 id="do-the-public-modules-compile-unchanged-in-other-asn-1-tools">Do the public modules compile unchanged in other ASN.1 tools?</h3>
+
+    <p>Not all of them. They contain small extensions of ours (for example named values in the ITS PDU header), so some stored modules don't compile unchanged in other ASN.1 tools. Clean copies are planned.</p>
+
+    <footer>
+        asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · ETSI C-ITS message tooling.
+    </footer>
+</div>
+</body>
+</html>
