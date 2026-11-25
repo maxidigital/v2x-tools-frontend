@@ -27,16 +27,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <!-- Analytics (gtag + Umami), consumed by src/services/analytics.ts -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-EGM7LYNG67"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      gtag('config', 'G-EGM7LYNG67');
-    </script>
+    <!-- Analytics: Umami only (no cookies, so no consent banner needed); consumed by src/services/analytics.ts.
+         Google Analytics was removed on 2026-11-25: it set tracking cookies, which would need a consent banner. -->
     <script
       defer
       src="https://cloud.umami.is/script.js"
