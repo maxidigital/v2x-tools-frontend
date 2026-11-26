@@ -113,7 +113,7 @@ def convert(md, title, subtitle, active, description, toc):
 """ + intro + toc_html + "\n\n".join(body) + """
 
     <footer>
-        asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · ETSI C-ITS message tooling.
+        asn1click — <a href="/">Web tools</a> · <a href="https://asn1click.com">asn1click.com</a> · a product of <a href="https://v2xnow.de">v2xnow</a> · Hosted in the EU.
     </footer>
 </div>
 </body>

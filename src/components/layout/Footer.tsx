@@ -30,7 +30,13 @@ function LegalLink({ title, children }: { title: string; children: ReactNode }) 
 export function Footer() {
   return (
     <footer className="flex min-h-9 shrink-0 py-1 flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-border px-4 text-xs text-muted-foreground">
-      <span>© {new Date().getFullYear()} v2xnow.de</span>
+      <span>
+        © {new Date().getFullYear()} asn1click · a product of{' '}
+        <a className="transition-colors hover:text-foreground" href="https://v2xnow.de" target="_blank" rel="noreferrer">
+          v2xnow
+        </a>
+      </span>
+      <span title="All services and data run in the European Union (Netherlands)">Hosted in the EU</span>
       <LegalLink title="Impressum">
         <p>
           <strong>Maximiliano Bottazzi</strong>
