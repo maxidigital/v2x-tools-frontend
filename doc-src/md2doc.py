@@ -102,6 +102,7 @@ def convert(md, title, subtitle, active, description, toc):
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/doc/doc.css">{extra_css}
+    <script defer src="https://cloud.umami.is/script.js" data-exclude-hash="true" data-website-id="18b30b9d-90d2-4f01-9668-36985baa91c3"></script>
 </head>
 <body>
 <div class="container">
