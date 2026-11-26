@@ -18,7 +18,7 @@ def slug(t):
     return re.sub(r"^-|-$", "", re.sub(r"[^a-z0-9]+", "-", t))
 
 def fix_href(h):
-    h = re.sub(r"^https://v2x\.tools/doc/", "/doc/", h)
+    h = re.sub(r"^https://(v2x\.tools|tools\.asn1click\.com)/doc/", "/doc/", h)  # same-site links stay relative
     h = re.sub(r"^\./changelog", "/doc/changelog.html", h)
     h = re.sub(r"^\./faq", "/doc/faq.html", h)
     return h

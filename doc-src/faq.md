@@ -7,7 +7,7 @@ Short answers about what asn1click does and doesn't do. For how-to guides and th
 ## Data and privacy
 
 ### Do you store the payloads I decode or encode?
-No. Payloads are processed in memory and are neither stored nor logged. Anonymous usage analytics record error messages, which may quote a single field value. Through an AI assistant ([MCP](https://tools.asn1click.com/doc/mcp.html), chat) the AI provider sees the payloads; for confidential data use the web UI or the API.
+No. Payloads are processed in memory and are neither stored nor logged. Anonymous usage analytics record error messages, which may quote a single field value. Through an AI assistant ([MCP](https://tools.asn1click.com/doc/mcp.html), chat) the AI provider sees the payloads; for confidential data use the web UI or the API. All services and data run in the EU (Netherlands).
 
 ### Who can see the ASN.1 modules I upload?
 Only you. Uploaded modules are private to your account.
