@@ -33,7 +33,7 @@ export function Footer() {
       <span>
         © {new Date().getFullYear()} asn1click · a product of{' '}
         <a className="transition-colors hover:text-foreground" href="https://v2xnow.de" target="_blank" rel="noreferrer">
-          v2xnow
+          v2xnow.de
         </a>
       </span>
       <span title="All services and data run in the European Union (Netherlands)">Hosted in the EU</span>
